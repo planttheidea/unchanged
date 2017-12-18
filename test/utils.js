@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import sinon from 'sinon';
 
 // src
 import * as utils from 'src/utils';
@@ -180,7 +181,131 @@ test('if getNewChildClone will get a new array when the object doe not exist and
   t.deepEqual(result, []);
 });
 
-test.todo('onMatchAtPath');
+test('if onMatchAtPath calls onMatch and returns its result if the object exists and returns the result', (t) => {
+  const path = ['key'];
+  const object = {
+    [path[0]]: 'value'
+  };
+  const shouldClone = false;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.calledOnce);
+  t.true(onMatch.calledWith(object, path[0]));
+
+  t.is(result, path[0]);
+});
+
+test('if onMatchAtPath calls onMatch and returns the original object if the object exists and returns the object if it should be cloned', (t) => {
+  const path = ['key'];
+  const object = {
+    [path[0]]: 'value'
+  };
+  const shouldClone = true;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.calledOnce);
+  t.true(onMatch.calledWith(object, path[0]));
+
+  t.is(result, object);
+});
+
+test('if onMatchAtPath returns noMatchValue if the object does not exist and it should not be cloned', (t) => {
+  const path = ['key'];
+  const object = null;
+  const shouldClone = false;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.notCalled);
+
+  t.is(result, noMatchValue);
+});
+
+test('if onMatchAtPath calls itself if the path has more than one value and the next key exists', (t) => {
+  const path = ['key', 'otherKey'];
+  const object = {
+    [path[0]]: {
+      [path[1]]: 'value'
+    }
+  };
+  const shouldClone = false;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const passedPath = [...path];
+
+  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.calledOnce);
+  t.true(onMatch.calledWith(object[path[0]], path[1]));
+
+  t.deepEqual(passedPath, [path[1]]);
+
+  t.is(result, path[1]);
+});
+
+test('if onMatchAtPath does not call itself if the path has more than one value but the next object does not exist', (t) => {
+  const path = ['key', 'otherKey'];
+  const object = null;
+  const shouldClone = false;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const passedPath = [...path];
+
+  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.notCalled);
+
+  t.deepEqual(passedPath, [path[1]]);
+
+  t.is(result, noMatchValue);
+});
+
+test('if onMatchAtPath does not call itself if the path has more than one value but the next key does not exist', (t) => {
+  const path = ['key', 'otherKey'];
+  const object = {};
+  const shouldClone = false;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const passedPath = [...path];
+
+  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.notCalled);
+
+  t.deepEqual(passedPath, [path[1]]);
+
+  t.is(result, noMatchValue);
+});
+
+test('if onMatchAtPath calls itself with a new clone if the path has more than one value and returns the object', (t) => {
+  const path = ['key', 'otherKey'];
+  const object = {};
+  const shouldClone = true;
+  const onMatch = sinon.stub().returnsArg(1);
+  const noMatchValue = 'no match';
+
+  const passedPath = [...path];
+
+  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+
+  t.true(onMatch.calledOnce);
+  t.true(onMatch.calledWith(object[path[0]], path[1]));
+
+  t.deepEqual(passedPath, [path[1]]);
+
+  t.is(result, object);
+});
 
 test('if getNestedProperty will get the nested value in the object', (t) => {
   const object = {
