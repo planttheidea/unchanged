@@ -4358,9 +4358,9 @@ path-type@^2.0.0:
   dependencies:
     pify "^2.0.0"
 
-pathington@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.0.2.tgz#85a32fcb3c90b0b8b4c85f4a3bf09eb03bf4f0f3"
+pathington@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.1.0.tgz#00b4b0495a0591d5e20cb1e1131575cea39bf233"
 
 pbkdf2@^3.0.3:
   version "3.0.14"

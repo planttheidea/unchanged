@@ -1,8 +1,5 @@
-// external dependencies
-import {parse} from 'pathington';
-
 // utils
-import {curry, getDeepClone, getNestedProperty, getShallowClone} from './utils';
+import {curry, getDeepClone, getNestedProperty, hasNestedProperty, isEmptyKey} from './utils';
 
 /**
  * @function get
@@ -15,11 +12,25 @@ import {curry, getDeepClone, getNestedProperty, getShallowClone} from './utils';
  * @returns {*} the value requested
  */
 export const get = curry((path, object) => {
-  return path ? getNestedProperty(parse(path), object) : object;
+  return isEmptyKey(path) ? object : getNestedProperty(path, object);
 });
 
 /**
- * @function remove
+ * @function has
+ *
+ * @description
+ * does the nested path exist on the object
+ *
+ * @param {Array<number|string>|number|string} path the path to match on the object
+ * @param {Array<*>|Object} object the object to get the value from
+ * @returns {boolean} does the path exist
+ */
+export const has = curry((path, object) => {
+  return isEmptyKey(path) ? !!object : hasNestedProperty(path, object);
+});
+
+/**
+ * @function removeobject with quoted keys
  *
  * @description
  * remove the value in the object at the path requested
@@ -29,13 +40,15 @@ export const get = curry((path, object) => {
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
 export const remove = curry((path, object) => {
-  return getDeepClone(parse(path), getShallowClone(object), (ref, key) => {
-    if (Array.isArray(ref)) {
-      ref.splice(key, 1);
-    } else {
-      delete ref[key];
-    }
-  });
+  return hasNestedProperty(path, object)
+    ? getDeepClone(path, object, (ref, key) => {
+      if (Array.isArray(ref)) {
+        ref.splice(key, 1);
+      } else {
+        delete ref[key];
+      }
+    })
+    : object;
 });
 
 /**
@@ -50,7 +63,7 @@ export const remove = curry((path, object) => {
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
 export const set = curry((path, value, object) => {
-  return getDeepClone(parse(path), getShallowClone(object), (ref, key) => {
+  return getDeepClone(path, object, (ref, key) => {
     ref[key] = value;
   });
 });
@@ -68,7 +81,7 @@ export const set = curry((path, value, object) => {
  */
 export const add = curry((path, value, object) => {
   const nestedValue = get(path, object);
-  const fullPath = Array.isArray(nestedValue) ? `${path}[${nestedValue.length}]` : path;
+  const fullPath = Array.isArray(nestedValue) ? `${isEmptyKey(path) ? '' : path}[${nestedValue.length}]` : path;
 
   return set(fullPath, value, object);
 });

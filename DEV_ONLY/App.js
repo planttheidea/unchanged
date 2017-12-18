@@ -4,6 +4,18 @@ import {render} from 'react-dom';
 
 import * as src from '../src';
 
+// const array = ['existing'];
+// const nestedArray = {
+//   array: [...array]
+// };
+// const nestedObject = {
+//   array: [{key: 'value'}]
+// };
+//
+// console.log(src.add(null, 'value', array), array);
+// console.log(src.add('array', 'value', nestedArray), nestedArray);
+// console.log(src.add('array[0].otherKey', 'other value', nestedObject), nestedObject);
+
 const foo = (() => {
   const Foo = function(value) {
     this.value = value;
@@ -57,7 +69,7 @@ const simpleFoo = src.add('regexp.something', 'else', simpleObject);
 
 console.log('custom prototype', simpleFoo, simpleObject, simpleFoo === simpleObject);
 
-const simpleAddArray = src.add('', 'new value', simpleArray);
+const simpleAddArray = src.add(null, 'new value', simpleArray);
 
 console.log('simple array', simpleAddArray, simpleArray, simpleAddArray === simpleArray);
 
@@ -80,6 +92,19 @@ console.log('deep array', src.get('[0].nested["object with quoted keys"]', deepO
 
 console.groupEnd('get');
 
+console.group('has');
+
+console.log('simple object true', src.has('simple', simpleObject));
+console.log('simple object false', src.has('complex', simpleObject));
+console.log('simple array true', src.has(1, simpleArray));
+console.log('simple array false', src.has(7, simpleArray));
+console.log('deep object true', src.has('deeply[0].nested["object with quoted keys"]', deepObject));
+console.log('deep object false', src.has('deeply[0].nested["non-existent object"]', deepObject));
+console.log('deep array true', src.has('[0].nested["object with quoted keys"]', deepObject.deeply));
+console.log('deep array false', src.has('[0].nested["non-existent object"]', deepObject.deeply));
+
+console.groupEnd('has');
+
 console.group('remove');
 
 const simpleRemoveObject = src.remove('simple', simpleObject);
@@ -97,6 +122,10 @@ console.log('deep object', deepRemoveObject, deepObject, deepRemoveObject === de
 const deepRemoveArray = src.remove('deeply.nested[0]', deepArray);
 
 console.log('deep array', deepRemoveArray, deepArray, deepRemoveArray === deepArray);
+
+const deepRemoveArrayInvalid = src.remove('foo.bar.baz', deepArray);
+
+console.log('deep array invalid', deepRemoveArrayInvalid, deepArray, deepRemoveArrayInvalid === deepArray);
 
 console.groupEnd('remove');
 
