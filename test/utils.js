@@ -45,44 +45,6 @@ test('if curry will make a function curriable', (t) => {
   t.deepEqual(result, [a, b]);
 });
 
-test('if isKeyForArrayType returns true when the key should be for an array', (t) => {
-  const key = 1;
-
-  t.true(utils.isKeyForArrayType(key));
-});
-
-test('if isKeyForArrayType returns false when the key should be for an object', (t) => {
-  const key = 'foo';
-
-  t.false(utils.isKeyForArrayType(key));
-});
-
-test('if getFunctionName will return no match when the value is not a function', (t) => {
-  const fn = {};
-
-  const result = utils.getFunctionName(fn);
-
-  t.is(result, '__NO_CONSTRUCTOR_FOUND__');
-});
-
-test('if getFunctionName will return the function name when the value is a function', (t) => {
-  const fn = function named() {};
-
-  const result = utils.getFunctionName(fn);
-
-  t.is(result, fn.name);
-});
-
-test('if getFunctionName will return the parsed function name when the value is a function but the name property does not exist', (t) => {
-  const fn = function named() {};
-
-  delete fn.name;
-
-  const result = utils.getFunctionName(fn);
-
-  t.is(result, 'named');
-});
-
 test('if getShallowClone shallowly clones the object when it is an array', (t) => {
   const object = ['array'];
 

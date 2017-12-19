@@ -7,6 +7,7 @@ import {
   getNewEmptyObject,
   hasNestedProperty,
   isArray,
+  isCloneable,
   isEmptyKey
 } from './utils';
 
@@ -50,13 +51,15 @@ export const has = curry((path, object) => {
  * @returns {Array<*>|Object} the new merged object
  */
 export const merge = curry((path, objectToMerge, object) => {
-  return object
-    ? isEmptyKey(path)
-      ? getDeeplyMergedObject(object, objectToMerge)
-      : getDeepClone(path, object, (ref, key) => {
-        ref[key] = getDeeplyMergedObject(ref[key], objectToMerge);
-      })
-    : objectToMerge;
+  if (!isCloneable(object)) {
+    return objectToMerge;
+  }
+
+  return isEmptyKey(path)
+    ? getDeeplyMergedObject(object, objectToMerge)
+    : getDeepClone(path, object, (ref, key) => {
+      ref[key] = getDeeplyMergedObject(ref[key], objectToMerge);
+    });
 });
 
 /**
@@ -70,17 +73,19 @@ export const merge = curry((path, objectToMerge, object) => {
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
 export const remove = curry((path, object) => {
-  return isEmptyKey(path)
-    ? getNewEmptyObject(object)
-    : hasNestedProperty(path, object)
-      ? getDeepClone(path, object, (ref, key) => {
-        if (isArray(ref)) {
-          ref.splice(key, 1);
-        } else {
-          delete ref[key];
-        }
-      })
-      : object;
+  if (isEmptyKey(path)) {
+    return getNewEmptyObject(object);
+  }
+
+  return hasNestedProperty(path, object)
+    ? getDeepClone(path, object, (ref, key) => {
+      if (isArray(ref)) {
+        ref.splice(key, 1);
+      } else {
+        delete ref[key];
+      }
+    })
+    : object;
 });
 
 /**

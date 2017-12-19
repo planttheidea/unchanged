@@ -7,14 +7,19 @@ import {parse} from 'pathington';
 const REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
 /**
- * @constant {Object} GLOBAL
- */
-const GLOBAL = typeof window === 'object' ? window : global;
-
-/**
  * @function hasOwnProperty
  */
 const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * @constant {RegExp} NATIVE_FUNCTION_REGEXP
+ */
+const NATIVE_FUNCTION_REGEXP = new RegExp(
+  `^${Function.prototype.toString
+    .call(Function)
+    .replace(/([.*+?^=!:$(){}|[\]\/\\])/g, '\\$1')
+    .replace(/Function|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?')}$`
+);
 
 /**
  * @function isArray
@@ -59,54 +64,31 @@ export const isCloneable = (object) => {
 };
 
 /**
- * @function isKeyForArrayType
- *
- * @description
- * is the key passed for array type children
- *
- * @param {number|string} key the key to test
- * @returns {boolean} is the key passed for array types
- */
-export const isKeyForArrayType = (key) => {
-  return typeof key === 'number';
-};
-
-/**
- * @function getFunctionName
- *
- * @description
- * get the function name based on the property or derivation from the string value
- *
- * @param {function} fn the function to get the name of
- * @returns {string} the name of the function
- */
-export const getFunctionName = (fn) => {
-  const match =
-    typeof fn === 'function' ? (fn.name ? [null, fn.name] : fn.toString().match(/function ([^\(]+)/)) : null;
-
-  return match ? match[1] : '__NO_CONSTRUCTOR_FOUND__';
-};
-
-/**
  * @function getShallowClone
  *
  * @description
- * get a shallow clone of the value passed based on the type requested (maintaining prototype)
+ * get a shallow clone of the value passed based on the type requested (maintaining prototype if possible)
  *
  * @param {Array<*>|Object} object the object to clone
- * @param {number|string} key the key to base the object type from
+ * @param {number|string} key the key to base the object type fromisReactElement(object) ||
  * @returns {Array<*>|Object} a shallow clone of the value
  */
 export const getShallowClone = (object) => {
-  return isArray(object)
-    ? [...object]
-    : object.constructor === Object || typeof GLOBAL[getFunctionName(object.constructor)] === 'function'
-      ? {...object}
-      : Object.keys(object).reduce((clone, key) => {
-        clone[key] = object[key];
+  if (isArray(object)) {
+    return [...object];
+  }
 
-        return clone;
-      }, Object.create(Object.getPrototypeOf(object)));
+  if (object.constructor === Object) {
+    return {...object};
+  }
+
+  return object.constructor && NATIVE_FUNCTION_REGEXP.test(`${object.constructor}`)
+    ? {}
+    : Object.keys(object).reduce((clone, key) => {
+      clone[key] = object[key];
+
+      return clone;
+    }, Object.create(Object.getPrototypeOf(object)));
 };
 
 /**
@@ -119,7 +101,7 @@ export const getShallowClone = (object) => {
  * @returns {Array|Object} the empty child
  */
 export const getNewEmptyChild = (key) => {
-  return isKeyForArrayType(key) ? [] : {};
+  return typeof key === 'number' ? [] : {};
 };
 
 /**
@@ -136,6 +118,19 @@ export const getNewEmptyObject = (object) => {
 };
 
 /**
+ * @function cloneIfPossible
+ *
+ * @description
+ * clone the object passed if it is mergeable, else return itself
+ *
+ * @param {*} object he object to clone
+ * @returns {*} the cloned object
+ */
+export const cloneIfPossible = (object) => {
+  return isCloneable(object) ? getShallowClone(object) : object;
+};
+
+/**
  * @function getNewChildClone
  *
  * @description
@@ -146,11 +141,13 @@ export const getNewEmptyObject = (object) => {
  * @returns {Array<*>|Object} the clone of the key at object
  */
 export const getNewChildClone = (object, nextKey) => {
-  return isCloneable(object)
-    ? isKeyForArrayType(nextKey)
-      ? isArray(object) ? getShallowClone(object) : []
-      : isArray(object) ? {} : getShallowClone(object)
-    : getNewEmptyChild(nextKey);
+  const emptyChild = getNewEmptyChild(nextKey);
+
+  if (!isCloneable(object)) {
+    return emptyChild;
+  }
+
+  return isArray(object) === isArray(emptyChild) ? cloneIfPossible(object) : emptyChild;
 };
 
 /**
@@ -168,7 +165,7 @@ export const getNewChildClone = (object, nextKey) => {
  */
 export const onMatchAtPath = (path, object, shouldClone, onMatch, noMatchValue) => {
   if (path.length <= 1) {
-    const result = shouldClone || object ? onMatch(object, path[0]) : noMatchValue;
+    const result = object || shouldClone ? onMatch(object, path[0]) : noMatchValue;
 
     return shouldClone ? object : result;
   }
@@ -187,19 +184,6 @@ export const onMatchAtPath = (path, object, shouldClone, onMatch, noMatchValue) 
 };
 
 /**
- * @function cloneIfPossible
- *
- * @description
- * clone the object passed if it is mergeable, else return itself
- *
- * @param {*} object he object to clone
- * @returns {*} the cloned object
- */
-export const cloneIfPossible = (object) => {
-  return isCloneable(object) ? getShallowClone(object) : object;
-};
-
-/**
  * @function getDeeplyMergedObject
  *
  * @description
@@ -212,22 +196,26 @@ export const cloneIfPossible = (object) => {
 export const getDeeplyMergedObject = (object1, object2) => {
   const isObject1Array = isArray(object1);
 
-  return isObject1Array !== isArray(object2)
-    ? cloneIfPossible(object2)
-    : isObject1Array
-      ? [...object1, ...object2.map(cloneIfPossible)]
-      : Object.keys(object2).reduce(
-        (clone, key) => {
-          clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+  if (isObject1Array !== isArray(object2)) {
+    return cloneIfPossible(object2);
+  }
 
-          return clone;
-        },
-        Object.keys(object1).reduce((clone, key) => {
-          clone[key] = cloneIfPossible(object1[key]);
+  if (isObject1Array) {
+    return [...object1, ...object2.map(cloneIfPossible)];
+  }
 
-          return clone;
-        }, {})
-      );
+  return Object.keys(object2).reduce(
+    (clone, key) => {
+      clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+
+      return clone;
+    },
+    Object.keys(object1).reduce((clone, key) => {
+      clone[key] = cloneIfPossible(object1[key]);
+
+      return clone;
+    }, {})
+  );
 };
 
 /**

@@ -57,5 +57,9 @@ module.exports = Object.assign({}, defaultConfig, {
     })
   }),
 
+  node: {
+    fs: 'empty'
+  },
+
   plugins: [...defaultConfig.plugins, new HtmlWebpackPlugin()]
 });

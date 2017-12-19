@@ -1,20 +1,6 @@
-import PropTypes from 'prop-types';
-import React, {PureComponent} from 'react';
-import {render} from 'react-dom';
-
 import * as src from '../src';
 
-// const array = ['existing'];
-// const nestedArray = {
-//   array: [...array]
-// };
-// const nestedObject = {
-//   array: [{key: 'value'}]
-// };
-//
-// console.log(src.add(null, 'value', array), array);
-// console.log(src.add('array', 'value', nestedArray), nestedArray);
-// console.log(src.add('array[0].otherKey', 'other value', nestedObject), nestedObject);
+// import '../benchmarks';
 
 const foo = (() => {
   const Foo = function(value) {
@@ -64,6 +50,8 @@ console.group('add');
 const simpleAddObject = src.add('["other key"]', 'new value', simpleObject);
 
 console.log('simple object', simpleAddObject, simpleObject, simpleAddObject === simpleObject);
+
+console.log(simpleObject.regexp);
 
 const simpleFoo = src.add('regexp.something', 'else', simpleObject);
 
@@ -173,22 +161,6 @@ console.log('deep array', deepSetArray, deepArray, deepSetArray === deepArray);
 
 console.groupEnd('set');
 
-class App extends PureComponent {
-  element = null;
-
-  render() {
-    return (
-      <div>
-        <h1>App</h1>
-      </div>
-    );
-  }
-}
-
-const renderApp = (container) => {
-  render(<App />, container);
-};
-
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
 document.body.style.margin = 0;
@@ -196,6 +168,6 @@ document.body.style.padding = 0;
 
 const div = document.createElement('div');
 
-renderApp(div);
+div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
