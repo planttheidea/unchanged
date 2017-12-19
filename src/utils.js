@@ -2,9 +2,24 @@
 import {parse} from 'pathington';
 
 /**
+ * @constant {Object} REACT_ELEMENT_TYPE
+ */
+const REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
+
+/**
  * @constant {Object} GLOBAL
  */
-export const GLOBAL = typeof window === 'object' ? window : global;
+const GLOBAL = typeof window === 'object' ? window : global;
+
+/**
+ * @function hasOwnProperty
+ */
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+/**
+ * @function isArray
+ */
+export const isArray = Array.isArray;
 
 /**
  * @function curry
@@ -23,6 +38,24 @@ export const curry = (fn) => {
         return curried(...args, ...remainingArgs);
       };
   };
+};
+
+/**
+ * @function isCloneable
+ *
+ * @description
+ * can the object be merged
+ *
+ * @param {*} object the object to test
+ * @returns {boolean} can the object be merged
+ */
+export const isCloneable = (object) => {
+  return (
+    !!object &&
+    typeof object === 'object' &&
+    !(object instanceof Date || object instanceof RegExp) &&
+    object.$$typeof !== REACT_ELEMENT_TYPE
+  );
 };
 
 /**
@@ -65,7 +98,7 @@ export const getFunctionName = (fn) => {
  * @returns {Array<*>|Object} a shallow clone of the value
  */
 export const getShallowClone = (object) => {
-  return Array.isArray(object)
+  return isArray(object)
     ? [...object]
     : object.constructor === Object || typeof GLOBAL[getFunctionName(object.constructor)] === 'function'
       ? {...object}
@@ -90,6 +123,19 @@ export const getNewEmptyChild = (key) => {
 };
 
 /**
+ * @function getNewEmptyObject
+ *
+ * @description
+ * get a new empty object for the type of key provided
+ *
+ * @param {Array|Object} object the object to get an empty value of
+ * @returns {Array|Object} the empty object
+ */
+export const getNewEmptyObject = (object) => {
+  return isArray(object) ? [] : {};
+};
+
+/**
  * @function getNewChildClone
  *
  * @description
@@ -100,10 +146,10 @@ export const getNewEmptyChild = (key) => {
  * @returns {Array<*>|Object} the clone of the key at object
  */
 export const getNewChildClone = (object, nextKey) => {
-  return object
+  return isCloneable(object)
     ? isKeyForArrayType(nextKey)
-      ? Array.isArray(object) ? getShallowClone(object) : []
-      : Array.isArray(object) ? {} : getShallowClone(object)
+      ? isArray(object) ? getShallowClone(object) : []
+      : isArray(object) ? {} : getShallowClone(object)
     : getNewEmptyChild(nextKey);
 };
 
@@ -135,9 +181,53 @@ export const onMatchAtPath = (path, object, shouldClone, onMatch, noMatchValue) 
     return object;
   }
 
-  return object && Object.prototype.hasOwnProperty.call(object, key)
+  return object && hasOwnProperty.call(object, key)
     ? onMatchAtPath(path, object[key], shouldClone, onMatch, noMatchValue)
     : noMatchValue;
+};
+
+/**
+ * @function cloneIfPossible
+ *
+ * @description
+ * clone the object passed if it is mergeable, else return itself
+ *
+ * @param {*} object he object to clone
+ * @returns {*} the cloned object
+ */
+export const cloneIfPossible = (object) => {
+  return isCloneable(object) ? getShallowClone(object) : object;
+};
+
+/**
+ * @function getDeeplyMergedObject
+ *
+ * @description
+ * get the objects merged into a new object
+ *
+ * @param {Array<*>|Object} object1 the object to merge into
+ * @param {Array<*>|Object} object2 the object to merge
+ * @returns {Array<*>|Object} the merged object
+ */
+export const getDeeplyMergedObject = (object1, object2) => {
+  const isObject1Array = isArray(object1);
+
+  return isObject1Array !== isArray(object2)
+    ? cloneIfPossible(object2)
+    : isObject1Array
+      ? [...object1, ...object2.map(cloneIfPossible)]
+      : Object.keys(object2).reduce(
+        (clone, key) => {
+          clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+
+          return clone;
+        },
+        Object.keys(object1).reduce((clone, key) => {
+          clone[key] = cloneIfPossible(object1[key]);
+
+          return clone;
+        }, {})
+      );
 };
 
 /**
@@ -170,7 +260,12 @@ export const getNestedProperty = (path, object) => {
 export const getDeepClone = (path, object, callback) => {
   const parsedPath = parse(path);
 
-  return onMatchAtPath(parsedPath, object ? getShallowClone(object) : getNewEmptyChild(parsedPath[0]), true, callback);
+  return onMatchAtPath(
+    parsedPath,
+    isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(parsedPath[0]),
+    true,
+    callback
+  );
 };
 
 /**
@@ -190,7 +285,7 @@ export const hasNestedProperty = (path, object) => {
       object,
       false,
       (ref, key) => {
-        return !!ref && Object.prototype.hasOwnProperty.call(ref, key);
+        return !!ref && hasOwnProperty.call(ref, key);
       },
       false
     )
@@ -207,5 +302,5 @@ export const hasNestedProperty = (path, object) => {
  * @returns {boolean} is the object an empty key value
  */
 export const isEmptyKey = (object) => {
-  return object === void 0 || object === null || object.length === 0;
+  return object === void 0 || object === null || (isArray(object) && !object.length);
 };

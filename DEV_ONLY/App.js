@@ -105,6 +105,30 @@ console.log('deep array false', src.has('[0].nested["non-existent object"]', dee
 
 console.groupEnd('has');
 
+console.group('merge');
+
+const simpleMergeObject = src.merge(null, {simple: 'thing', different: 'value'}, simpleObject);
+
+console.log('simple object', simpleMergeObject, simpleObject, simpleMergeObject === simpleObject);
+
+const simpleMergeArray = src.merge(null, ['different', 'value'], simpleArray);
+
+console.log('simple array', simpleMergeArray, simpleArray, simpleMergeArray === simpleArray);
+
+const deepMergeObject = src.merge(
+  'deeply[0].nested',
+  {'object with quoted keys': 'thing', different: 'value'},
+  deepObject
+);
+
+console.log('deep object', deepMergeObject, deepObject, deepMergeObject === deepObject);
+
+const deepMergeArray = src.merge('deeply.nested', ['different', 'value'], deepArray);
+
+console.log('deep array', deepMergeArray, deepArray, deepMergeArray === deepArray);
+
+console.groupEnd('merge');
+
 console.group('remove');
 
 const simpleRemoveObject = src.remove('simple', simpleObject);

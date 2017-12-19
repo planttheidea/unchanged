@@ -69,16 +69,13 @@ test('if add will add the deeply-nested value to the array', (t) => {
   ]);
 });
 
-test('if add will add the value to the object if an empty key', (t) => {
+test('if add will return the value= if an empty key', (t) => {
   const object = {top: 'level'};
 
   const result = index.add(null, 'value', object);
 
   t.not(result, object);
-  t.deepEqual(result, {
-    ...object,
-    null: 'value'
-  });
+  t.is(result, 'value');
 });
 
 test('if add will add the value to the array if an empty key', (t) => {

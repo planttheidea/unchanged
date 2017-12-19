@@ -5,6 +5,25 @@ import sinon from 'sinon';
 // src
 import * as utils from 'src/utils';
 
+test('if cloneIfPossible will shallowly clone the object if it is cloneable', (t) => {
+  const object = {
+    key: 'value'
+  };
+
+  const result = utils.cloneIfPossible(object);
+
+  t.not(result, object);
+  t.deepEqual(result, object);
+});
+
+test('if cloneIfPossible will return the object if it is not cloneable', (t) => {
+  const object = new Date();
+
+  const result = utils.cloneIfPossible(object);
+
+  t.is(result, object);
+});
+
 test('if curry will make a function curriable', (t) => {
   const method = (a, b) => {
     return [a, b];
@@ -117,6 +136,22 @@ test('if getNewEmptyChild will return an object when the key should not produce 
   const key = 'foo';
 
   const result = utils.getNewEmptyChild(key);
+
+  t.deepEqual(result, {});
+});
+
+test('if getNewEmptyObject will return an array when the object passed is an array', (t) => {
+  const object = ['some', 'array'];
+
+  const result = utils.getNewEmptyObject(object);
+
+  t.deepEqual(result, []);
+});
+
+test('if getNewEmptyObject will return an object when the object passed is not an array', (t) => {
+  const object = 'foo';
+
+  const result = utils.getNewEmptyObject(object);
 
   t.deepEqual(result, {});
 });
@@ -371,6 +406,49 @@ test('if getDeepClone will create a deep clone on a new object if it does not ex
   });
 });
 
+test('if getDeeplyMergedObject will clone object2 if the objects are different types', (t) => {
+  const object1 = {key: 'value'};
+  const object2 = ['key', 'value'];
+
+  const result = utils.getDeeplyMergedObject(object1, object2);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, object2);
+});
+
+test('if getDeeplyMergedObject will merge the arrays if the objects are both array types', (t) => {
+  const object1 = ['one'];
+  const object2 = ['two'];
+
+  const result = utils.getDeeplyMergedObject(object1, object2);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, [...object1, ...object2]);
+});
+
+test('if getDeeplyMergedObject will merge the objects if the objects are both object types', (t) => {
+  const object1 = {date: {willBe: 'overwritten'}, deep: {key: 'value'}};
+  const object2 = {date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'};
+
+  const result = utils.getDeeplyMergedObject(object1, object2);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, {
+    date: object2.date,
+    deep: {
+      ...object1.deep,
+      ...object2.deep
+    },
+    untouched: object2.untouched
+  });
+});
+
 test('if hasNestedProperty will return true if the nested property exists on the object', (t) => {
   const object = {
     deeply: [
@@ -404,6 +482,46 @@ test('if hasNestedProperty will return false if the object does not exist', (t) 
   t.false(utils.hasNestedProperty(path, object));
 });
 
+test('if isCloneable returns false if null', (t) => {
+  const object = null;
+
+  t.false(utils.isCloneable(object));
+});
+
+test('if isCloneable returns false if not an object', (t) => {
+  const object = 123;
+
+  t.false(utils.isCloneable(object));
+});
+
+test('if isCloneable returns false if a date', (t) => {
+  const object = new Date();
+
+  t.false(utils.isCloneable(object));
+});
+
+test('if isCloneable returns false if a regexp', (t) => {
+  const object = /foo/;
+
+  t.false(utils.isCloneable(object));
+});
+
+test('if isCloneable returns false if a react element', (t) => {
+  const object = {
+    $$typeof: Symbol.for('react.element')
+  };
+
+  t.false(utils.isCloneable(object));
+});
+
+test('if isCloneable returns true otherwise', (t) => {
+  const object = {
+    valid: true
+  };
+
+  t.true(utils.isCloneable(object));
+});
+
 test('if isEmptyKey will return true when undefined', (t) => {
   const object = undefined;
 
@@ -416,13 +534,13 @@ test('if isEmptyKey will return true when null', (t) => {
   t.true(utils.isEmptyKey(object));
 });
 
-test('if isEmptyKey will return true when an empty string', (t) => {
+test('if isEmptyKey will return false when an empty string', (t) => {
   const object = '';
 
-  t.true(utils.isEmptyKey(object));
+  t.false(utils.isEmptyKey(object));
 });
 
-test('if isEmptyKey will return true when an empty array', (t) => {
+test('if isEmptyKey will true false when an empty array', (t) => {
   const object = [];
 
   t.true(utils.isEmptyKey(object));
