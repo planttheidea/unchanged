@@ -53,7 +53,7 @@ module.exports = {
     for (let i = 0; i < cycles; i++) {
       newValue = Math.random();
 
-      set('value', newValue, obj);
+      set(['value'], newValue, obj);
     }
   },
 
@@ -111,7 +111,7 @@ module.exports = {
       index = ~~(Math.random() * maxIndex);
       newVal = Math.random();
 
-      set(index, newVal, newArr);
+      set([index], newVal, newArr);
     }
   }
 };

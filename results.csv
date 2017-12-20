@@ -1,33 +1,33 @@
 Benchmark (all times in milliseconds): 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000
-[get] Object Native: 0, 1, 0, 1, 0, 0, 0, 3
-[get] Object lodash fp: 2, 8, 3, 13, 20, 111, 209, 919
-[get] Object ramda: 0, 2, 3, 3, 1, 12, 21, 95
-[get] Object Unchanged: 1, 3, 3, 6, 9, 39, 73, 365
-[get] Array Native: 1, 0, 1, 1, 1, 5, 11, 48
-[get] Array lodash fp: 0, 3, 4, 11, 19, 92, 180, 893
-[get] Array ramda: 1, 2, 2, 6, 7, 29, 54, 253
-[get] Array Unchanged: 0, 2, 3, 6, 7, 39, 70, 344
-[get-in] Object Native: 0, 0, 1, 1, 0, 0, 0, 3
-[get-in] Object lodash fp: 3, 5, 6, 20, 33, 166, 330, 1673
-[get-in] Object ramda: 0, 0, 1, 7, 6, 29, 54, 264
-[get-in] Object Unchanged: 2, 7, 9, 44, 79, 360, 700, 3533
+[get] Object Native: 0, 0, 1, 1, 0, 0, 1, 3
+[get] Object lodash fp: 2, 8, 4, 14, 19, 112, 210, 910
+[get] Object ramda: 1, 2, 1, 5, 1, 11, 20, 93
+[get] Object Unchanged: 1, 2, 3, 4, 6, 32, 55, 267
+[get] Array Native: 0, 1, 1, 1, 1, 4, 10, 46
+[get] Array lodash fp: 0, 4, 3, 11, 20, 91, 178, 901
+[get] Array ramda: 0, 5, 2, 3, 6, 26, 50, 247
+[get] Array Unchanged: 1, 1, 2, 6, 8, 41, 70, 343
+[get-in] Object Native: 1, 0, 0, 1, 0, 0, 1, 3
+[get-in] Object lodash fp: 1, 8, 5, 17, 33, 160, 321, 1614
+[get-in] Object ramda: 0, 1, 1, 6, 7, 29, 52, 266
+[get-in] Object Unchanged: 1, 3, 1, 11, 18, 78, 149, 743
 [get-in] Array Native: 0, 0, 1, 2, 1, 5, 11, 52
-[get-in] Array lodash fp: 1, 7, 8, 30, 55, 275, 554, 2791
-[get-in] Array ramda: 1, 1, 2, 7, 7, 34, 62, 300
-[get-in] Array Unchanged: 1, 7, 11, 39, 66, 330, 653, 3203
-[set] Object Native: 1, 2, 4, 16, 30, 138, 275, 1367
-[set] Object lodash fp: 5, 19, 10, 43, 79, 403, 818, 4171
-[set] Object ramda: 0, 3, 3, 6, 10, 50, 106, 399
-[set] Object Unchanged: 1, 4, 8, 22, 35, 175, 394, 1705
-[set] Array Native: 0, 1, 4, 6, 14, 68, 130, 649
-[set] Array lodash fp: 3, 15, 11, 46, 88, 450, 896, 4475
-[set] Array ramda: 1, 7, 11, 45, 83, 420, 839, 4178
-[set] Array Unchanged: 1, 9, 7, 20, 36, 176, 349, 1774
-[set-in] Object Native: 1, 3, 9, 30, 60, 287, 570, 2859
-[set-in] Object lodash fp: 9, 20, 18, 78, 154, 769, 1541, 7719
-[set-in] Object ramda: 1, 5, 9, 36, 64, 322, 641, 3160
-[set-in] Object Unchanged: 2, 15, 21, 71, 141, 711, 1416, 7049
-[set-in] Array Native: 1, 3, 5, 14, 27, 132, 256, 1296
-[set-in] Array lodash fp: 3, 17, 18, 70, 138, 688, 1372, 6891
-[set-in] Array ramda: 3, 9, 14, 58, 114, 577, 1117, 5610
-[set-in] Array Unchanged: 2, 10, 19, 75, 143, 706, 1418, 7037
+[get-in] Array lodash fp: 2, 7, 8, 30, 53, 268, 538, 2686
+[get-in] Array ramda: 0, 1, 2, 6, 7, 32, 62, 300
+[get-in] Array Unchanged: 0, 2, 6, 10, 21, 90, 189, 901
+[set] Object Native: 1, 2, 3, 17, 30, 131, 262, 1319
+[set] Object lodash fp: 5, 18, 13, 42, 79, 398, 801, 3983
+[set] Object ramda: 1, 2, 3, 5, 9, 40, 74, 370
+[set] Object Unchanged: 1, 4, 7, 20, 31, 143, 290, 1454
+[set] Array Native: 0, 1, 3, 7, 15, 68, 131, 656
+[set] Array lodash fp: 2, 16, 12, 47, 90, 449, 896, 4477
+[set] Array ramda: 2, 6, 10, 42, 76, 392, 776, 3841
+[set] Array Unchanged: 1, 7, 7, 20, 37, 173, 350, 1742
+[set-in] Object Native: 1, 3, 8, 29, 53, 264, 528, 2646
+[set-in] Object lodash fp: 8, 17, 19, 80, 173, 808, 1537, 7691
+[set-in] Object ramda: 1, 6, 8, 35, 64, 318, 627, 3081
+[set-in] Object Unchanged: 2, 9, 14, 41, 71, 348, 700, 3488
+[set-in] Array Native: 1, 4, 4, 14, 29, 132, 259, 1291
+[set-in] Array lodash fp: 3, 15, 20, 72, 145, 722, 1445, 7252
+[set-in] Array ramda: 2, 8, 16, 57, 106, 574, 1080, 5367
+[set-in] Array Unchanged: 2, 10, 15, 46, 85, 431, 852, 4268

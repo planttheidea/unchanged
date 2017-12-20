@@ -219,6 +219,19 @@ export const getDeeplyMergedObject = (object1, object2) => {
 };
 
 /**
+ * @function getParsedPath
+ *
+ * @description
+ * get the path array, either as-is if already an array, or parsed by pathington
+ *
+ * @param {Array<number|string>|number|string} path the path to parse
+ * @returns {Array<number|string>} the parsed path
+ */
+export const getParsedPath = (path) => {
+  return isArray(path) ? path : parse(path);
+};
+
+/**
  * @function getNestedProperty
  *
  * @description
@@ -233,7 +246,7 @@ export const getNestedProperty = (path, object) => {
     return undefined;
   }
 
-  const parsedPath = parse(path);
+  const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
     return object[parsedPath[0]];
@@ -258,7 +271,7 @@ export const getNestedProperty = (path, object) => {
  * @returns {Array<*>|Object} the clone object
  */
 export const getDeepClone = (path, object, onMatch) => {
-  const parsedPath = parse(path);
+  const parsedPath = getParsedPath(path);
   const topLevelClone = isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(parsedPath[0]);
 
   if (parsedPath.length === 1) {
@@ -285,7 +298,7 @@ export const hasNestedProperty = (path, object) => {
     return false;
   }
 
-  const parsedPath = parse(path);
+  const parsedPath = getParsedPath(path);
 
   return parsedPath.length === 1
     ? hasOwnProperty.call(object, parsedPath[0])

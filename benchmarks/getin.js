@@ -53,7 +53,7 @@ module.exports = {
     let val;
 
     for (let i = 0; i < cycles; i++) {
-      val = get('data.value', obj);
+      val = get(['data', 'value'], obj);
     }
   },
 
@@ -99,7 +99,7 @@ module.exports = {
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
-      val = get(`[0][${index}]`, arr);
+      val = get([0, index], arr);
     }
   }
 };

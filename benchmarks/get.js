@@ -45,7 +45,7 @@ module.exports = {
     let val;
 
     for (let i = 0; i < cycles; i++) {
-      val = get('value', obj);
+      val = get(['value'], obj);
     }
   },
 
@@ -88,7 +88,7 @@ module.exports = {
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
-      val = get(index, array);
+      val = get([index], array);
     }
   }
 };
