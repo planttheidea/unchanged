@@ -38,7 +38,7 @@ const foo = get('foo', object);
 const baz = set('bar[0].baz', 'not quz', object);
 
 // all methods are curriable
-const removeBaz = remove('bar[0].quz');
+const removeBaz = remove('bar[0].baz');
 const sansBaz = removeBaz(object);
 ```
 
@@ -183,7 +183,7 @@ console.log(merge('object', object2, object1)); // {one: 'new value', oneSpecifi
 
 #### ramda
 
-[`ramda`](http://ramdajs.com/) is also similar in its implementation, however the first big difference is that dotty syntax is not supported by `ramda`, only path arrays. Additionally, as mentioned, `unchanged` does not support placeholders. The big benefit over ramda is the simplicity of the API; for example, in `ramda` you use one method if you want to assign to a top-level property (`assoc`) and another method if you want to assign to a nested property (`assocPath`). In unchanged, this is combined into a single `set` method.
+[`ramda`](http://ramdajs.com/) is also similar in its implementation, however the first big difference is that dotty syntax is not supported by `ramda`, only path arrays. Additionally, as mentioned, `unchanged` does not support placeholders. The big benefit over ramda is the simplicity of the API; for example, in `ramda` you use one method if you want to assign to a top-level property (`assoc`) and another method if you want to assign to a nested property (`assocPath`). In `unchanged`, this is combined into a single `set` method.
 
 Another difference, and this required an example, is the way that objects are copied.
 
