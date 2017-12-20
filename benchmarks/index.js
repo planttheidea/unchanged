@@ -153,6 +153,8 @@ Object.keys(TESTS).forEach((testType) => {
   console.log('');
   console.log(`Running benchmarks for ${testTitle}...`);
 
+  results.push(new Array(TABLE_HEAD.length + 1).fill('---'));
+
   const typeTable = new Table({
     head: ['', ...TABLE_HEAD]
   });
