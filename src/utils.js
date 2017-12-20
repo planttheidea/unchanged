@@ -229,9 +229,21 @@ export const getDeeplyMergedObject = (object1, object2) => {
  * @returns {*} the retrieved values
  */
 export const getNestedProperty = (path, object) => {
-  return onMatchAtPath(parse(path), object, false, (ref, key) => {
-    return ref[key];
-  });
+  if (!object) {
+    return undefined;
+  }
+
+  const parsedPath = parse(path);
+
+  if (parsedPath.length === 1) {
+    return object[parsedPath[0]];
+  }
+
+  return parsedPath.length === 1
+    ? object[parsedPath[0]]
+    : onMatchAtPath(parsedPath, object, false, (ref, key) => {
+      return ref[key];
+    });
 };
 
 /**
@@ -242,18 +254,20 @@ export const getNestedProperty = (path, object) => {
  *
  * @param {Array<number|string>|number|string} path the path to deeply modify the object on
  * @param {Array<*>|Object} object the objeisCurrentKeyArrayct to modify
- * @param {function} callback the callback to execute
+ * @param {function} onMatch the callback to execute
  * @returns {Array<*>|Object} the clone object
  */
-export const getDeepClone = (path, object, callback) => {
+export const getDeepClone = (path, object, onMatch) => {
   const parsedPath = parse(path);
+  const topLevelClone = isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(parsedPath[0]);
 
-  return onMatchAtPath(
-    parsedPath,
-    isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(parsedPath[0]),
-    true,
-    callback
-  );
+  if (parsedPath.length === 1) {
+    onMatch(topLevelClone, parsedPath[0]);
+
+    return topLevelClone;
+  }
+
+  return onMatchAtPath(parsedPath, topLevelClone, true, onMatch);
 };
 
 /**
@@ -267,17 +281,23 @@ export const getDeepClone = (path, object, callback) => {
  * @returns {boolean} does the nested path exist
  */
 export const hasNestedProperty = (path, object) => {
-  return object
-    ? onMatchAtPath(
-      parse(path),
+  if (!object) {
+    return false;
+  }
+
+  const parsedPath = parse(path);
+
+  return parsedPath.length === 1
+    ? hasOwnProperty.call(object, parsedPath[0])
+    : onMatchAtPath(
+      parsedPath,
       object,
       false,
       (ref, key) => {
         return !!ref && hasOwnProperty.call(ref, key);
       },
       false
-    )
-    : false;
+    );
 };
 
 /**

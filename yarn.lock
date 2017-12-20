@@ -4373,9 +4373,9 @@ path-type@^2.0.0:
   dependencies:
     pify "^2.0.0"
 
-pathington@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.1.1.tgz#78c3dc24b60452b637720a661f610338f7cac7cb"
+pathington@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.1.2.tgz#ff775ce57fc34c9581c64af8381ff7e259629d3e"
 
 pbkdf2@^3.0.3:
   version "3.0.14"
@@ -4578,6 +4578,10 @@ querystringify@0.0.x:
 querystringify@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-1.0.0.tgz#6286242112c5b712fa654e526652bf6a13ff05cb"
+
+ramda@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.25.0.tgz#8fdf68231cffa90bc2f9460390a0cb74a29b29a9"
 
 randomatic@^1.1.3:
   version "1.1.7"

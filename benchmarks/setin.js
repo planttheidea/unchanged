@@ -1,7 +1,6 @@
 /* eslint no-unused-vars: 0 */
-const seamlessImmutableJs = require('seamless-immutable');
-const ImmutableJs = require('immutable');
-const moriJs = require('mori');
+const _ = require('lodash/fp');
+const {assocPath} = require('ramda');
 const {set} = require('../lib');
 
 /**
@@ -11,117 +10,117 @@ const {set} = require('../lib');
 const value = Math.random();
 const array = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
 
-/**
- * Object
- */
+module.exports = {
+  // objects
+  objectSetInNative(cycles) {
+    const obj = {
+      data: {value}
+    };
 
-exports.objectSetInNative = (cycles) => {
-  const obj = {
-    data: {value}
-  };
+    for (let i = 0; i < cycles; i++) {
+      Object.assign({}, obj, {
+        data: Object.assign({}, obj.data, {
+          value: Math.random()
+        })
+      });
+    }
+  },
+  objectSetInLodashFp(cycles) {
+    const obj = {
+      data: {value}
+    };
 
-  for (let i = 0; i < cycles; i++) {
-    Object.assign({}, obj, {
-      data: Object.assign({}, obj.data, {
-        value: Math.random()
-      })
-    });
-  }
-};
+    let newValue;
 
-exports.objectSetInSeamlessImmutableJs = (cycles) => {
-  const obj = seamlessImmutableJs.from({
-    data: {value}
-  });
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
 
-  for (let i = 0; i < cycles; i++) {
-    obj.setIn(['data', 'value'], Math.random());
-  }
-};
+      _.set('data.value', newValue, obj);
+    }
+  },
+  objectSetInRamda(cycles) {
+    const obj = {
+      data: {value}
+    };
 
-exports.objectSetInImmutableJs = (cycles) => {
-  const obj = ImmutableJs.fromJS({
-    data: {value}
-  });
+    let newValue;
 
-  for (let i = 0; i < cycles; i++) {
-    obj.setIn(['data', 'value'], Math.random());
-  }
-};
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
 
-exports.objectSetInMoriJs = (cycles) => {
-  const obj = moriJs.hashMap('data', moriJs.hashMap('value', value));
+      assocPath(['data', 'value'], newValue, obj);
+    }
+  },
+  objectSetInUnchanged(cycles) {
+    const obj = {
+      data: {value}
+    };
 
-  for (let i = 0; i < cycles; i++) {
-    moriJs.assocIn(obj, ['data', 'value'], Math.random());
-  }
-};
+    let newValue;
 
-exports.objectSetInUnchanged = (cycles) => {
-  const obj = {
-    data: {value}
-  };
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
 
-  for (let i = 0; i < cycles; i++) {
-    set('data.value', Math.random(), obj);
-  }
-};
+      set('data.value', newValue, obj);
+    }
+  },
 
-/**
- * Array
- */
+  // arrays
+  arraySetInNative(cycles) {
+    const arr = [array];
+    const maxIndex = arr[0].length - 1;
 
-exports.arraySetInNative = (cycles) => {
-  const arr = [array];
-  const maxIndex = arr[0].length - 1;
+    let newArr, index;
 
-  let newArr, index;
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      newArr[0] = [].concat(arr[0]);
 
-  for (let i = 0; i < cycles; i++) {
-    newArr = [].concat(arr);
-    newArr[0] = [].concat(arr[0]);
+      index = ~~(Math.random() * maxIndex);
+      newArr[0][index] = Math.random();
+    }
+  },
+  arraySetInLodashFp(cycles) {
+    const arr = [array];
+    const maxIndex = arr[0].length - 1;
 
-    index = ~~(Math.random() * maxIndex);
-    newArr[0][index] = Math.random();
-  }
-};
+    let newArr, index;
 
-exports.arraySetInSeamlessImmutableJs = (cycles) => {
-  const arr = seamlessImmutableJs.from([array]);
-  const maxIndex = arr[0].length - 1;
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      newArr[0] = [].concat(arr[0]);
 
-  for (let i = 0; i < cycles; i++) {
-    arr.setIn([0, ~~(Math.random() * maxIndex)], Math.random());
-  }
-};
+      index = ~~(Math.random() * maxIndex);
 
-exports.arraySetInImmutableJs = (cycles) => {
-  const arr = ImmutableJs.fromJS([array]);
-  const maxIndex = arr.get(0).size - 1;
+      _.set('[0][${index}]', Math.random(), newArr);
+    }
+  },
+  arraySetInRamda(cycles) {
+    const arr = [array];
+    const maxIndex = arr[0].length - 1;
 
-  for (let i = 0; i < cycles; i++) {
-    arr.setIn([0, ~~(Math.random() * maxIndex)], Math.random());
-  }
-};
+    let newArr, index;
 
-exports.arraySetInMoriJs = (cycles) => {
-  const arr = moriJs.vector(moriJs.vector(...array));
-  const maxIndex = moriJs.count(moriJs.get(arr, 0)) - 1;
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      newArr[0] = [].concat(arr[0]);
 
-  for (let i = 0; i < cycles; i++) {
-    moriJs.assocIn(arr, [0, ~~(Math.random() * maxIndex)], Math.random());
-  }
-};
+      index = ~~(Math.random() * maxIndex);
 
-exports.arraySetInUnchanged = (cycles) => {
-  const arr = [array];
-  const maxIndex = arr[0].length - 1;
+      assocPath([0, index], Math.random(), newArr);
+    }
+  },
+  arraySetInUnchanged(cycles) {
+    const arr = array;
+    const maxIndex = arr.length - 1;
 
-  let index;
+    let newArr, index, newVal;
 
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      index = ~~(Math.random() * maxIndex);
 
-    set(`[0][${index}]`, Math.random(), arr);
+      set('[0][${index}]', Math.random(), newArr);
+    }
   }
 };

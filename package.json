@@ -3,35 +3,20 @@
   "ava": {
     "babel": {
       "babelrc": true,
-      "presets": [
-        "react"
-      ]
+      "presets": ["react"]
     },
     "failFast": true,
-    "files": [
-      "test/*.js"
-    ],
-    "require": [
-      "babel-register"
-    ],
-    "source": [
-      "src/*.js"
-    ],
+    "files": ["test/*.js"],
+    "require": ["babel-register"],
+    "source": ["src/*.js"],
     "verbose": true
   },
-  "browserslist": [
-    "defaults",
-    "Explorer >= 9",
-    "Safari >= 6",
-    "Opera >= 15",
-    "iOS >= 8",
-    "Android >= 4"
-  ],
+  "browserslist": ["defaults", "Explorer >= 9", "Safari >= 6", "Opera >= 15", "iOS >= 8", "Android >= 4"],
   "bugs": {
     "url": "https://github.com/planttheidea/unchanged/issues"
   },
   "dependencies": {
-    "pathington": "^1.1.1"
+    "pathington": "^1.1.2"
   },
   "description": "Custom identity functions for composability",
   "devDependencies": {
@@ -49,22 +34,18 @@
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-loader": "^1.9.0",
     "html-webpack-plugin": "^2.30.1",
-    "immutable": "^3.8.2",
     "in-publish": "^2.0.0",
-    "mori": "^0.3.2",
+    "lodash": "^4.17.4",
     "nyc": "^11.3.0",
     "optimize-js-plugin": "^0.0.4",
+    "ramda": "^0.25.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "seamless-immutable": "^7.1.2",
     "sinon": "^4.1.3",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.7"
   },
-  "keywords": [
-    "identity",
-    "compose"
-  ],
+  "keywords": ["identity", "compose"],
   "license": "MIT",
   "homepage": "https://github.com/planttheidea/unchanged#readme",
   "main": "lib/index.js",
@@ -87,7 +68,8 @@
     "lint": "NODE_ENV=test eslint src",
     "lint:fix": "NODE_ENV=test eslint src --fix",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
+    "prepublish:compile":
+      "npm run lint && npm run test:coverage && npm run transpile:lib && npm run transpile:es && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
     "test:coverage": "nyc npm test",

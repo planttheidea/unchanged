@@ -1,41 +1,33 @@
 Benchmark (all times in milliseconds): 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000
-[get] Object Native: 0, 0, 0, 2, 0, 0, 1, 3
-[get] Object Seamless-immutable: 0, 0, 0, 1, 6, 0, 1, 3
-[get] Object Immutable.js: 1, 2, 2, 7, 8, 7, 5, 25
-[get] Object Mori.js: 2, 3, 5, 13, 14, 14, 20, 101
-[get] Object Unchanged: 1, 3, 4, 6, 10, 48, 85, 430
-[get] Array Native: 0, 1, 1, 1, 1, 5, 10, 50
-[get] Array Seamless-immutable.js: 0, 1, 0, 3, 2, 9, 14, 51
-[get] Array Immutable.js: 0, 2, 2, 4, 4, 9, 12, 61
-[get] Array Mori.js: 1, 4, 6, 7, 3, 18, 32, 153
-[get] Array Unchanged: 1, 8, 7, 19, 35, 168, 331, 1648
-[get-in] Object Native: 0, 0, 0, 1, 0, 1, 0, 3
-[get-in] Object Seamless-immutable: 1, 0, 0, 2, 2, 1, 1, 4
-[get-in] Object Immutable.js: 1, 2, 4, 10, 5, 25, 49, 242
-[get-in] Object Mori.js: 1, 6, 9, 9, 10, 42, 82, 414
-[get-in] Object Unchanged: 1, 8, 10, 47, 85, 395, 765, 3812
-[get-in] Array Native: 1, 0, 1, 2, 1, 6, 13, 53
-[get-in] Array Seamless-immutable.js: 1, 0, 1, 5, 5, 10, 16, 58
-[get-in] Array Immutable.js: 1, 3, 3, 11, 8, 38, 72, 352
-[get-in] Array Mori.js: 2, 8, 4, 16, 12, 58, 114, 571
-[get-in] Array Unchanged: 1, 6, 12, 42, 80, 396, 792, 3974
-[set] Object Native: 0, 2, 4, 17, 31, 141, 286, 1444
-[set] Object Seamless-immutable: 5, 23, 38, 153, 289, 1470, 2948, 14588
-[set] Object Immutable.js: 1, 6, 10, 8, 7, 31, 58, 226
-[set] Object Mori.js: 1, 3, 5, 6, 4, 19, 37, 178
-[set] Object Unchanged: 2, 4, 10, 18, 37, 168, 347, 1713
-[set] Array Native: 0, 2, 3, 8, 15, 69, 136, 667
-[set] Array Seamless-immutable.js: 9, 39, 75, 313, 621, 3128, 6225, 31179
-[set] Array Immutable.js: 1, 6, 4, 18, 22, 111, 215, 966
-[set] Array Mori.js: 2, 5, 9, 3, 7, 31, 57, 285
-[set] Array Unchanged: 2, 3, 10, 12, 27, 122, 241, 1197
-[set-in] Object Native: 0, 4, 8, 31, 59, 289, 581, 2885
-[set-in] Object Seamless-immutable: 8, 40, 71, 334, 651, 3242, 6505, 32700
-[set-in] Object Immutable.js: 3, 12, 11, 23, 29, 143, 288, 1434
-[set-in] Object Mori.js: 3, 11, 9, 17, 24, 94, 167, 851
-[set-in] Object Unchanged: 3, 13, 20, 72, 143, 718, 1424, 7143
-[set-in] Array Native: 0, 4, 6, 14, 29, 133, 266, 1319
-[set-in] Array Seamless-immutable.js: 15, 73, 132, 607, 1216, 6093, 12242, 61092
-[set-in] Array Immutable.js: 5, 9, 17, 38, 69, 341, 648, 3300
-[set-in] Array Mori.js: 2, 9, 7, 10, 18, 87, 170, 853
-[set-in] Array Unchanged: 2, 9, 21, 60, 119, 594, 1182, 5920
+[get] Object Native: 0, 1, 0, 1, 0, 0, 0, 3
+[get] Object lodash fp: 2, 8, 3, 13, 20, 111, 209, 919
+[get] Object ramda: 0, 2, 3, 3, 1, 12, 21, 95
+[get] Object Unchanged: 1, 3, 3, 6, 9, 39, 73, 365
+[get] Array Native: 1, 0, 1, 1, 1, 5, 11, 48
+[get] Array lodash fp: 0, 3, 4, 11, 19, 92, 180, 893
+[get] Array ramda: 1, 2, 2, 6, 7, 29, 54, 253
+[get] Array Unchanged: 0, 2, 3, 6, 7, 39, 70, 344
+[get-in] Object Native: 0, 0, 1, 1, 0, 0, 0, 3
+[get-in] Object lodash fp: 3, 5, 6, 20, 33, 166, 330, 1673
+[get-in] Object ramda: 0, 0, 1, 7, 6, 29, 54, 264
+[get-in] Object Unchanged: 2, 7, 9, 44, 79, 360, 700, 3533
+[get-in] Array Native: 0, 0, 1, 2, 1, 5, 11, 52
+[get-in] Array lodash fp: 1, 7, 8, 30, 55, 275, 554, 2791
+[get-in] Array ramda: 1, 1, 2, 7, 7, 34, 62, 300
+[get-in] Array Unchanged: 1, 7, 11, 39, 66, 330, 653, 3203
+[set] Object Native: 1, 2, 4, 16, 30, 138, 275, 1367
+[set] Object lodash fp: 5, 19, 10, 43, 79, 403, 818, 4171
+[set] Object ramda: 0, 3, 3, 6, 10, 50, 106, 399
+[set] Object Unchanged: 1, 4, 8, 22, 35, 175, 394, 1705
+[set] Array Native: 0, 1, 4, 6, 14, 68, 130, 649
+[set] Array lodash fp: 3, 15, 11, 46, 88, 450, 896, 4475
+[set] Array ramda: 1, 7, 11, 45, 83, 420, 839, 4178
+[set] Array Unchanged: 1, 9, 7, 20, 36, 176, 349, 1774
+[set-in] Object Native: 1, 3, 9, 30, 60, 287, 570, 2859
+[set-in] Object lodash fp: 9, 20, 18, 78, 154, 769, 1541, 7719
+[set-in] Object ramda: 1, 5, 9, 36, 64, 322, 641, 3160
+[set-in] Object Unchanged: 2, 15, 21, 71, 141, 711, 1416, 7049
+[set-in] Array Native: 1, 3, 5, 14, 27, 132, 256, 1296
+[set-in] Array lodash fp: 3, 17, 18, 70, 138, 688, 1372, 6891
+[set-in] Array ramda: 3, 9, 14, 58, 114, 577, 1117, 5610
+[set-in] Array Unchanged: 2, 10, 19, 75, 143, 706, 1418, 7037

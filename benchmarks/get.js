@@ -1,7 +1,6 @@
 /* eslint no-unused-vars: 0 */
-const seamlessImmutableJs = require('seamless-immutable');
-const ImmutableJs = require('immutable');
-const moriJs = require('mori');
+const _ = require('lodash/fp');
+const {path} = require('ramda');
 const {get} = require('../lib');
 
 /**
@@ -11,119 +10,85 @@ const {get} = require('../lib');
 const value = Math.random();
 const array = [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()];
 
-/**
- * Object
- */
+module.exports = {
+  // objects
+  objectGetNative(cycles) {
+    const obj = {value};
 
-exports.objectGetNative = (cycles) => {
-  const obj = {value};
+    let val;
 
-  let val;
+    for (let i = 0; i < cycles; i++) {
+      val = obj.value;
+    }
+  },
+  objectGetLodashFp(cycles) {
+    const obj = {value};
 
-  for (let i = 0; i < cycles; i++) {
-    val = obj.value;
-  }
-};
+    let val;
 
-exports.objectGetSeamlessImmutableJs = (cycles) => {
-  const obj = seamlessImmutableJs.from({value});
+    for (let i = 0; i < cycles; i++) {
+      val = _.get('value', obj);
+    }
+  },
+  objectGetRamda(cycles) {
+    const obj = {value};
 
-  let val;
+    let val;
 
-  for (let i = 0; i < cycles; i++) {
-    val = obj.value;
-  }
-};
+    for (let i = 0; i < cycles; i++) {
+      val = path(['value'], obj);
+    }
+  },
+  objectGetUnchanged(cycles) {
+    const obj = {value};
 
-exports.objectGetImmutableJs = (cycles) => {
-  const obj = ImmutableJs.fromJS({value});
+    let val;
 
-  let val;
+    for (let i = 0; i < cycles; i++) {
+      val = get('value', obj);
+    }
+  },
 
-  for (let i = 0; i < cycles; i++) {
-    val = obj.get('value');
-  }
-};
+  // arrays
+  arrayGetNative(cycles) {
+    const arr = array;
+    const maxIndex = arr.length - 1;
 
-exports.objectGetMoriJs = (cycles) => {
-  const obj = moriJs.hashMap('value', value);
+    let index, val;
 
-  let val;
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = arr[index];
+    }
+  },
+  arrayGetLodashFp(cycles) {
+    const maxIndex = array.length - 1;
 
-  for (let i = 0; i < cycles; i++) {
-    val = moriJs.get(obj, 'value');
-  }
-};
+    let index, val;
 
-exports.objectGetUnchanged = (cycles) => {
-  const obj = {value};
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = _.get(index, array);
+    }
+  },
+  arrayGetRamda(cycles) {
+    const maxIndex = array.length - 1;
 
-  let val;
+    let index, val;
 
-  for (let i = 0; i < cycles; i++) {
-    val = get('value', obj);
-  }
-};
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = path([index], array);
+    }
+  },
+  arrayGetUnchanged(cycles) {
+    const maxIndex = array.length - 1;
 
-/**
- * Array
- */
+    let index, val;
 
-exports.arrayGetNative = (cycles) => {
-  const arr = array;
-  const maxIndex = arr.length - 1;
-
-  let index, val;
-
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
-    val = arr[index];
-  }
-};
-
-exports.arrayGetSeamlessImmutableJs = (cycles) => {
-  const arr = seamlessImmutableJs.from(array);
-  const maxIndex = arr.length - 1;
-
-  let index, val;
-
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
-    val = arr[index];
-  }
-};
-
-exports.arrayGetImmutableJs = (cycles) => {
-  const arr = ImmutableJs.fromJS(array);
-  const maxIndex = arr.size - 1;
-
-  let index, val;
-
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
-    val = arr.get(index);
-  }
-};
-
-exports.arrayGetMoriJs = (cycles) => {
-  const arr = moriJs.vector(...array);
-  const maxIndex = moriJs.count(arr) - 1;
-
-  let index, val;
-
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
-    val = moriJs.get(arr, index);
-  }
-};
-
-exports.arrayGetUnchanged = (cycles) => {
-  const maxIndex = array.length - 1;
-
-  let index, val;
-
-  for (let i = 0; i < cycles; i++) {
-    index = ~~(Math.random() * maxIndex);
-    val = get([index], array);
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = get(index, array);
+    }
   }
 };
