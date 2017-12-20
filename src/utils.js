@@ -156,24 +156,35 @@ export const getNewChildClone = (object, nextKey) => {
  * @param {function} onMatch when a match is found, call this method
  * @param {boolean} shouldClone should the object be cloned
  * @param {*} noMatchValue when no match is found, return this value
+ * @param {number} [index=0] the index of the key to process
  * @returns {*} either the return from onMatch or the noMatchValue
  */
-export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue) => {
-  if (path.length <= 1) {
-    const result = object || shouldClone ? onMatch(object, path[0]) : noMatchValue;
+export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, index = 0) => {
+  const key = path[index];
+  const nextIndex = index + 1;
+
+  if (nextIndex === path.length) {
+    const result = object || shouldClone ? onMatch(object, key) : noMatchValue;
 
     return shouldClone ? object : result;
   }
 
-  const key = path.shift();
-
   if (shouldClone) {
-    object[key] = onMatchAtPath(path, getNewChildClone(object[key], path[0]), onMatch, shouldClone, noMatchValue);
+    object[key] = onMatchAtPath(
+      path,
+      getNewChildClone(object[key], path[nextIndex]),
+      onMatch,
+      shouldClone,
+      noMatchValue,
+      nextIndex
+    );
 
     return object;
   }
 
-  return object && object[key] ? onMatchAtPath(path, object[key], onMatch, shouldClone, noMatchValue) : noMatchValue;
+  return object && object[key]
+    ? onMatchAtPath(path, object[key], onMatch, shouldClone, noMatchValue, nextIndex)
+    : noMatchValue;
 };
 
 /**

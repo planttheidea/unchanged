@@ -237,14 +237,10 @@ test('if onMatchAtPath calls itself if the path has more than one value and the 
   const shouldClone = false;
   const noMatchValue = 'no match';
 
-  const passedPath = [...path];
-
-  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object[path[0]], path[1]));
-
-  t.deepEqual(passedPath, [path[1]]);
 
   t.is(result, path[1]);
 });
@@ -256,13 +252,9 @@ test('if onMatchAtPath does not call itself if the path has more than one value 
   const shouldClone = false;
   const noMatchValue = 'no match';
 
-  const passedPath = [...path];
-
-  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.notCalled);
-
-  t.deepEqual(passedPath, [path[1]]);
 
   t.is(result, noMatchValue);
 });
@@ -274,13 +266,9 @@ test('if onMatchAtPath does not call itself if the path has more than one value 
   const shouldClone = false;
   const noMatchValue = 'no match';
 
-  const passedPath = [...path];
-
-  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.notCalled);
-
-  t.deepEqual(passedPath, [path[1]]);
 
   t.is(result, noMatchValue);
 });
@@ -292,14 +280,10 @@ test('if onMatchAtPath calls itself with a new clone if the path has more than o
   const shouldClone = true;
   const noMatchValue = 'no match';
 
-  const passedPath = [...path];
-
-  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object[path[0]], path[1]));
-
-  t.deepEqual(passedPath, [path[1]]);
 
   t.is(result, object);
 });
