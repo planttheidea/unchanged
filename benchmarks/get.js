@@ -27,6 +27,15 @@ module.exports = {
     let val;
 
     for (let i = 0; i < cycles; i++) {
+      val = _.get(['value'], obj);
+    }
+  },
+  objectGetLodashFpDotty(cycles) {
+    const obj = {value};
+
+    let val;
+
+    for (let i = 0; i < cycles; i++) {
       val = _.get('value', obj);
     }
   },
@@ -71,6 +80,16 @@ module.exports = {
     }
   },
   arrayGetLodashFp(cycles) {
+    const maxIndex = array.length - 1;
+
+    let index, val;
+
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = _.get([index], array);
+    }
+  },
+  arrayGetLodashFpDotty(cycles) {
     const maxIndex = array.length - 1;
 
     let index, val;

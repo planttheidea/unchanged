@@ -1,14 +1,18 @@
-/* eslint no-console: 0 */
 const fs = require('fs');
+const Table = require('cli-table');
+
 const {repeats, test} = require('./test');
+
 const {
   objectGetNative,
   objectGetLodashFp,
+  objectGetLodashFpDotty,
   objectGetRamda,
   objectGetUnchanged,
   objectGetUnchangedDotty,
   arrayGetNative,
   arrayGetLodashFp,
+  arrayGetLodashFpDotty,
   arrayGetRamda,
   arrayGetUnchanged,
   arrayGetUnchangedDotty
@@ -17,12 +21,14 @@ const {
 const {
   objectGetInNative,
   objectGetInLodashFp,
+  objectGetInLodashFpDotty,
   objectGetInRamda,
   objectGetInUnchanged,
   objectGetInUnchangedDotty,
   arrayGetInNative,
   arrayGetInRamda,
   arrayGetInLodashFp,
+  arrayGetInLodashFpDotty,
   arrayGetInUnchanged,
   arrayGetInUnchangedDotty
 } = require('./getin');
@@ -30,11 +36,13 @@ const {
 const {
   objectSetNative,
   objectSetLodashFp,
+  objectSetLodashFpDotty,
   objectSetRamda,
   objectSetUnchanged,
   objectSetUnchangedDotty,
   arraySetNative,
   arraySetLodashFp,
+  arraySetLodashFpDotty,
   arraySetRamda,
   arraySetUnchanged,
   arraySetUnchangedDotty
@@ -43,91 +51,135 @@ const {
 const {
   objectSetInNative,
   objectSetInLodashFp,
+  objectSetInLodashFpDotty,
   objectSetInRamda,
   objectSetInUnchanged,
   objectSetInUnchangedDotty,
   arraySetInNative,
   arraySetInLodashFp,
+  arraySetInLodashFpDotty,
   arraySetInRamda,
   arraySetInUnchanged,
   arraySetInUnchangedDotty
 } = require('./setin');
 
-const header = () => {
-  return `Benchmark (all times in milliseconds): ${repeats.join(', ')}`;
+const TABLE_HEAD = repeats.map((number) => {
+  return `${number} ops`;
+});
+
+const TEST_TITLES = {
+  getArray: 'get array index',
+  getInArray: 'get nested array index',
+  getInObject: 'get nested object property',
+  getObject: 'get object property',
+  setArray: 'set array index',
+  setInArray: 'set nested array index',
+  setInObject: 'set nested object property',
+  setObject: 'set object property'
 };
 
-console.log('starting benchmarks...');
-
-const results = [];
-const logAndSave = (it) => {
-  results.push(it);
-  console.log(it);
+const TESTS = {
+  getObject: {
+    native: objectGetNative,
+    'lodash fp (array)': objectGetLodashFp,
+    'lodash fp (dotty)': objectGetLodashFpDotty,
+    ramda: objectGetRamda,
+    'unchanged (array)': objectGetUnchanged,
+    'unchanged (dotty)': objectGetUnchangedDotty
+  },
+  getArray: {
+    native: arrayGetNative,
+    'lodash fp (array)': arrayGetLodashFp,
+    'lodash fp (dotty)': arrayGetLodashFpDotty,
+    ramda: arrayGetRamda,
+    'unchanged (array)': arrayGetUnchanged,
+    'unchanged (dotty)': arrayGetUnchangedDotty
+  },
+  getInObject: {
+    native: objectGetInNative,
+    'lodash fp (array)': objectGetInLodashFp,
+    'lodash fp (dotty)': objectGetInLodashFpDotty,
+    ramda: objectGetInRamda,
+    'unchanged (array)': objectGetInUnchanged,
+    'unchanged (dotty)': objectGetInUnchangedDotty
+  },
+  getInArray: {
+    native: arrayGetInNative,
+    'lodash fp (array)': arrayGetInLodashFp,
+    'lodash fp (dotty)': arrayGetInLodashFpDotty,
+    ramda: arrayGetInRamda,
+    'unchanged (array)': arrayGetInUnchanged,
+    'unchanged (dotty)': arrayGetInUnchangedDotty
+  },
+  setObject: {
+    native: objectSetNative,
+    'lodash fp (array)': objectSetLodashFp,
+    'lodash fp (dotty)': objectSetLodashFpDotty,
+    ramda: objectSetRamda,
+    'unchanged (array)': objectSetUnchanged,
+    'unchanged (dotty)': objectSetUnchangedDotty
+  },
+  setArray: {
+    native: arraySetNative,
+    'lodash fp (array)': arraySetLodashFp,
+    'lodash fp (dotty)': arraySetLodashFpDotty,
+    ramda: arraySetRamda,
+    'unchanged (array)': arraySetUnchanged,
+    'unchanged (dotty)': arraySetUnchangedDotty
+  },
+  setInObject: {
+    native: objectSetInNative,
+    'lodash fp (array)': objectSetInLodashFp,
+    'lodash fp (dotty)': objectSetInLodashFpDotty,
+    ramda: objectSetInRamda,
+    'unchanged (array)': objectSetInUnchanged,
+    'unchanged (dotty)': objectSetInUnchangedDotty
+  },
+  setInArray: {
+    native: arraySetInNative,
+    'lodash fp (array)': arraySetInLodashFp,
+    'lodash fp (dotty)': arraySetInLodashFpDotty,
+    ramda: arraySetInRamda,
+    'unchanged (array)': arraySetInUnchanged,
+    'unchanged (dotty)': arraySetInUnchangedDotty
+  }
 };
 
-// header
-logAndSave(header());
+const results = [['Test', ...TABLE_HEAD].join(',')];
 
-// object get tests
-logAndSave(test('[get] Object Native', objectGetNative));
-logAndSave(test('[get] Object lodash fp', objectGetLodashFp));
-logAndSave(test('[get] Object ramda', objectGetRamda));
-logAndSave(test('[get] Object Unchanged', objectGetUnchanged));
-logAndSave(test('[get] Object Unchanged dotty', objectGetUnchangedDotty));
+Object.keys(TESTS).forEach((testType) => {
+  const testTitle = TEST_TITLES[testType];
 
-// array get tests
-logAndSave(test('[get] Array Native', arrayGetNative));
-logAndSave(test('[get] Array lodash fp', arrayGetLodashFp));
-logAndSave(test('[get] Array ramda', arrayGetRamda));
-logAndSave(test('[get] Array Unchanged', arrayGetUnchanged));
-logAndSave(test('[get] Array Unchanged dotty', arrayGetUnchangedDotty));
+  console.log('');
+  console.log(`Running benchmarks for ${testTitle}...`);
 
-// object get in tests
-logAndSave(test('[get-in] Object Native', objectGetInNative));
-logAndSave(test('[get-in] Object lodash fp', objectGetInLodashFp));
-logAndSave(test('[get-in] Object ramda', objectGetInRamda));
-logAndSave(test('[get-in] Object Unchanged', objectGetInUnchanged));
-logAndSave(test('[get-in] Object Unchanged dotty', objectGetInUnchangedDotty));
+  const typeTable = new Table({
+    head: ['', ...TABLE_HEAD]
+  });
 
-// array get in tests
-logAndSave(test('[get-in] Array Native', arrayGetInNative));
-logAndSave(test('[get-in] Array lodash fp', arrayGetInLodashFp));
-logAndSave(test('[get-in] Array ramda', arrayGetInRamda));
-logAndSave(test('[get-in] Array Unchanged', arrayGetInUnchanged));
-logAndSave(test('[get-in] Array Unchanged dotty', arrayGetInUnchangedDotty));
+  Object.keys(TESTS[testType]).forEach((testName) => {
+    const result = test(testName, TESTS[testType][testName]);
+    const resultRow = [testName, ...result];
 
-// object set tests
-logAndSave(test('[set] Object Native', objectSetNative));
-logAndSave(test('[set] Object lodash fp', objectSetLodashFp));
-logAndSave(test('[set] Object ramda', objectSetRamda));
-logAndSave(test('[set] Object Unchanged', objectSetUnchanged));
-logAndSave(test('[set] Object Unchanged dotty', objectSetUnchangedDotty));
+    typeTable.push(resultRow);
+    results.push(
+      resultRow
+        .map((result, index) => {
+          return index === 0 ? `[${testTitle}] ${result}` : result;
+        })
+        .join(',')
+    );
+  });
 
-// array set tests
-logAndSave(test('[set] Array Native', arraySetNative));
-logAndSave(test('[set] Array lodash fp', arraySetLodashFp));
-logAndSave(test('[set] Array ramda', arraySetRamda));
-logAndSave(test('[set] Array Unchanged', arraySetUnchanged));
-logAndSave(test('[set] Array Unchanged dotty', arraySetUnchangedDotty));
+  console.log(typeTable.toString());
+});
 
-// object set in tests
-logAndSave(test('[set-in] Object Native', objectSetInNative));
-logAndSave(test('[set-in] Object lodash fp', objectSetInLodashFp));
-logAndSave(test('[set-in] Object ramda', objectSetInRamda));
-logAndSave(test('[set-in] Object Unchanged', objectSetInUnchanged));
-logAndSave(test('[set-in] Object Unchanged dotty', objectSetInUnchangedDotty));
-
-// array set in tests
-logAndSave(test('[set-in] Array Native', arraySetInNative));
-logAndSave(test('[set-in] Array lodash fp', arraySetInLodashFp));
-logAndSave(test('[set-in] Array ramda', arraySetInRamda));
-logAndSave(test('[set-in] Array Unchanged', arraySetInUnchanged));
-logAndSave(test('[set-in] Array Unchanged dotty', arraySetInUnchangedDotty));
+console.log('');
 
 // write to file
 if (fs && fs.writeFileSync) {
-  fs.writeFileSync('results.csv', results.join('\n'), 'utf8');
-  console.log('benchmarks done! Results saved to results.csv');
+  fs.writeFileSync('benchmark_results.csv', results.join('\n'), 'utf8');
+  console.log('benchmarks done! Results saved to benchmark_results.csv');
 } else {
   console.log('benchmarks done!');
 }

@@ -31,6 +31,17 @@ module.exports = {
     for (let i = 0; i < cycles; i++) {
       newValue = Math.random();
 
+      _.set(['value'], newValue, obj);
+    }
+  },
+  objectSetLodashFpDotty(cycles) {
+    const obj = {value};
+
+    let newValue;
+
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
+
       _.set('value', newValue, obj);
     }
   },
@@ -84,6 +95,20 @@ module.exports = {
     }
   },
   arraySetLodashFp(cycles) {
+    const arr = array;
+    const maxIndex = arr.length - 1;
+
+    let newArr, index, newVal;
+
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      index = ~~(Math.random() * maxIndex);
+      newVal = Math.random();
+
+      _.set([index], newVal, newArr);
+    }
+  },
+  arraySetLodashFpDotty(cycles) {
     const arr = array;
     const maxIndex = arr.length - 1;
 
