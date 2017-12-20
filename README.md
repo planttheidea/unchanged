@@ -1,6 +1,6 @@
 # unchanged
 
-A tiny (~1.8kb gzipped+minified), [fast](#benchmark_results.csv), immutable manager for JS objects and arrays. Supports nested key paths via path arrays or [dotty syntax](https://github.com/planttheidea/pathington), and all methods are curriable for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a fraction of the footprint.
+A tiny (~1.8kb gzipped+minified), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), immutable manager for JS objects and arrays. Supports nested key paths via path arrays or [dotty syntax](https://github.com/planttheidea/pathington), and all methods are curriable for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a fraction of the footprint.
 
 ## Table of contents
 
@@ -179,7 +179,7 @@ console.log(merge('object', object2, object1)); // {one: 'new value', oneSpecifi
 
 #### lodash
 
-[`lodash/fp`](https://lodash.com/) (the functional programming implementation of standard `lodash`) is very similar in implementation to `unchanged`, mainly because it supports dotty syntax for paths as well. The main difference with this package is that when currying you cannot use placeholders, meaning arguments must be provided in the order of their usage. The trade-off is the footprint ... bringing in `lodash/fp/get` alone can be upwards of 30kB minified, whereas `unchanged` sits at about 4 in its entirety. Also, `unchanged` is [faster in almost every category](#benchmark_results.csv).
+[`lodash/fp`](https://lodash.com/) (the functional programming implementation of standard `lodash`) is very similar in implementation to `unchanged`, mainly because it supports dotty syntax for paths as well. The main difference with this package is that when currying you cannot use placeholders, meaning arguments must be provided in the order of their usage. The trade-off is the footprint ... bringing in `lodash/fp/get` alone can be upwards of 30kB minified, whereas `unchanged` sits at about 4 in its entirety. Also, `unchanged` is [faster in almost every category](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv).
 
 #### ramda
 
