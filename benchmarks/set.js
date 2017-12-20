@@ -56,6 +56,17 @@ module.exports = {
       set(['value'], newValue, obj);
     }
   },
+  objectSetUnchangedDotty(cycles) {
+    const obj = {value};
+
+    let newValue;
+
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
+
+      set('value', newValue, obj);
+    }
+  },
 
   // arrays
   arraySetNative(cycles) {
@@ -112,6 +123,20 @@ module.exports = {
       newVal = Math.random();
 
       set([index], newVal, newArr);
+    }
+  },
+  arraySetUnchangedDotty(cycles) {
+    const arr = array;
+    const maxIndex = arr.length - 1;
+
+    let newArr, index, newVal;
+
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      index = ~~(Math.random() * maxIndex);
+      newVal = Math.random();
+
+      set(index, newVal, newArr);
     }
   }
 };

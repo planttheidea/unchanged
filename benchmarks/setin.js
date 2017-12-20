@@ -64,6 +64,19 @@ module.exports = {
       set(['data', 'value'], newValue, obj);
     }
   },
+  objectSetInUnchangedDotty(cycles) {
+    const obj = {
+      data: {value}
+    };
+
+    let newValue;
+
+    for (let i = 0; i < cycles; i++) {
+      newValue = Math.random();
+
+      set('data.value', newValue, obj);
+    }
+  },
 
   // arrays
   arraySetInNative(cycles) {
@@ -121,6 +134,19 @@ module.exports = {
       index = ~~(Math.random() * maxIndex);
 
       set([0, index], Math.random(), newArr);
+    }
+  },
+  arraySetInUnchangedDotty(cycles) {
+    const arr = array;
+    const maxIndex = arr.length - 1;
+
+    let newArr, index, newVal;
+
+    for (let i = 0; i < cycles; i++) {
+      newArr = [].concat(arr);
+      index = ~~(Math.random() * maxIndex);
+
+      set(`[0][${index}]`, Math.random(), newArr);
     }
   }
 };

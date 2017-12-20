@@ -1,33 +1,41 @@
 Benchmark (all times in milliseconds): 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000
-[get] Object Native: 0, 0, 1, 1, 0, 0, 1, 3
-[get] Object lodash fp: 2, 8, 4, 14, 19, 112, 210, 910
-[get] Object ramda: 1, 2, 1, 5, 1, 11, 20, 93
-[get] Object Unchanged: 1, 2, 3, 4, 6, 32, 55, 267
-[get] Array Native: 0, 1, 1, 1, 1, 4, 10, 46
-[get] Array lodash fp: 0, 4, 3, 11, 20, 91, 178, 901
-[get] Array ramda: 0, 5, 2, 3, 6, 26, 50, 247
-[get] Array Unchanged: 1, 1, 2, 6, 8, 41, 70, 343
-[get-in] Object Native: 1, 0, 0, 1, 0, 0, 1, 3
-[get-in] Object lodash fp: 1, 8, 5, 17, 33, 160, 321, 1614
-[get-in] Object ramda: 0, 1, 1, 6, 7, 29, 52, 266
-[get-in] Object Unchanged: 1, 3, 1, 11, 18, 78, 149, 743
-[get-in] Array Native: 0, 0, 1, 2, 1, 5, 11, 52
-[get-in] Array lodash fp: 2, 7, 8, 30, 53, 268, 538, 2686
-[get-in] Array ramda: 0, 1, 2, 6, 7, 32, 62, 300
-[get-in] Array Unchanged: 0, 2, 6, 10, 21, 90, 189, 901
-[set] Object Native: 1, 2, 3, 17, 30, 131, 262, 1319
-[set] Object lodash fp: 5, 18, 13, 42, 79, 398, 801, 3983
-[set] Object ramda: 1, 2, 3, 5, 9, 40, 74, 370
-[set] Object Unchanged: 1, 4, 7, 20, 31, 143, 290, 1454
-[set] Array Native: 0, 1, 3, 7, 15, 68, 131, 656
-[set] Array lodash fp: 2, 16, 12, 47, 90, 449, 896, 4477
-[set] Array ramda: 2, 6, 10, 42, 76, 392, 776, 3841
-[set] Array Unchanged: 1, 7, 7, 20, 37, 173, 350, 1742
-[set-in] Object Native: 1, 3, 8, 29, 53, 264, 528, 2646
-[set-in] Object lodash fp: 8, 17, 19, 80, 173, 808, 1537, 7691
-[set-in] Object ramda: 1, 6, 8, 35, 64, 318, 627, 3081
-[set-in] Object Unchanged: 2, 9, 14, 41, 71, 348, 700, 3488
-[set-in] Array Native: 1, 4, 4, 14, 29, 132, 259, 1291
-[set-in] Array lodash fp: 3, 15, 20, 72, 145, 722, 1445, 7252
-[set-in] Array ramda: 2, 8, 16, 57, 106, 574, 1080, 5367
-[set-in] Array Unchanged: 2, 10, 15, 46, 85, 431, 852, 4268
+[get] Object Native: 0, 0, 0, 1, 0, 0, 1, 3
+[get] Object lodash fp: 2, 7, 3, 13, 19, 113, 206, 912
+[get] Object ramda: 0, 2, 3, 4, 1, 10, 22, 93
+[get] Object Unchanged: 0, 3, 1, 6, 6, 29, 55, 268
+[get] Object Unchanged dotty: 1, 2, 3, 5, 7, 30, 56, 283
+[get] Array Native: 0, 0, 1, 1, 1, 5, 11, 48
+[get] Array lodash fp: 0, 4, 2, 11, 20, 90, 181, 895
+[get] Array ramda: 1, 3, 2, 5, 6, 28, 50, 249
+[get] Array Unchanged: 1, 2, 5, 4, 8, 37, 71, 345
+[get] Array Unchanged dotty: 1, 2, 3, 5, 9, 38, 69, 364
+[get-in] Object Native: 0, 0, 0, 2, 0, 0, 0, 3
+[get-in] Object lodash fp: 2, 9, 4, 18, 33, 162, 323, 1614
+[get-in] Object ramda: 1, 0, 1, 7, 7, 29, 53, 266
+[get-in] Object Unchanged: 1, 3, 2, 12, 15, 74, 141, 702
+[get-in] Object Unchanged dotty: 2, 2, 3, 9, 9, 47, 90, 455
+[get-in] Array Native: 0, 1, 1, 1, 1, 5, 11, 52
+[get-in] Array lodash fp: 2, 9, 8, 32, 57, 289, 579, 2915
+[get-in] Array ramda: 0, 1, 2, 6, 7, 30, 59, 292
+[get-in] Array Unchanged: 0, 1, 6, 10, 21, 95, 185, 926
+[get-in] Array Unchanged dotty: 2, 3, 8, 15, 28, 132, 269, 1322
+[set] Object Native: 1, 2, 3, 15, 29, 137, 268, 1331
+[set] Object lodash fp: 6, 25, 11, 40, 78, 395, 794, 3986
+[set] Object ramda: 1, 2, 3, 5, 9, 39, 74, 364
+[set] Object Unchanged: 1, 4, 7, 20, 30, 148, 297, 1494
+[set] Object Unchanged dotty: 0, 2, 6, 20, 33, 164, 321, 1614
+[set] Array Native: 1, 1, 4, 7, 17, 81, 132, 675
+[set] Array lodash fp: 3, 17, 11, 45, 83, 428, 842, 4233
+[set] Array ramda: 1, 7, 10, 44, 82, 412, 823, 4178
+[set] Array Unchanged: 1, 6, 9, 19, 36, 177, 353, 1769
+[set] Array Unchanged dotty: 1, 5, 5, 21, 37, 179, 354, 1785
+[set-in] Object Native: 1, 4, 7, 28, 55, 265, 545, 2669
+[set-in] Object lodash fp: 7, 19, 18, 75, 149, 755, 1500, 7510
+[set-in] Object ramda: 1, 6, 9, 38, 70, 351, 694, 3415
+[set-in] Object Unchanged: 2, 7, 13, 42, 72, 359, 717, 3599
+[set-in] Object Unchanged dotty: 2, 3, 12, 21, 35, 175, 350, 1747
+[set-in] Array Native: 0, 4, 4, 15, 28, 131, 263, 1297
+[set-in] Array lodash fp: 3, 14, 16, 67, 134, 656, 1311, 6572
+[set-in] Array ramda: 2, 9, 16, 59, 118, 583, 1169, 5807
+[set-in] Array Unchanged: 2, 10, 18, 46, 90, 437, 886, 4463
+[set-in] Array Unchanged dotty: 2, 7, 13, 33, 60, 305, 605, 3054

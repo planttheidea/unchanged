@@ -48,6 +48,15 @@ module.exports = {
       val = get(['value'], obj);
     }
   },
+  objectGetUnchangedDotty(cycles) {
+    const obj = {value};
+
+    let val;
+
+    for (let i = 0; i < cycles; i++) {
+      val = get('value', obj);
+    }
+  },
 
   // arrays
   arrayGetNative(cycles) {
@@ -89,6 +98,16 @@ module.exports = {
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
       val = get([index], array);
+    }
+  },
+  arrayGetUnchangedDotty(cycles) {
+    const maxIndex = array.length - 1;
+
+    let index, val;
+
+    for (let i = 0; i < cycles; i++) {
+      index = ~~(Math.random() * maxIndex);
+      val = get(0, array);
     }
   }
 };

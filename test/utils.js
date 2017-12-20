@@ -183,11 +183,11 @@ test('if onMatchAtPath calls onMatch and returns its result if the object exists
   const object = {
     [path[0]]: 'value'
   };
-  const shouldClone = false;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = false;
   const noMatchValue = 'no match';
 
-  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object, path[0]));
@@ -200,11 +200,11 @@ test('if onMatchAtPath calls onMatch and returns the original object if the obje
   const object = {
     [path[0]]: 'value'
   };
-  const shouldClone = true;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = true;
   const noMatchValue = 'no match';
 
-  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object, path[0]));
@@ -215,11 +215,11 @@ test('if onMatchAtPath calls onMatch and returns the original object if the obje
 test('if onMatchAtPath returns noMatchValue if the object does not exist and it should not be cloned', (t) => {
   const path = ['key'];
   const object = null;
-  const shouldClone = false;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = false;
   const noMatchValue = 'no match';
 
-  const result = utils.onMatchAtPath(path, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(path, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.notCalled);
 
@@ -233,13 +233,13 @@ test('if onMatchAtPath calls itself if the path has more than one value and the 
       [path[1]]: 'value'
     }
   };
-  const shouldClone = false;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = false;
   const noMatchValue = 'no match';
 
   const passedPath = [...path];
 
-  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object[path[0]], path[1]));
@@ -252,13 +252,13 @@ test('if onMatchAtPath calls itself if the path has more than one value and the 
 test('if onMatchAtPath does not call itself if the path has more than one value but the next object does not exist', (t) => {
   const path = ['key', 'otherKey'];
   const object = null;
-  const shouldClone = false;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = false;
   const noMatchValue = 'no match';
 
   const passedPath = [...path];
 
-  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.notCalled);
 
@@ -270,13 +270,13 @@ test('if onMatchAtPath does not call itself if the path has more than one value 
 test('if onMatchAtPath does not call itself if the path has more than one value but the next key does not exist', (t) => {
   const path = ['key', 'otherKey'];
   const object = {};
-  const shouldClone = false;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = false;
   const noMatchValue = 'no match';
 
   const passedPath = [...path];
 
-  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.notCalled);
 
@@ -288,13 +288,13 @@ test('if onMatchAtPath does not call itself if the path has more than one value 
 test('if onMatchAtPath calls itself with a new clone if the path has more than one value and returns the object', (t) => {
   const path = ['key', 'otherKey'];
   const object = {};
-  const shouldClone = true;
   const onMatch = sinon.stub().returnsArg(1);
+  const shouldClone = true;
   const noMatchValue = 'no match';
 
   const passedPath = [...path];
 
-  const result = utils.onMatchAtPath(passedPath, object, shouldClone, onMatch, noMatchValue);
+  const result = utils.onMatchAtPath(passedPath, object, onMatch, shouldClone, noMatchValue);
 
   t.true(onMatch.calledOnce);
   t.true(onMatch.calledWith(object[path[0]], path[1]));

@@ -7,11 +7,6 @@ import {parse} from 'pathington';
 const REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
 /**
- * @function hasOwnProperty
- */
-const hasOwnProperty = Object.prototype.hasOwnProperty;
-
-/**
  * @constant {RegExp} NATIVE_FUNCTION_REGEXP
  */
 const NATIVE_FUNCTION_REGEXP = new RegExp(
@@ -158,12 +153,12 @@ export const getNewChildClone = (object, nextKey) => {
  *
  * @param {Array<number|string>} path the path to find a match at
  * @param {Array<*>|Object} object the object to find the path in
- * @param {boolean} shouldClone should the object be cloned
  * @param {function} onMatch when a match is found, call this method
+ * @param {boolean} shouldClone should the object be cloned
  * @param {*} noMatchValue when no match is found, return this value
  * @returns {*} either the return from onMatch or the noMatchValue
  */
-export const onMatchAtPath = (path, object, shouldClone, onMatch, noMatchValue) => {
+export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue) => {
   if (path.length <= 1) {
     const result = object || shouldClone ? onMatch(object, path[0]) : noMatchValue;
 
@@ -173,14 +168,12 @@ export const onMatchAtPath = (path, object, shouldClone, onMatch, noMatchValue) 
   const key = path.shift();
 
   if (shouldClone) {
-    object[key] = onMatchAtPath(path, getNewChildClone(object[key], path[0]), shouldClone, onMatch, noMatchValue);
+    object[key] = onMatchAtPath(path, getNewChildClone(object[key], path[0]), onMatch, shouldClone, noMatchValue);
 
     return object;
   }
 
-  return object && hasOwnProperty.call(object, key)
-    ? onMatchAtPath(path, object[key], shouldClone, onMatch, noMatchValue)
-    : noMatchValue;
+  return object && object[key] ? onMatchAtPath(path, object[key], onMatch, shouldClone, noMatchValue) : noMatchValue;
 };
 
 /**
@@ -242,21 +235,15 @@ export const getParsedPath = (path) => {
  * @returns {*} the retrieved values
  */
 export const getNestedProperty = (path, object) => {
-  if (!object) {
-    return undefined;
-  }
-
   const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
-    return object[parsedPath[0]];
+    return object ? object[parsedPath[0]] : undefined;
   }
 
-  return parsedPath.length === 1
-    ? object[parsedPath[0]]
-    : onMatchAtPath(parsedPath, object, false, (ref, key) => {
-      return ref[key];
-    });
+  return onMatchAtPath(parsedPath, object, (ref, key) => {
+    return ref[key];
+  });
 };
 
 /**
@@ -280,7 +267,7 @@ export const getDeepClone = (path, object, onMatch) => {
     return topLevelClone;
   }
 
-  return onMatchAtPath(parsedPath, topLevelClone, true, onMatch);
+  return onMatchAtPath(parsedPath, topLevelClone, onMatch, true);
 };
 
 /**
@@ -294,23 +281,21 @@ export const getDeepClone = (path, object, onMatch) => {
  * @returns {boolean} does the nested path exist
  */
 export const hasNestedProperty = (path, object) => {
-  if (!object) {
-    return false;
-  }
-
   const parsedPath = getParsedPath(path);
 
-  return parsedPath.length === 1
-    ? hasOwnProperty.call(object, parsedPath[0])
-    : onMatchAtPath(
-      parsedPath,
-      object,
-      false,
-      (ref, key) => {
-        return !!ref && hasOwnProperty.call(ref, key);
-      },
-      false
-    );
+  if (parsedPath.length === 1) {
+    return object ? object[parsedPath[0]] !== void 0 : false;
+  }
+
+  return onMatchAtPath(
+    parsedPath,
+    object,
+    (ref, key) => {
+      return !!ref && ref[key] !== void 0;
+    },
+    false,
+    false
+  );
 };
 
 /**
