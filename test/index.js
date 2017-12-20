@@ -25,6 +25,20 @@ test('if add will add the top-level value to the array', (t) => {
   t.deepEqual(result, [...object, 'value']);
 });
 
+test('if add will add the top-level value to the nested array', (t) => {
+  const object = {
+    nested: ['top', 'level']
+  };
+
+  const result = index.add('nested', 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    nested: [...object.nested, 'value']
+  });
+});
+
 test('if add will add the deeply-nested value to the object', (t) => {
   const object = {
     deeply: {
@@ -323,6 +337,71 @@ test('if has will return false for an empty object the key is empy', (t) => {
   const object = null;
 
   t.false(index.has(null, object));
+});
+
+test('if merge will return the object to merge if the object is not cloneable', (t) => {
+  const path = null;
+  const objectToMerge = {
+    object: 'to merge'
+  };
+  const object = null;
+
+  const result = index.merge(path, objectToMerge, object);
+
+  t.not(result, object);
+  t.is(result, objectToMerge);
+});
+
+test('if merge will merge the complete objects if the key is empty', (t) => {
+  const path = null;
+  const objectToMerge = {
+    object: 'to merge'
+  };
+  const object = {
+    existing: 'object'
+  };
+
+  const result = index.merge(path, objectToMerge, object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    ...objectToMerge
+  });
+});
+
+test('if merge will merge the objects at the path specified when the key is not empty', (t) => {
+  const path = 'path';
+  const objectToMerge = {
+    object: 'to merge',
+    [path]: 'final value'
+  };
+  const object = {
+    existing: 'object',
+    [path]: 'overwritten value'
+  };
+
+  const result = index.merge(path, objectToMerge, object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    [path]: {
+      ...objectToMerge
+    }
+  });
+});
+
+test('if remove will return an empty version of the object when the key is empty', (t) => {
+  const path = null;
+  const object = {
+    existing: 'object'
+  };
+
+  const result = index.remove(path, object);
+
+  t.not(result, object);
+  t.deepEqual(result, {});
 });
 
 test('if remove will remove the top-level value from the object', (t) => {

@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import * as pathington from 'pathington';
 import sinon from 'sinon';
 
 // src
@@ -45,7 +46,7 @@ test('if curry will make a function curriable', (t) => {
   t.deepEqual(result, [a, b]);
 });
 
-test('if getShallowClone shallowly clones the object when it is an array', (t) => {
+test('if gearrtShallowClone shallowly clones the object when it is an array', (t) => {
   const object = ['array'];
 
   const result = utils.getShallowClone(object);
@@ -301,6 +302,26 @@ test('if getNestedProperty will get the nested value in the object', (t) => {
   t.is(result, object.deeply.nested);
 });
 
+test('if getNestedProperty will return the top-level value when the length ofthe path is 1', (t) => {
+  const path = 'path';
+  const object = {
+    [path]: 'value'
+  };
+
+  const result = utils.getNestedProperty(path, object);
+
+  t.is(result, object[path]);
+});
+
+test('if getNestedProperty will return undefined when the object does not exist and the length ofthe path is 1', (t) => {
+  const path = 'path';
+  const object = null;
+
+  const result = utils.getNestedProperty(path, object);
+
+  t.is(result, undefined);
+});
+
 test('if getDeepClone will create a deep clone on the object at the path specified', (t) => {
   const value = 'value';
 
@@ -428,6 +449,22 @@ test('if hasNestedProperty will return false if the object does not exist', (t) 
   t.false(utils.hasNestedProperty(path, object));
 });
 
+test('if hasNestedProperty will return the top-level value when the length ofthe path is 1', (t) => {
+  const path = 'path';
+  const object = {
+    [path]: 'value'
+  };
+
+  t.true(utils.hasNestedProperty(path, object));
+});
+
+test('if hasNestedProperty will return undefined when the object does not exist and the length ofthe path is 1', (t) => {
+  const path = 'path';
+  const object = null;
+
+  t.false(utils.hasNestedProperty(path, object));
+});
+
 test('if isCloneable returns false if null', (t) => {
   const object = null;
 
@@ -508,4 +545,25 @@ test('if isEmptyKey will return false when a number', (t) => {
   const object = 0;
 
   t.false(utils.isEmptyKey(object));
+});
+
+test('if getParsedPath will return the path if it is an array', (t) => {
+  const path = ['path'];
+
+  const result = utils.getParsedPath(path);
+
+  t.is(result, path);
+});
+
+test('if getParsedPath will parse the path with pathington if not an array', (t) => {
+  const path = 'path';
+
+  const spy = sinon.spy(pathington, 'parse');
+
+  const result = utils.getParsedPath(path);
+
+  t.true(spy.calledOnce);
+  t.true(spy.calledWith(path));
+
+  t.deepEqual(result, [path]);
 });

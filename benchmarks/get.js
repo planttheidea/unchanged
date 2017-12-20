@@ -69,14 +69,13 @@ module.exports = {
 
   // arrays
   arrayGetNative(cycles) {
-    const arr = array;
-    const maxIndex = arr.length - 1;
+    const maxIndex = array.length - 1;
 
     let index, val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
-      val = arr[index];
+      val = array[index];
     }
   },
   arrayGetLodashFp(cycles) {

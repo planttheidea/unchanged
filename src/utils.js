@@ -208,18 +208,19 @@ export const getDeeplyMergedObject = (object1, object2) => {
     return [...object1, ...object2.map(cloneIfPossible)];
   }
 
-  return Object.keys(object2).reduce(
-    (clone, key) => {
-      clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
-
-      return clone;
-    },
-    Object.keys(object1).reduce((clone, key) => {
+  const target = isCloneable(object1)
+    ? Object.keys(object1).reduce((clone, key) => {
       clone[key] = cloneIfPossible(object1[key]);
 
       return clone;
     }, {})
-  );
+    : {};
+
+  return Object.keys(object2).reduce((clone, key) => {
+    clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+
+    return clone;
+  }, target);
 };
 
 /**
