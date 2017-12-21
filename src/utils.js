@@ -2,19 +2,14 @@
 import {parse} from 'pathington';
 
 /**
- * @constant {Symbol} REACT_ELEMENT_TYPE
+ * @constant {Symbol} REACT_ELEMENT
  */
-const REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
+const REACT_ELEMENT = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
 /**
- * @constant {RegExp} NATIVE_FUNCTION_REGEXP
+ * @constant {RegExp} FUNCTION_NAME
  */
-const NATIVE_FUNCTION_REGEXP = new RegExp(
-  `^${Function.prototype.toString
-    .call(Function)
-    .replace(/([.*+?^=!:$(){}|[\]\/\\])/g, '\\$1')
-    .replace(/Function|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?')}$`
-);
+const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
 
 /**
  * @function isArray
@@ -35,7 +30,25 @@ export const isCloneable = (object) => {
     !!object &&
     typeof object === 'object' &&
     !(object instanceof Date || object instanceof RegExp) &&
-    object.$$typeof !== REACT_ELEMENT_TYPE
+    object.$$typeof !== REACT_ELEMENT
+  );
+};
+
+/**
+ * @function isGlobalConstructor
+ *
+ * @description
+ * is the function passed a global constructor function
+ *
+ * @param {function} fn the function to test
+ * @returns {boolean} is the function a global constructor
+ */
+export const isGlobalConstructor = (fn) => {
+  return (
+    typeof fn === 'function' &&
+    (typeof window !== 'undefined' ? window : global)[
+      fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]
+    ] === fn
   );
 };
 
@@ -58,7 +71,7 @@ export const getShallowClone = (object) => {
     return {...object};
   }
 
-  return object.constructor && NATIVE_FUNCTION_REGEXP.test(`${object.constructor}`)
+  return isGlobalConstructor(object.constructor)
     ? {}
     : Object.keys(object).reduce((clone, key) => {
       clone[key] = object[key];

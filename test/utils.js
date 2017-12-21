@@ -25,7 +25,7 @@ test('if cloneIfPossible will return the object if it is not cloneable', (t) => 
   t.is(result, object);
 });
 
-test('if gearrtShallowClone shallowly clones the object when it is an array', (t) => {
+test('if getShallowClone shallowly clones the object when it is an array', (t) => {
   const object = ['array'];
 
   const result = utils.getShallowClone(object);
@@ -524,6 +524,66 @@ test('if isEmptyKey will return false when a number', (t) => {
   const object = 0;
 
   t.false(utils.isEmptyKey(object));
+});
+
+test('if isGlobalConstructor returns false if the fn passed is not a function', (t) => {
+  const fn = {};
+
+  t.false(utils.isGlobalConstructor(fn));
+});
+
+test('if isGlobalConstructor returns based on if the fn passed with a name property exists on the global object', (t) => {
+  const trueFn = RegExp;
+  const falseFn = function Foo() {};
+
+  t.true(utils.isGlobalConstructor(trueFn));
+  t.false(utils.isGlobalConstructor(falseFn));
+});
+
+test.serial(
+  'if isGlobalConstructor returns based on if the fn passed with a name property exists on the window object',
+  (t) => {
+    const currentWindow = global.window;
+
+    global.window = {
+      RegExp
+    };
+
+    const trueFn = RegExp;
+    const falseFn = function Foo() {};
+
+    t.true(utils.isGlobalConstructor(trueFn));
+    t.false(utils.isGlobalConstructor(falseFn));
+
+    global.window = currentWindow;
+  }
+);
+
+test('if isGlobalConstructor returns false if the fn passed without a name property does not have a match', (t) => {
+  const fn = () => {};
+
+  delete fn.name;
+
+  t.false(utils.isGlobalConstructor(fn));
+});
+
+test('if isGlobalConstructor returns false if the fn passed without a name property has a match but no name', (t) => {
+  const fn = function() {};
+
+  delete fn.name;
+
+  t.false(utils.isGlobalConstructor(fn));
+});
+
+test('if isGlobalConstructor returns based on if the fn passed without a name property has a match that is a global function', (t) => {
+  const trueFn = Promise;
+  const falseFn = function Foo() {};
+
+  delete trueFn.name;
+  delete falseFn.name;
+
+  t.true(utils.isGlobalConstructor(trueFn));
+  t.false(utils.isGlobalConstructor(falseFn));
 });
 
 test('if getParsedPath will return the path if it is an array', (t) => {
