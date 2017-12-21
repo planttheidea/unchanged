@@ -183,7 +183,7 @@ const object2 = {
   three: 'value3'
 };
 
-console.log(merge('object', object2, object1)); // {one: 'new value', oneSpecific: 'value', object: {one: 'value1', two: 'value1'}, three: 'value3'}
+console.log(merge(null, object2, object1)); // {one: 'new value', oneSpecific: 'value', object: {one: 'value1', two: 'value1'}, three: 'value3'}
 ```
 
 ## Additional objects
@@ -195,13 +195,13 @@ A placeholder value used to identify "gaps" in a curried function, allowing for 
 ```javascript
 import {__, set} from 'unchanged';
 
-const object = {
+const thing = {
   foo: 'foo';
 };
 
-const setFoo = set('foo', __, object);
+const setFoo = set('foo', __, thing);
 
-setFoo('bar');
+setFooOnThing('bar');
 ```
 
 ## Differences from other libraries
