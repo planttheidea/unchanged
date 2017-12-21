@@ -15,7 +15,7 @@
   "dependencies": {
     "pathington": "^1.1.4"
   },
-  "description": "Custom identity functions for composability",
+  "description": "A tiny, fast, unopinionated immutable handler for updating JS objects and arrays",
   "devDependencies": {
     "ava": "^0.24.0",
     "babel-cli": "^6.26.0",
