@@ -14,11 +14,9 @@ export const __ = typeof Symbol === 'function' ? Symbol('placeholder') : 0xedd1;
  * @returns {Array<*>} the complete list of args
  */
 export const getPassedArgs = (originalArgs, nextArgs) => {
-  const argsToPass = new Array(originalArgs.length);
-
-  for (let index = 0; index < originalArgs.length; index++) {
-    argsToPass[index] = originalArgs[index] === __ && nextArgs.length ? nextArgs.shift() : originalArgs[index];
-  }
+  const argsToPass = originalArgs.map((arg) => {
+    return arg === __ && nextArgs.length ? nextArgs.shift() : arg;
+  });
 
   return nextArgs.length ? argsToPass.concat(nextArgs) : argsToPass;
 };

@@ -2,7 +2,7 @@
 
 A tiny (~1.9kb minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated immutable handler for updating JS objects and arrays.
 
-Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `concat`, `get`, `set`, `merge`, and `omit` with a 92% smaller footprint.
+Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 92% smaller footprint.
 
 ## Table of contents
 
@@ -136,7 +136,7 @@ console.log(add('foo[0].quz', 'added value' object)); // {foo: [{bar: 'baz', quz
 console.log(add(['foo', 0, 'quz'], 'added value', object)); // {foo: [{bar: 'baz', quz: 'added value'}]}
 ```
 
-Notice that the `Object` form operates just like the `set` method, where a key needs to be specified for assignment. In the case of an `Array`, however, the value is appended to the object at that key.
+Notice that the `Object` usage is idential to the `set` method, where a key needs to be specified for assignment. In the case of an `Array`, however, the value is pushed to the array at that key.
 
 NOTE: If you want to add an item to a top-level array, pass `null` as the key:
 
@@ -211,11 +211,12 @@ setFoo('bar');
 [`lodash/fp`](https://lodash.com/) (the functional programming implementation of `lodash`) is identical in implementation to `unchanged`'s methods, just with a _13x_ larger footprint. These methods should map directly:
 
 * `curry.placeholder` => `__`
-* `concat` => `add` (arrays only)
 * `get` => `get`
 * `merge` => `merge`
 * `omit` => `remove`
 * `set` => `set` (also maps to `add` for objects only)
+
+NOTE: There is no direct parallel for the `add` method in `lodash/fp`; the closest is `concat` but that is array-specific and does not support nested keys.
 
 #### ramda
 
