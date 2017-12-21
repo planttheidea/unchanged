@@ -15,7 +15,7 @@
   "dependencies": {
     "pathington": "^1.1.4"
   },
-  "description": "A tiny, fast, unopinionated immutable handler for updating JS objects and arrays",
+  "description": "A tiny, fast, unopinionated handler for updating JS objects and arrays immutably",
   "devDependencies": {
     "ava": "^0.24.0",
     "babel-cli": "^6.26.0",
