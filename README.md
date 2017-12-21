@@ -1,6 +1,8 @@
 # unchanged
 
-A tiny (~1.8kb gzipped+minified), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), immutable manager for JS objects and arrays. Supports nested key paths via path arrays or [dotty syntax](https://github.com/planttheidea/pathington), and all methods are curriable for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a fraction of the footprint.
+A tiny (~1.9kb minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), immutable handler for updating JS objects and arrays.
+
+Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 92% smaller footprint.
 
 ## Table of contents
 
@@ -11,16 +13,19 @@ A tiny (~1.8kb gzipped+minified), [fast](https://github.com/planttheidea/unchang
   * [remove](#remove)
   * [add](#add)
   * [merge](#merge)
+* [Additional objects](#additional-objects)
+  * [\_\_](#__)
 * [Differences with other libraries](#differences-with-other-libraries)
   * [lodash](#lodash)
   * [ramda](#ramda)
+  * [Other immutability libraries](#other-immutability-libraries)
 * [Browser support](#browser-support)
 * [Development](#development)
 
 ## Usage
 
 ```javascript
-import {add, get, merge, remove, set} from 'unchanged';
+import {__, add, get, merge, remove, set} from 'unchanged';
 
 const object = {
   foo: 'foo',
@@ -40,6 +45,12 @@ const baz = set('bar[0].baz', 'not quz', object);
 // all methods are curriable
 const removeBaz = remove('bar[0].baz');
 const sansBaz = removeBaz(object);
+```
+
+One thing to note is that there is no `default` export, so if you want to bring in all methods you should use the `import *` syntax:
+
+```javascript
+import * as uc from 'unchanged';
 ```
 
 ## Methods
@@ -175,17 +186,42 @@ const object2 = {
 console.log(merge('object', object2, object1)); // {one: 'new value', oneSpecific: 'value', object: {one: 'value1', two: 'value1'}, three: 'value3'}
 ```
 
+## Additional objects
+
+#### \_\_
+
+A placeholder value used to identify "gaps" in a curried function, allowing for earlier application of arguments later in the argument order.
+
+```javascript
+import {__, set} from 'unchanged';
+
+const object = {
+  foo: 'foo';
+};
+
+const setFoo = set('foo', __, object);
+
+setFoo('bar');
+```
+
 ## Differences from other libraries
 
 #### lodash
 
-[`lodash/fp`](https://lodash.com/) (the functional programming implementation of standard `lodash`) is very similar in implementation to `unchanged`, mainly because it supports dotty syntax for paths as well. The main difference with this package is that when currying you cannot use placeholders, meaning arguments must be provided in the order of their usage. The trade-off is the footprint ... bringing in `lodash/fp/get` alone can be upwards of 30kB minified, whereas `unchanged` sits at about 4 in its entirety. Also, `unchanged` is [faster in almost every category](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv).
+[`lodash/fp`](https://lodash.com/) (the functional programming implementation of standard `lodash`) is identical in implementation to `unchanged`, just with a _13x_ larger footprint. These methods should map directly:
+
+* `curry.placeholder` => `__`
+* `concat` => `add` (arrays only)
+* `get` => `get`
+* `merge` => `merge`
+* `omit` => `remove`
+* `set` => `set` (also maps to `add` for objects only)
 
 #### ramda
 
-[`ramda`](http://ramdajs.com/) is also similar in its implementation, however the first big difference is that dotty syntax is not supported by `ramda`, only path arrays. Additionally, as mentioned, `unchanged` does not support placeholders. The big benefit over ramda is the simplicity of the API; for example, in `ramda` you use one method if you want to assign to a top-level property (`assoc`) and another method if you want to assign to a nested property (`assocPath`). In `unchanged`, this is combined into a single `set` method.
+[`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dotty syntax is not supported by `ramda`, only path arrays. Another difference is that the `ramda` methods that do deep clones (`assocPath`, for example) only work with objects; arrays are converted into objects, which can make updating collections challenging sometimes.
 
-Another difference, and this required an example, is the way that objects are copied.
+The last main difference is the way that objects are copied, example:
 
 ```javascript
 function Foo(value) {
@@ -212,6 +248,10 @@ console.log(unchangedResult instanceof Foo); // true
 ```
 
 This makes `ramda` more performant in certain scenarios, but can be unexpected behavior.
+
+#### Other immutability libraries
+
+This includes popular solutions like [Immutable.js](https://facebook.github.io/immutable-js/), [seamless-immutable](https://github.com/rtfeldman/seamless-immutable), [mori](http://swannodette.github.io/mori/), etc. These solutions all work well, but with one caveat: _you need to buy completely into their system_. Each of these libraries redefines how the objects are stored internally, and require that you learn a new, highly specific API to use these reconfigured objects. `unchanged` is unopinionated, using standard JS to handle standard JS objects.
 
 ## Browser support
 

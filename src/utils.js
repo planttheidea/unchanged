@@ -2,7 +2,7 @@
 import {parse} from 'pathington';
 
 /**
- * @constant {Object} REACT_ELEMENT_TYPE
+ * @constant {Symbol} REACT_ELEMENT_TYPE
  */
 const REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
@@ -20,25 +20,6 @@ const NATIVE_FUNCTION_REGEXP = new RegExp(
  * @function isArray
  */
 export const isArray = Array.isArray;
-
-/**
- * @function curry
- *
- * @description
- * simple curry application method
- *
- * @param {function} fn the function to curry
- * @returns {function(...Array<*>): *} the curried version of fn
- */
-export const curry = (fn) => {
-  return function curried(...args) {
-    return args.length >= fn.length
-      ? fn(...args)
-      : (...remainingArgs) => {
-        return curried(...args, ...remainingArgs);
-      };
-  };
-};
 
 /**
  * @function isCloneable

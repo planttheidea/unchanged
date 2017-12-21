@@ -25,27 +25,6 @@ test('if cloneIfPossible will return the object if it is not cloneable', (t) => 
   t.is(result, object);
 });
 
-test('if curry will make a function curriable', (t) => {
-  const method = (a, b) => {
-    return [a, b];
-  };
-
-  const curriedMethod = utils.curry(method);
-
-  t.is(typeof curriedMethod, 'function');
-
-  const a = 'a';
-  const b = 'b';
-
-  const curriedResult = curriedMethod(a);
-
-  t.is(typeof curriedMethod, 'function');
-
-  const result = curriedResult(b);
-
-  t.deepEqual(result, [a, b]);
-});
-
 test('if gearrtShallowClone shallowly clones the object when it is an array', (t) => {
   const object = ['array'];
 

@@ -1,6 +1,6 @@
 // utils
+import {__, curry} from './curry';
 import {
-  curry,
   getDeepClone,
   getDeeplyMergedObject,
   getNestedProperty,
@@ -10,6 +10,8 @@ import {
   isCloneable,
   isEmptyKey
 } from './utils';
+
+export {__};
 
 /**
  * @function get
