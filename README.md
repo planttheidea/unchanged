@@ -1,8 +1,8 @@
 # unchanged
 
-A tiny (~1.9kb minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), immutable handler for updating JS objects and arrays.
+A tiny (~1.9kb minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated immutable handler for updating JS objects and arrays.
 
-Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 92% smaller footprint.
+Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `concat`, `get`, `set`, `merge`, and `omit` with a 92% smaller footprint.
 
 ## Table of contents
 
@@ -208,7 +208,7 @@ setFoo('bar');
 
 #### lodash
 
-[`lodash/fp`](https://lodash.com/) (the functional programming implementation of standard `lodash`) is identical in implementation to `unchanged`, just with a _13x_ larger footprint. These methods should map directly:
+[`lodash/fp`](https://lodash.com/) (the functional programming implementation of `lodash`) is identical in implementation to `unchanged`'s methods, just with a _13x_ larger footprint. These methods should map directly:
 
 * `curry.placeholder` => `__`
 * `concat` => `add` (arrays only)
@@ -219,7 +219,7 @@ setFoo('bar');
 
 #### ramda
 
-[`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dotty syntax is not supported by `ramda`, only path arrays. Another difference is that the `ramda` methods that do deep clones (`assocPath`, for example) only work with objects; arrays are converted into objects, which can make updating collections challenging sometimes.
+[`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dot-bracket syntax is not supported by `ramda`, only path arrays. Another difference is that the `ramda` methods that do deep clones (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging sometimes.
 
 The last main difference is the way that objects are copied, example:
 
@@ -247,11 +247,11 @@ console.log(unchangedResult); // {value: 'foo', bar: 'baz'}
 console.log(unchangedResult instanceof Foo); // true
 ```
 
-This makes `ramda` more performant in certain scenarios, but can be unexpected behavior.
+This can make `ramda` more performant in certain scenarios, but at the cost of having potentially unexpected behavior.
 
 #### Other immutability libraries
 
-This includes popular solutions like [Immutable.js](https://facebook.github.io/immutable-js/), [seamless-immutable](https://github.com/rtfeldman/seamless-immutable), [mori](http://swannodette.github.io/mori/), etc. These solutions all work well, but with one caveat: _you need to buy completely into their system_. Each of these libraries redefines how the objects are stored internally, and require that you learn a new, highly specific API to use these reconfigured objects. `unchanged` is unopinionated, using standard JS to handle standard JS objects.
+This includes popular solutions like [Immutable.js](https://facebook.github.io/immutable-js/), [seamless-immutable](https://github.com/rtfeldman/seamless-immutable), [mori](http://swannodette.github.io/mori/), etc. These solutions all work well, but with one caveat: _you need to buy completely into their system_. Each of these libraries redefines how the objects are stored internally, and require that you learn a new, highly specific API to use these custom objects. `unchanged` is unopinionated, using standard JS to handle standard JS objects.
 
 ## Browser support
 

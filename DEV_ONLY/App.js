@@ -1,4 +1,5 @@
 import * as src from '../src';
+import {assoc} from 'ramda';
 
 // import '../benchmarks';
 
@@ -7,8 +8,14 @@ const foo = (() => {
     this.value = value;
   };
 
+  Foo.prototype.getValue = function() {
+    return this.value;
+  };
+
   return new Foo('foo');
 })();
+
+console.log(assoc('key', 'value', foo));
 
 const simpleObject = {
   foo,
