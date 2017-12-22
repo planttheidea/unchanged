@@ -15,7 +15,8 @@ const foo = (() => {
   return new Foo('foo');
 })();
 
-console.log(assoc('key', 'value', foo));
+console.log(assoc(0, 'value', foo));
+console.log(src.set(0, 'value', foo));
 
 const simpleObject = {
   foo,
