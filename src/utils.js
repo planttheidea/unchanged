@@ -130,9 +130,7 @@ export const cloneIfPossible = (object) => {
  * @returns {Array<*>|Object} the clone of the key at object
  */
 export const getNewChildClone = (object, nextKey) => {
-  const emptyChild = getNewEmptyChild(nextKey);
-
-  return isCloneable(object) && isArray(object) === isArray(emptyChild) ? getShallowClone(object) : emptyChild;
+  return isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
 };
 
 /**
