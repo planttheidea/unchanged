@@ -64,7 +64,9 @@ export const isGlobalConstructor = (fn) => {
  */
 export const getShallowClone = (object) => {
   if (isArray(object)) {
-    return [...object];
+    return object.map((item) => {
+      return item;
+    });
   }
 
   if (object.constructor === Object) {
@@ -193,7 +195,7 @@ export const getDeeplyMergedObject = (object1, object2) => {
   }
 
   if (isObject1Array) {
-    return [...object1, ...object2.map(cloneIfPossible)];
+    return object1.concat(object2.map(cloneIfPossible));
   }
 
   const target = isCloneable(object1)
@@ -309,4 +311,28 @@ export const hasNestedProperty = (path, object) => {
  */
 export const isEmptyKey = (object) => {
   return object === void 0 || object === null || (isArray(object) && !object.length);
+};
+
+/**
+ * @function splice
+ *
+ * @description
+ * splice a single item from the array
+ *
+ * @param {Array<*>} array array to splice from
+ * @param {number} splicedIndex index to splice at
+ */
+export const splice = (array, splicedIndex) => {
+  if (array.length) {
+    let length = array.length,
+        index = splicedIndex;
+
+    while (index < length) {
+      array[index] = array[index + 1];
+
+      index++;
+    }
+
+    array.length--;
+  }
 };

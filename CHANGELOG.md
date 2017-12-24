@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.0.3
+
+* Use custom `splice` for `remove` instead of native (in case item is an extension of an `Array` and has messed with `splice`)
+
 ## 1.0.2
 
 * Do not create a new object if the object type does not match what the key thinks it should be (causes invalid results for array-like objects)

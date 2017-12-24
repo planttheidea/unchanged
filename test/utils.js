@@ -606,3 +606,25 @@ test('if getParsedPath will parse the path with pathington if not an array', (t)
 
   t.deepEqual(result, [path]);
 });
+
+test('if splice performs the same operation as the native splice', (t) => {
+  const indexToSpice = 1;
+
+  let nativeArray = ['foo', 'bar'],
+      customArray = [...nativeArray];
+
+  nativeArray.splice(indexToSpice, 1);
+  utils.splice(customArray, indexToSpice);
+
+  t.deepEqual(nativeArray, customArray);
+});
+
+test('if splice returns immediately when an empty array is passed', (t) => {
+  let array = [];
+
+  const originalArrayLength = array.length;
+
+  utils.splice(array, 0);
+
+  t.is(array.length, originalArrayLength);
+});
