@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.0.4
+
+* Ensure that the original object's prototype is retained on `merge` when it is not a standard object
+
 ## 1.0.3
 
 * Use custom `splice` for `remove` instead of native (in case item is an extension of an `Array` and has messed with `splice`)

@@ -395,6 +395,52 @@ test('if getDeeplyMergedObject will merge the objects if the objects are both ob
   });
 });
 
+test('if getDeeplyMergedObject will merge the objects retaining the prototype', (t) => {
+  class Foo {
+    constructor(value) {
+      if (value && value.constructor === Object) {
+        return Object.keys(value).reduce((reduced, key) => {
+          const deepValue = value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
+
+          if (reduced[key]) {
+            reduced[key].value = deepValue;
+          } else {
+            reduced[key] = {
+              value: deepValue
+            };
+          }
+
+          return reduced;
+        }, this);
+      }
+
+      this.value = value;
+
+      return this;
+    }
+  }
+
+  const object1 = {date: {willBe: 'overwritten'}, deep: {key: 'value'}};
+  const object2 = {date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'};
+
+  const result = utils.getDeeplyMergedObject(new Foo(object1), new Foo(object2));
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(
+    result,
+    new Foo({
+      date: object2.date,
+      deep: {
+        ...object1.deep,
+        ...object2.deep
+      },
+      untouched: object2.untouched
+    })
+  );
+});
+
 test('if hasNestedProperty will return true if the nested property exists on the object', (t) => {
   const object = {
     deeply: [
