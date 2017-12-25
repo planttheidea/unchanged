@@ -190,7 +190,7 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
 export const getDeeplyMergedObject = (object1, object2) => {
   const isObject1Array = isArray(object1);
 
-  if (isObject1Array !== isArray(object2)) {
+  if (isObject1Array !== isArray(object2) || !isCloneable(object1)) {
     return cloneIfPossible(object2);
   }
 
@@ -198,13 +198,11 @@ export const getDeeplyMergedObject = (object1, object2) => {
     return object1.concat(object2.map(cloneIfPossible));
   }
 
-  const target = isCloneable(object1)
-    ? Object.keys(object1).reduce((clone, key) => {
-      clone[key] = cloneIfPossible(object1[key]);
+  const target = Object.keys(object1).reduce((clone, key) => {
+    clone[key] = cloneIfPossible(object1[key]);
 
-      return clone;
-    }, {})
-    : {};
+    return clone;
+  }, object1.constructor === Object ? {} : Object.create(Object.getPrototypeOf(object1)));
 
   return Object.keys(object2).reduce((clone, key) => {
     clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];

@@ -1,21 +1,38 @@
 import * as src from '../src';
 import {assoc} from 'ramda';
 
-import crio from 'crio';
-
 // import '../benchmarks';
 
-const array = crio([
-  {
-    foo: [
-      {
-        bar: 'baz'
-      }
-    ]
-  }
-]);
+class Foo {
+  constructor(value) {
+    if (value && value.constructor === Object) {
+      return Object.keys(value).reduce((reduced, key) => {
+        if (reduced[key]) {
+          reduced[key].value = new Foo(value[key]);
+        } else {
+          reduced[key] = {
+            value: new Foo(value[key])
+          };
+        }
 
-console.log(array, src.remove([0, 'foo', 0, 'bar'], array));
+        return reduced;
+      }, this);
+    }
+
+    this.value = value;
+
+    return this;
+  }
+}
+
+const object1 = new Foo({date: {willBe: 'overwritten'}, deep: {key: 'value'}});
+const object2 = new Foo({date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'});
+
+const result = src.merge(null, object1, object2);
+
+console.log(object1);
+console.log(object2);
+console.log(result);
 
 // const foo = (() => {
 //   const Foo = function(value) {
