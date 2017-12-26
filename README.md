@@ -148,7 +148,7 @@ console.log(add(null, 'bar', object)); // ['foo', 'bar']
 
 #### merge
 
-`add(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`merge(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
 
 Returns a new object that is a deep merge of the two `object`s passed at the `path` specified.
 
