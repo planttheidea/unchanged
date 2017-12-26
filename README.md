@@ -15,7 +15,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
   * [merge](#merge)
 * [Additional objects](#additional-objects)
   * [\_\_](#__)
-* [Differences with other libraries](#differences-with-other-libraries)
+* [Differences from other libraries](#differences-from-other-libraries)
   * [lodash](#lodash)
   * [ramda](#ramda)
   * [Other immutability libraries](#other-immutability-libraries)
