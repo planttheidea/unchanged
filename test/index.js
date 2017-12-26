@@ -16,15 +16,6 @@ test('if add will add the top-level value to the object', (t) => {
   });
 });
 
-test('if add will add the top-level value to the array', (t) => {
-  const object = ['top', 'level'];
-
-  const result = index.add(null, 'value', object);
-
-  t.not(result, object);
-  t.deepEqual(result, [...object, 'value']);
-});
-
 test('if add will add the top-level value to the nested array', (t) => {
   const object = {
     nested: ['top', 'level']
@@ -90,6 +81,15 @@ test('if add will return the value if an empty key', (t) => {
 
   t.not(result, object);
   t.is(result, 'value');
+});
+
+test('if add will add the value to the array if an empty key', (t) => {
+  const object = ['top', 'level'];
+
+  const result = index.add(null, 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, [...object, 'value']);
 });
 
 test('if add will handle a ridiculous entry', (t) => {
