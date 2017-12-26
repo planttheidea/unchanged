@@ -148,7 +148,7 @@ console.log(add(null, 'bar', object)); // ['foo', 'bar']
 
 #### merge
 
-`add(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`merge(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
 
 Returns a new object that is a deep merge of the two `object`s passed at the `path` specified.
 
@@ -272,9 +272,9 @@ Standard stuff, clone the repo and `npm install` dependencies. The npm scripts a
 * `build` => run webpack to build development `dist` file with NODE_ENV=development
 * `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
 * `dev` => run webpack dev server to run example app / playground
-* `dist` => runs `build` and `build-minified`
+* `dist` => runs `build` and `build:minified`
 * `lint` => run ESLint against all files in the `src` folder
-* `prepublish` => runs `compile-for-publish`
+* `prepublish` => runs `prepublish:compile` when publishing
 * `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
 * `test` => run AVA test functions with `NODE_ENV=test`
 * `test:coverage` => run `test` but with `nyc` for coverage checker

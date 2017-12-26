@@ -8,7 +8,8 @@ import {
   hasNestedProperty,
   isArray,
   isCloneable,
-  isEmptyKey
+  isEmptyKey,
+  splice
 } from './utils';
 
 export {__};
@@ -82,7 +83,7 @@ export const remove = curry((path, object) => {
   return hasNestedProperty(path, object)
     ? getDeepClone(path, object, (ref, key) => {
       if (isArray(ref)) {
-        ref.splice(key, 1);
+        splice(ref, key);
       } else {
         delete ref[key];
       }

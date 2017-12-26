@@ -108,14 +108,14 @@ test('if getNewChildClone will get a shallow clone of the object when it is an a
   t.deepEqual(result, object);
 });
 
-test('if getNewChildClone will get a new object when it is an object and the key type should be an array', (t) => {
-  const object = {array: true};
+test('if getNewChildClone will assign the numeric key to the object when the object is not an array (even though the key says it should be)', (t) => {
+  const object = {array: false};
   const nextKey = 0;
 
   const result = utils.getNewChildClone(object, nextKey);
 
   t.not(result, object);
-  t.deepEqual(result, []);
+  t.deepEqual(result, {...object});
 });
 
 test('if getNewChildClone will get a shallow clone of the object when it is an object and the key type should be an object', (t) => {
@@ -128,14 +128,14 @@ test('if getNewChildClone will get a shallow clone of the object when it is an o
   t.deepEqual(result, object);
 });
 
-test('if getNewChildClone will get a new object when it is an array and the key type should be an object', (t) => {
-  const object = ['array'];
-  const nextKey = 'key';
+test('if getNewChildClone will get a new array when the key type should be an array', (t) => {
+  const object = undefined;
+  const nextKey = 0;
 
   const result = utils.getNewChildClone(object, nextKey);
 
   t.not(result, object);
-  t.deepEqual(result, {});
+  t.deepEqual(result, []);
 });
 
 test('if getNewChildClone will get a new object when the object doe not exist and the key type should be an object', (t) => {
@@ -395,6 +395,52 @@ test('if getDeeplyMergedObject will merge the objects if the objects are both ob
   });
 });
 
+test('if getDeeplyMergedObject will merge the objects retaining the prototype', (t) => {
+  class Foo {
+    constructor(value) {
+      if (value && value.constructor === Object) {
+        return Object.keys(value).reduce((reduced, key) => {
+          const deepValue = value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
+
+          if (reduced[key]) {
+            reduced[key].value = deepValue;
+          } else {
+            reduced[key] = {
+              value: deepValue
+            };
+          }
+
+          return reduced;
+        }, this);
+      }
+
+      this.value = value;
+
+      return this;
+    }
+  }
+
+  const object1 = {date: {willBe: 'overwritten'}, deep: {key: 'value'}};
+  const object2 = {date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'};
+
+  const result = utils.getDeeplyMergedObject(new Foo(object1), new Foo(object2));
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(
+    result,
+    new Foo({
+      date: object2.date,
+      deep: {
+        ...object1.deep,
+        ...object2.deep
+      },
+      untouched: object2.untouched
+    })
+  );
+});
+
 test('if hasNestedProperty will return true if the nested property exists on the object', (t) => {
   const object = {
     deeply: [
@@ -605,4 +651,26 @@ test('if getParsedPath will parse the path with pathington if not an array', (t)
   t.true(spy.calledWith(path));
 
   t.deepEqual(result, [path]);
+});
+
+test('if splice performs the same operation as the native splice', (t) => {
+  const indexToSpice = 1;
+
+  let nativeArray = ['foo', 'bar'],
+      customArray = [...nativeArray];
+
+  nativeArray.splice(indexToSpice, 1);
+  utils.splice(customArray, indexToSpice);
+
+  t.deepEqual(nativeArray, customArray);
+});
+
+test('if splice returns immediately when an empty array is passed', (t) => {
+  let array = [];
+
+  const originalArrayLength = array.length;
+
+  utils.splice(array, 0);
+
+  t.is(array.length, originalArrayLength);
 });

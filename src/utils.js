@@ -64,7 +64,9 @@ export const isGlobalConstructor = (fn) => {
  */
 export const getShallowClone = (object) => {
   if (isArray(object)) {
-    return [...object];
+    return object.map((item) => {
+      return item;
+    });
   }
 
   if (object.constructor === Object) {
@@ -130,9 +132,7 @@ export const cloneIfPossible = (object) => {
  * @returns {Array<*>|Object} the clone of the key at object
  */
 export const getNewChildClone = (object, nextKey) => {
-  const emptyChild = getNewEmptyChild(nextKey);
-
-  return isCloneable(object) && isArray(object) === isArray(emptyChild) ? getShallowClone(object) : emptyChild;
+  return isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
 };
 
 /**
@@ -190,21 +190,19 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
 export const getDeeplyMergedObject = (object1, object2) => {
   const isObject1Array = isArray(object1);
 
-  if (isObject1Array !== isArray(object2)) {
+  if (isObject1Array !== isArray(object2) || !isCloneable(object1)) {
     return cloneIfPossible(object2);
   }
 
   if (isObject1Array) {
-    return [...object1, ...object2.map(cloneIfPossible)];
+    return object1.concat(object2.map(cloneIfPossible));
   }
 
-  const target = isCloneable(object1)
-    ? Object.keys(object1).reduce((clone, key) => {
-      clone[key] = cloneIfPossible(object1[key]);
+  const target = Object.keys(object1).reduce((clone, key) => {
+    clone[key] = cloneIfPossible(object1[key]);
 
-      return clone;
-    }, {})
-    : {};
+    return clone;
+  }, object1.constructor === Object ? {} : Object.create(Object.getPrototypeOf(object1)));
 
   return Object.keys(object2).reduce((clone, key) => {
     clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
@@ -311,4 +309,28 @@ export const hasNestedProperty = (path, object) => {
  */
 export const isEmptyKey = (object) => {
   return object === void 0 || object === null || (isArray(object) && !object.length);
+};
+
+/**
+ * @function splice
+ *
+ * @description
+ * splice a single item from the array
+ *
+ * @param {Array<*>} array array to splice from
+ * @param {number} splicedIndex index to splice at
+ */
+export const splice = (array, splicedIndex) => {
+  if (array.length) {
+    let length = array.length,
+        index = splicedIndex;
+
+    while (index < length) {
+      array[index] = array[index + 1];
+
+      index++;
+    }
+
+    array.length--;
+  }
 };
