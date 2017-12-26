@@ -16,15 +16,6 @@ test('if add will add the top-level value to the object', (t) => {
   });
 });
 
-test('if add will add the top-level value to the array', (t) => {
-  const object = ['top', 'level'];
-
-  const result = index.add(null, 'value', object);
-
-  t.not(result, object);
-  t.deepEqual(result, [...object, 'value']);
-});
-
 test('if add will add the top-level value to the nested array', (t) => {
   const object = {
     nested: ['top', 'level']
