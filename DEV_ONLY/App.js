@@ -3,36 +3,11 @@ import {assoc} from 'ramda';
 
 // import '../benchmarks';
 
-class Foo {
-  constructor(value) {
-    if (value && value.constructor === Object) {
-      return Object.keys(value).reduce((reduced, key) => {
-        if (reduced[key]) {
-          reduced[key].value = new Foo(value[key]);
-        } else {
-          reduced[key] = {
-            value: new Foo(value[key])
-          };
-        }
+const object = {foo: [{bar: {baz: 'quz'}}], bar: 'baz'};
 
-        return reduced;
-      }, this);
-    }
+const result = src.merge(['foo', 0, 'bar'], {baz: 'nope', quz: 'blah'}, object);
 
-    this.value = value;
-
-    return this;
-  }
-}
-
-const object1 = new Foo({date: {willBe: 'overwritten'}, deep: {key: 'value'}});
-const object2 = new Foo({date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'});
-
-const result = src.merge(null, object1, object2);
-
-console.log(object1);
-console.log(object2);
-console.log(result);
+console.log(result, object);
 
 // const foo = (() => {
 //   const Foo = function(value) {

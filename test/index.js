@@ -83,7 +83,7 @@ test('if add will add the deeply-nested value to the array', (t) => {
   ]);
 });
 
-test('if add will return the value= if an empty key', (t) => {
+test('if add will return the value itself if an empty key is used for "add" to an array', (t) => {
   const object = {top: 'level'};
 
   const result = index.add(null, 'value', object);
@@ -92,7 +92,7 @@ test('if add will return the value= if an empty key', (t) => {
   t.is(result, 'value');
 });
 
-test('if add will add the value to the array if an empty key', (t) => {
+test('if add will append the value to the array if an empty key is used for "add" on an array', (t) => {
   const object = ['top', 'level'];
 
   const result = index.add(null, 'value', object);
