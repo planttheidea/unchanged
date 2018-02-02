@@ -70,7 +70,7 @@ export const getShallowClone = (object) => {
   }
 
   if (object.constructor === Object) {
-    return {...object};
+    return Object.assign({}, object);
   }
 
   return isGlobalConstructor(object.constructor)

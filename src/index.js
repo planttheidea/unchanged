@@ -123,7 +123,9 @@ export const set = curry((path, value, object) => {
  */
 export const add = curry((path, value, object) => {
   const nestedValue = get(path, object);
-  const fullPath = isArray(nestedValue) ? `${isEmptyKey(path) ? '' : path}[${nestedValue.length}]` : path;
+  const fullPath = isArray(nestedValue)
+    ? isArray(path) ? path.concat([nestedValue.length]) : `${isEmptyKey(path) ? '' : path}[${nestedValue.length}]`
+    : path;
 
   return set(fullPath, value, object);
 });

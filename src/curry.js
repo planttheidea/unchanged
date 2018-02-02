@@ -4,6 +4,11 @@
 export const __ = typeof Symbol === 'function' ? Symbol('placeholder') : 0xedd1;
 
 /**
+ * @constant {function} slice
+ */
+export const slice = [].slice;
+
+/**
  * @function getPassedArgs
  *
  * @description
@@ -53,12 +58,16 @@ export const isAnyPlaceholder = (args, arity) => {
 export const curry = (fn) => {
   const arity = fn.length;
 
-  const curried = (...args) => {
-    return args.length >= arity && !isAnyPlaceholder(args, arity)
-      ? fn(...args)
-      : (...nextArgs) => {
-        return curried(...getPassedArgs(args, nextArgs));
-      };
+  const curried = function() {
+    if (arguments.length >= arity && !isAnyPlaceholder(arguments, arity)) {
+      return fn.apply(this, arguments);
+    }
+
+    const originalArgs = slice.call(arguments);
+
+    return function() {
+      return curried.apply(this, slice.call(getPassedArgs(originalArgs, slice.call(arguments))));
+    };
   };
 
   return curried;
