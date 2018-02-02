@@ -1,13 +1,16 @@
 import * as src from '../src';
 import {assoc} from 'ramda';
 
+console.log(src.add('d.f', 'df', {d: {f: []}}));
+console.log(src.add(['d', 'f'], 'df', {d: {f: []}}));
+
 // import '../benchmarks';
 
-const object = {foo: [{bar: {baz: 'quz'}}], bar: 'baz'};
-
-const result = src.merge(['foo', 0, 'bar'], {baz: 'nope', quz: 'blah'}, object);
-
-console.log(result, object);
+// const object = {foo: [{bar: {baz: 'quz'}}], bar: 'baz'};
+//
+// const result = src.merge(['foo', 0, 'bar'], {baz: 'nope', quz: 'blah'}, object);
+//
+// console.log(result, object);
 
 // const foo = (() => {
 //   const Foo = function(value) {

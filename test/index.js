@@ -30,7 +30,7 @@ test('if add will add the top-level value to the nested array', (t) => {
   });
 });
 
-test('if add will add the deeply-nested value to the object', (t) => {
+test('if add will add the deeply-nested value to the object when the key is a string', (t) => {
   const object = {
     deeply: {
       nested: 'value'
@@ -48,7 +48,25 @@ test('if add will add the deeply-nested value to the object', (t) => {
   });
 });
 
-test('if add will add the deeply-nested value to the array', (t) => {
+test('if add will add the deeply-nested value to the object when the key is an array', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+
+  const result = index.add(['some', 'other'], 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    some: {
+      other: 'value'
+    }
+  });
+});
+
+test('if add will add the deeply-nested value to the array when the key is a string', (t) => {
   const object = [
     {
       deeply: [
@@ -70,6 +88,74 @@ test('if add will add the deeply-nested value to the array', (t) => {
           other: 'value'
         }
       ]
+    }
+  ]);
+});
+
+test('if add will add the deeply-nested value to the array when the key is an array', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+
+  const result = index.add([0, 'some', 0, 'other'], 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, [
+    {
+      ...object[0],
+      some: [
+        {
+          other: 'value'
+        }
+      ]
+    }
+  ]);
+});
+
+test('if add will append the deeply-nested value to the array when the key is a string', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+
+  const result = index.add('[0]deeply', 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, [
+    {
+      deeply: [object[0].deeply[0], 'value']
+    }
+  ]);
+});
+
+test('if add will append the deeply-nested value to the array when the key is an array', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+
+  const result = index.add([0, 'deeply'], 'value', object);
+
+  t.not(result, object);
+  t.deepEqual(result, [
+    {
+      deeply: [object[0].deeply[0], 'value']
     }
   ]);
 });
