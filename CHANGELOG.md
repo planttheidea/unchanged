@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.0.5
+
+* Fix issue with using array keys when using `add` with nested arrays
+
 ## 1.0.4
 
 * Ensure that the original object's prototype is retained on `merge` when it is not a standard object
