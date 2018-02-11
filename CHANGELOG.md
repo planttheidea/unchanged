@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.0.6
+
+* Replace `map` with `slice` when shallow-cloning arrays (performance and footprint)
+
 ## 1.0.5
 
 * Fix issue with using array keys when using `add` with nested arrays

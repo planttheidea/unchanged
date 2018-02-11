@@ -64,9 +64,7 @@ export const isGlobalConstructor = (fn) => {
  */
 export const getShallowClone = (object) => {
   if (isArray(object)) {
-    return object.map((item) => {
-      return item;
-    });
+    return object.slice();
   }
 
   if (object.constructor === Object) {
