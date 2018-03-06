@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.0.7
+
+* Improve speed of curried methods by removing unneeded `slice` calls and calling with initial `0` index
+
 ## 1.0.6
 
 * Replace `map` with `slice` when shallow-cloning arrays (performance and footprint)

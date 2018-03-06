@@ -3,10 +3,7 @@
  */
 export const __ = typeof Symbol === 'function' ? Symbol('placeholder') : 0xedd1;
 
-/**
- * @constant {function} slice
- */
-export const slice = [].slice;
+const slice = [].slice;
 
 /**
  * @function getPassedArgs
@@ -19,9 +16,11 @@ export const slice = [].slice;
  * @returns {Array<*>} the complete list of args
  */
 export const getPassedArgs = (originalArgs, nextArgs) => {
-  const argsToPass = originalArgs.map((arg) => {
-    return arg === __ && nextArgs.length ? nextArgs.shift() : arg;
-  });
+  let argsToPass = new Array(originalArgs.length);
+
+  for (let index = 0; index < originalArgs.length; index++) {
+    argsToPass[index] = originalArgs[index] === __ && nextArgs.length ? nextArgs.shift() : originalArgs[index];
+  }
 
   return nextArgs.length ? argsToPass.concat(nextArgs) : argsToPass;
 };
@@ -63,10 +62,10 @@ export const curry = (fn) => {
       return fn.apply(this, arguments);
     }
 
-    const originalArgs = slice.call(arguments);
+    const originalArgs = slice.call(arguments, 0);
 
     return function() {
-      return curried.apply(this, slice.call(getPassedArgs(originalArgs, slice.call(arguments))));
+      return curried.apply(this, getPassedArgs(originalArgs, slice.call(arguments, 0)));
     };
   };
 
