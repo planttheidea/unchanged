@@ -2,6 +2,11 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.1.0
+
+* Add `rollup` for building `dist` files
+* Replace homegrown curry with `curriable`
+
 ## 1.0.7
 
 * Improve speed of curried methods by removing unneeded `slice` calls and calling with initial `0` index

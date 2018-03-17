@@ -10,6 +10,8 @@ module.exports = {
 
   entry: path.join(ROOT, 'src/index.js'),
 
+  mode: 'development',
+
   module: {
     rules: [
       {
