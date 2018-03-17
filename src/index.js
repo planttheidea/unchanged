@@ -1,5 +1,7 @@
+// external dependencies
+import {__, curry} from 'curriable';
+
 // utils
-import {__, curry} from './curry';
 import {
   getDeepClone,
   getDeeplyMergedObject,

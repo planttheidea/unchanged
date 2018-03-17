@@ -11,3 +11,5 @@ node_modules
 src
 test
 webpack
+*.log
+yarn.lock
