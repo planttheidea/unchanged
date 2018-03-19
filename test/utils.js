@@ -301,6 +301,56 @@ test('if getNestedProperty will return undefined when the object does not exist 
   t.is(result, undefined);
 });
 
+test('if getNestedPropertyWithFallback will get the nested value in the object', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+  const path = 'deeply.nested';
+  const fallback = 'fallback';
+
+  const result = utils.getNestedPropertyWithFallback(fallback, path, object);
+
+  t.is(result, object.deeply.nested);
+});
+
+test('if getNestedPropertyWithFallback will return the top-level value when the length of the path is 1', (t) => {
+  const path = 'path';
+  const object = {
+    [path]: 'value'
+  };
+  const fallback = 'fallback';
+
+  const result = utils.getNestedPropertyWithFallback(fallback, path, object);
+
+  t.is(result, object[path]);
+});
+
+test('if getNestedPropertyWithFallback will return the fallback when the object does not exist and the length of the path is 1', (t) => {
+  const path = 'path';
+  const object = null;
+  const fallback = 'fallback';
+
+  const result = utils.getNestedPropertyWithFallback(fallback, path, object);
+
+  t.is(result, fallback);
+});
+
+test('if getNestedPropertyWithFallback will return the fallback when the deeply nested value does not exist', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+  const path = 'deeply.nonexistent';
+  const fallback = 'fallback';
+
+  const result = utils.getNestedPropertyWithFallback(fallback, path, object);
+
+  t.is(result, fallback);
+});
+
 test('if getDeepClone will create a deep clone on the object at the path specified', (t) => {
   const value = 'value';
 

@@ -4,6 +4,8 @@ import test from 'ava';
 // src
 import * as index from 'src/index';
 
+// --- add --- //
+
 test('if add will add the top-level value to the object', (t) => {
   const object = {top: 'level'};
 
@@ -200,6 +202,8 @@ test('if add will handle a ridiculous entry', (t) => {
   });
 });
 
+// --- get --- //
+
 test('if get will return the top-level value from the object', (t) => {
   const object = {top: 'level'};
 
@@ -324,6 +328,145 @@ test('if get will return the object itself for a non-match on the object itself 
   t.is(result, object);
 });
 
+// --- getOr --- //
+
+test('if getOr will return the top-level value from the object', (t) => {
+  const object = {top: 'level'};
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 'top', object);
+
+  t.is(result, object.top);
+});
+
+test('if getOr will return the top-level value from the array', (t) => {
+  const object = ['top', 'level'];
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 0, object);
+
+  t.is(result, object[0]);
+});
+
+test('if getOr will return the deeply-nested value from the object', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 'deeply.nested', object);
+
+  t.is(result, object.deeply.nested);
+});
+
+test('if getOr will return the deeply-nested value from the array', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, '[0]deeply[0].nested', object);
+
+  t.is(result, object[0].deeply[0].nested);
+});
+
+test('if getOr will return the object itself when the key is empty', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, null, object);
+
+  t.is(result, object);
+});
+
+test('if getOr will return the array itself when the key is empty', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, null, object);
+
+  t.is(result, object);
+});
+
+test('if getOr will return the fallback for a non-match on the top-level value from the object', (t) => {
+  const object = {top: 'level'};
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 'invalid', object);
+
+  t.is(result, fallback);
+});
+
+test('if getOr will return the fallback for a non-match on the top-level value from the array', (t) => {
+  const object = ['top', 'level'];
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 2, object);
+
+  t.is(result, fallback);
+});
+
+test('if getOr will return the fallback for a non-match on the deeply-nested value from the object', (t) => {
+  const object = {
+    deeply: {
+      nested: 'value'
+    }
+  };
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, 'deeply.invalid', object);
+
+  t.is(result, fallback);
+});
+
+test('if getOr will return the fallback for a non-match on the deeply-nested value from the array', (t) => {
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value'
+        }
+      ]
+    }
+  ];
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, '[0]deeply[1].invalid', object);
+
+  t.is(result, fallback);
+});
+
+test('if getOr will return the object itself for a non-match on the object itself when the key is empty', (t) => {
+  const object = null;
+  const fallback = 'fallback';
+
+  const result = index.getOr(fallback, null, object);
+
+  t.is(result, object);
+});
+
+// --- has --- //
+
 test('if has will return true for the top-level value from the object', (t) => {
   const object = {top: 'level'};
 
@@ -416,6 +559,8 @@ test('if has will return false for an empty object the key is empy', (t) => {
   t.false(index.has(null, object));
 });
 
+// --- merge --- //
+
 test('if merge will return the object to merge if the object is not cloneable', (t) => {
   const path = null;
   const objectToMerge = {
@@ -468,6 +613,8 @@ test('if merge will merge the objects at the path specified when the key is not 
     }
   });
 });
+
+// --- remove --- //
 
 test('if remove will return an empty version of the object when the key is empty', (t) => {
   const path = null;
@@ -590,6 +737,8 @@ test('if remove will handle a ridiculous entry', (t) => {
     ]
   });
 });
+
+// --- set --- //
 
 test('if set will set the value on the top-level object', (t) => {
   const object = {key: 'value'};

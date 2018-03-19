@@ -25,7 +25,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 ## Usage
 
 ```javascript
-import { __, add, get, merge, remove, set } from "unchanged";
+import { __, add, get, getOr, merge, remove, set } from "unchanged";
 
 const object = {
   foo: "foo",
@@ -72,6 +72,26 @@ const object = {
 
 console.log(get("foo[0].bar", object)); // baz
 console.log(get(["foo", 0, "bar"], object)); // baz
+```
+
+#### getOr
+
+`get(fallback: any, path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
+
+Getter function for properties on the `object` passed, with a fallback value if that path does not exist.
+
+```javascript
+const object = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+
+console.log(getOr("foo[0].bar", object)); // baz
+console.log(getOr(["foo", 0, "bar"], object)); // baz
+console.log(getOr("blah", "foo[0].nonexistent", object)) // blah
 ```
 
 #### set
@@ -212,6 +232,7 @@ setFooOnThing('bar');
 
 * `curry.placeholder` => `__`
 * `get` => `get`
+* `getOr` => `getOr`
 * `merge` => `merge`
 * `omit` => `remove`
 * `set` => `set` (also maps to `add` for objects only)

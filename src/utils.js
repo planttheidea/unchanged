@@ -245,6 +245,36 @@ export const getNestedProperty = (path, object) => {
 };
 
 /**
+ * @function getNestedPropertyWithFallback
+ *
+ * @description
+ * Parse the path passed and get the nested property at that path, or return the
+ * given noMatchValue if nothing is found at that path.
+ *
+ * @param {*} noMatchValue the fallback value
+ * @param {Array<number|string>|number|string} path the path to retrieve values from the object
+ * @param {*} object the object to get values from
+ * @returns {*} the retrieved values
+ */
+export const getNestedPropertyWithFallback = (noMatchValue, path, object) => {
+  const parsedPath = getParsedPath(path);
+
+  if (parsedPath.length === 1) {
+    const objectValue = object ? object[parsedPath[0]] : undefined;
+
+    return objectValue === undefined ? noMatchValue : objectValue;
+  }
+
+  return onMatchAtPath(parsedPath, object, (ref, key) => {
+    if (ref[key] === undefined) {
+      return noMatchValue;
+    }
+
+    return ref[key];
+  }, false, noMatchValue);
+};
+
+/**
  * @function getDeepClone
  *
  * @description
