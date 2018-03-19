@@ -44,7 +44,7 @@ export const get = curry((path, object) => {
  * @returns {*} the value requested
  */
 export const getOr = curry((noMatchValue, path, object) => {
-  return isEmptyKey(path) ? object : getNestedPropertyWithFallback(noMatchValue, path, object);
+  return isEmptyKey(path) ? object : getNestedProperty(path, object, noMatchValue);
 });
 
 /**

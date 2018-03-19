@@ -230,47 +230,20 @@ export const getParsedPath = (path) => {
  *
  * @param {Array<number|string>|number|string} path the path to retrieve values from the object
  * @param {*} object the object to get values from
+ * @param {*} noMatchValue an optional fallback value to be returned when the nested property isn't found
  * @returns {*} the retrieved values
  */
-export const getNestedProperty = (path, object) => {
-  const parsedPath = getParsedPath(path);
-
-  if (parsedPath.length === 1) {
-    return object ? object[parsedPath[0]] : undefined;
-  }
-
-  return onMatchAtPath(parsedPath, object, (ref, key) => {
-    return ref[key];
-  });
-};
-
-/**
- * @function getNestedPropertyWithFallback
- *
- * @description
- * Parse the path passed and get the nested property at that path, or return the
- * given noMatchValue if nothing is found at that path.
- *
- * @param {*} noMatchValue the fallback value
- * @param {Array<number|string>|number|string} path the path to retrieve values from the object
- * @param {*} object the object to get values from
- * @returns {*} the retrieved values
- */
-export const getNestedPropertyWithFallback = (noMatchValue, path, object) => {
+export const getNestedProperty = (path, object, noMatchValue) => {
   const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
     const objectValue = object ? object[parsedPath[0]] : undefined;
 
-    return objectValue === undefined ? noMatchValue : objectValue;
+    return objectValue === void 0 ? noMatchValue : objectValue;
   }
 
   return onMatchAtPath(parsedPath, object, (ref, key) => {
-    if (ref[key] === undefined) {
-      return noMatchValue;
-    }
-
-    return ref[key];
+    return ref[key] !== void 0 ? ref[key] : noMatchValue;
   }, false, noMatchValue);
 };
 
