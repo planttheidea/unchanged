@@ -230,18 +230,21 @@ export const getParsedPath = (path) => {
  *
  * @param {Array<number|string>|number|string} path the path to retrieve values from the object
  * @param {*} object the object to get values from
+ * @param {*} noMatchValue an optional fallback value to be returned when the nested property isn't found
  * @returns {*} the retrieved values
  */
-export const getNestedProperty = (path, object) => {
+export const getNestedProperty = (path, object, noMatchValue) => {
   const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
-    return object ? object[parsedPath[0]] : undefined;
+    const objectValue = object ? object[parsedPath[0]] : undefined;
+
+    return objectValue === void 0 ? noMatchValue : objectValue;
   }
 
   return onMatchAtPath(parsedPath, object, (ref, key) => {
-    return ref[key];
-  });
+    return ref[key] !== void 0 ? ref[key] : noMatchValue;
+  }, false, noMatchValue);
 };
 
 /**

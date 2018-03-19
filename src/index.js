@@ -6,6 +6,7 @@ import {
   getDeepClone,
   getDeeplyMergedObject,
   getNestedProperty,
+  getNestedPropertyWithFallback,
   getNewEmptyObject,
   hasNestedProperty,
   isArray,
@@ -28,6 +29,22 @@ export {__};
  */
 export const get = curry((path, object) => {
   return isEmptyKey(path) ? object : getNestedProperty(path, object);
+});
+
+/**
+ * @function getOr
+ *
+ * @description
+ * get the value to the object at the path requested, or noMatchValue if nothing
+ * is there.
+ *
+ * @param {*} noMatchValue the fallback value if nothing is found at the given path
+ * @param {Array<number|string>|null|number|string} path the path to get the value at
+ * @param {Array<*>|Object} object the object to get the value from
+ * @returns {*} the value requested
+ */
+export const getOr = curry((noMatchValue, path, object) => {
+  return isEmptyKey(path) ? object : getNestedProperty(path, object, noMatchValue);
 });
 
 /**
