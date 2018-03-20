@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.2.0
+
+* Add [`getOr`](README.md#getor) function
+
 ## 1.1.0
 
 * Add `rollup` for building `dist` files
