@@ -6,7 +6,6 @@ import {
   getDeepClone,
   getDeeplyMergedObject,
   getNestedProperty,
-  getNestedPropertyWithFallback,
   getNewEmptyObject,
   hasNestedProperty,
   isArray,
@@ -27,9 +26,7 @@ export {__};
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const get = curry((path, object) => {
-  return isEmptyKey(path) ? object : getNestedProperty(path, object);
-});
+export const get = curry((path, object) => (isEmptyKey(path) ? object : getNestedProperty(path, object)));
 
 /**
  * @function getOr
@@ -43,9 +40,9 @@ export const get = curry((path, object) => {
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const getOr = curry((noMatchValue, path, object) => {
-  return isEmptyKey(path) ? object : getNestedProperty(path, object, noMatchValue);
-});
+export const getOr = curry(
+  (noMatchValue, path, object) => (isEmptyKey(path) ? object : getNestedProperty(path, object, noMatchValue))
+);
 
 /**
  * @function has
@@ -57,9 +54,7 @@ export const getOr = curry((noMatchValue, path, object) => {
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {boolean} does the path exist
  */
-export const has = curry((path, object) => {
-  return isEmptyKey(path) ? !!object : hasNestedProperty(path, object);
-});
+export const has = curry((path, object) => (isEmptyKey(path) ? !!object : hasNestedProperty(path, object)));
 
 /**
  * @function merge
@@ -121,13 +116,14 @@ export const remove = curry((path, object) => {
  * @param {Array<*>|Object} object the object to set the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const set = curry((path, value, object) => {
-  return isEmptyKey(path)
-    ? value
-    : getDeepClone(path, object, (ref, key) => {
-      ref[key] = value;
-    });
-});
+export const set = curry(
+  (path, value, object) =>
+    isEmptyKey(path)
+      ? value
+      : getDeepClone(path, object, (ref, key) => {
+        ref[key] = value;
+      })
+);
 
 /**
  * @function add

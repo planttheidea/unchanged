@@ -9,6 +9,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 * [Usage](#usage)
 * [Methods](#methods)
   * [get](#get)
+  * [getOr](#getor)
   * [set](#set)
   * [remove](#remove)
   * [add](#add)
@@ -76,7 +77,7 @@ console.log(get(["foo", 0, "bar"], object)); // baz
 
 #### getOr
 
-`get(fallback: any, path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
+`getOr(fallbackValue: any, path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
 
 Getter function for properties on the `object` passed, with a fallback value if that path does not exist.
 
@@ -89,9 +90,9 @@ const object = {
   ]
 };
 
-console.log(getOr("foo[0].bar", object)); // baz
-console.log(getOr(["foo", 0, "bar"], object)); // baz
-console.log(getOr("blah", "foo[0].nonexistent", object)) // blah
+console.log(getOr("blah", "foo[0].bar", object)); // baz
+console.log(getOr("blah", ["foo", 0, "bar"], object)); // baz
+console.log(getOr("blah", "foo[0].nonexistent", object)); // blah
 ```
 
 #### set
