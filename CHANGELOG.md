@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.2.1
+
+* Simplify code for `has`
+
 ## 1.2.0
 
 * Add [`getOr`](README.md#getor) function
