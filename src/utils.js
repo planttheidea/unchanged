@@ -272,13 +272,7 @@ export const getDeepClone = (path, object, onMatch) => {
  * @param {*} object the object to get values from
  * @returns {boolean} does the nested path exist
  */
-export const hasNestedProperty = (path, object) => {
-  const parsedPath = getParsedPath(path);
-
-  return parsedPath.length === 1
-    ? object ? object[parsedPath[0]] !== void 0 : false
-    : onMatchAtPath(parsedPath, object, (ref, key) => !!ref && ref[key] !== void 0, false, false);
-};
+export const hasNestedProperty = (path, object) => getNestedProperty(path, object) !== void 0;
 
 /**
  * @function isEmptyKey

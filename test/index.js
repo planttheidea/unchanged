@@ -764,12 +764,7 @@ test('if set will set the value on the top-level array', (t) => {
   const result = index.set(path, value, object);
 
   t.not(result, object);
-  t.deepEqual(
-    result,
-    object.map((objectValue, index) => {
-      return index === path ? value : objectValue;
-    })
-  );
+  t.deepEqual(result, object.map((objectValue, index) => (index === path ? value : objectValue)));
 });
 
 test('if set will set the value on the deeply-nested object', (t) => {

@@ -54,7 +54,9 @@ export const getOr = curry(
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {boolean} does the path exist
  */
-export const has = curry((path, object) => (isEmptyKey(path) ? !!object : hasNestedProperty(path, object)));
+/* eslint-disable eqeqeq */
+export const has = curry((path, object) => (isEmptyKey(path) ? object != null : hasNestedProperty(path, object)));
+/* eslint-enable */
 
 /**
  * @function merge
