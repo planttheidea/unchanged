@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.3.1
+
+* Remove benchmark files from published package
+
 ## 1.3.0
 
 * Add [`call`](README.md#call) function
