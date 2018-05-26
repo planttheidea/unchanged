@@ -6,6 +6,29 @@ import sinon from 'sinon';
 // src
 import * as utils from 'src/utils';
 
+test('if callIfFunction will call the object if it is a function', (t) => {
+  const object = sinon.stub().returnsThis();
+  const scope = {};
+  const parameters = ['foo', 'bar'];
+
+  const result = utils.callIfFunction(object, scope, parameters);
+
+  t.true(object.calledOnce);
+  t.true(object.calledWith(...parameters));
+
+  t.is(result, scope);
+});
+
+test('if callIfFunction will not call the object if it is not a function', (t) => {
+  const object = {};
+  const scope = {};
+  const parameters = ['foo', 'bar'];
+
+  const result = utils.callIfFunction(object, scope, parameters);
+
+  t.is(result, undefined);
+});
+
 test('if cloneIfPossible will shallowly clone the object if it is cloneable', (t) => {
   const object = {
     key: 'value'
@@ -268,6 +291,62 @@ test('if onMatchAtPath calls itself with a new clone if the path has more than o
   t.is(result, object);
 });
 
+test('if callNestedProperty will call the nested method in the object', (t) => {
+  const object = {
+    deeply: {
+      nested: sinon.stub().returnsThis()
+    }
+  };
+  const path = 'deeply.nested';
+  const parameters = ['foo', 'bar'];
+  
+  const result = utils.callNestedProperty(path, object, parameters, object);
+
+  t.true(object.deeply.nested.calledOnce);
+  t.true(object.deeply.nested.calledWith(...parameters));
+
+  t.is(result, object);
+});
+
+test('if callNestedProperty will call the top-level value when the length of the path is 1', (t) => {
+  const object = {
+    path: sinon.stub().returnsThis()
+  };
+  const path = 'path';
+  const parameters = ['foo', 'bar'];
+  
+  const result = utils.callNestedProperty(path, object, parameters, object);
+
+  t.true(object.path.calledOnce);
+  t.true(object.path.calledWith(...parameters));
+
+  t.is(result, object);
+});
+
+test('if callNestedProperty will return undefined when the object does exist', (t) => {
+  const object = null;
+  const path = 'nope';
+  const parameters = ['foo', 'bar'];
+  
+  const result = utils.callNestedProperty(path, object, parameters, object);
+
+  t.is(result, undefined);
+});
+
+test('if callNestedProperty will return undefined when the object does not have the property', (t) => {
+  const object = {
+    path: sinon.stub().returnsThis()
+  };
+  const path = 'nope';
+  const parameters = ['foo', 'bar'];
+  
+  const result = utils.callNestedProperty(path, object, parameters, object);
+
+  t.true(object.path.notCalled);
+
+  t.is(result, undefined);
+});
+
 test('if getNestedProperty will get the nested value in the object', (t) => {
   const object = {
     deeply: {
@@ -281,7 +360,7 @@ test('if getNestedProperty will get the nested value in the object', (t) => {
   t.is(result, object.deeply.nested);
 });
 
-test('if getNestedProperty will return the top-level value when the length ofthe path is 1', (t) => {
+test('if getNestedProperty will return the top-level value when the length of the path is 1', (t) => {
   const path = 'path';
   const object = {
     [path]: 'value'
@@ -554,46 +633,46 @@ test('if isCloneable returns true otherwise', (t) => {
   t.true(utils.isCloneable(object));
 });
 
-test('if isEmptyKey will return true when undefined', (t) => {
+test('if isEmptyPath will return true when undefined', (t) => {
   const object = undefined;
 
-  t.true(utils.isEmptyKey(object));
+  t.true(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will return true when null', (t) => {
+test('if isEmptyPath will return true when null', (t) => {
   const object = null;
 
-  t.true(utils.isEmptyKey(object));
+  t.true(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will return false when an empty string', (t) => {
+test('if isEmptyPath will return false when an empty string', (t) => {
   const object = '';
 
-  t.false(utils.isEmptyKey(object));
+  t.false(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will true false when an empty array', (t) => {
+test('if isEmptyPath will true false when an empty array', (t) => {
   const object = [];
 
-  t.true(utils.isEmptyKey(object));
+  t.true(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will return false when a populated string', (t) => {
+test('if isEmptyPath will return false when a populated string', (t) => {
   const object = 'populated';
 
-  t.false(utils.isEmptyKey(object));
+  t.false(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will return false when a populated array', (t) => {
+test('if isEmptyPath will return false when a populated array', (t) => {
   const object = ['populated'];
 
-  t.false(utils.isEmptyKey(object));
+  t.false(utils.isEmptyPath(object));
 });
 
-test('if isEmptyKey will return false when a number', (t) => {
+test('if isEmptyPath will return false when a number', (t) => {
   const object = 0;
 
-  t.false(utils.isEmptyKey(object));
+  t.false(utils.isEmptyPath(object));
 });
 
 test('if isGlobalConstructor returns false if the fn passed is not a function', (t) => {

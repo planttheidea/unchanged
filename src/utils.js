@@ -1,6 +1,12 @@
 // external dependencies
 import {parse} from 'pathington';
 
+const O = Object;
+const assign = O.assign;
+const create = O.create;
+const getPrototypeOf = O.getPrototypeOf;
+const keys = O.keys;
+
 /**
  * @constant {Symbol} REACT_ELEMENT
  */
@@ -42,9 +48,23 @@ export const isCloneable = (object) =>
  */
 export const isGlobalConstructor = (fn) =>
   typeof fn === 'function' &&
-  (typeof window !== 'undefined' ? window : global)[
+  global[
     fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]
   ] === fn;
+
+/**
+ * @function callIfFunction
+ *
+ * @description
+ * call the object passed if it is a function and return its return, else return undefined
+ *
+ * @param {*} object the object to conditionally call if a function
+ * @param {*} context the context to apply to the call
+ * @param {Array<*>} parameters the parametesr to apply the function with
+ * @returns {*} the restulf of the call or undefined
+ */
+export const callIfFunction = (object, context, parameters) =>
+  typeof object === 'function' ? object.apply(context, parameters) : void 0;
 
 /**
  * @function getShallowClone
@@ -57,21 +77,27 @@ export const isGlobalConstructor = (fn) =>
  * @returns {Array<*>|Object} a shallow clone of the value
  */
 export const getShallowClone = (object) => {
-  if (isArray(object)) {
-    return object.slice();
+  if (object.constructor === O) {
+    return assign({}, object);
   }
 
-  if (object.constructor === Object) {
-    return Object.assign({}, object);
+  if (isArray(object)) {
+    const newObject = new object.constructor();
+
+    for (let index = 0; index < object.length; index++) {
+      newObject.push(object[index]);
+    }
+
+    return newObject;
   }
 
   return isGlobalConstructor(object.constructor)
     ? {}
-    : Object.keys(object).reduce((clone, key) => {
+    : keys(object).reduce((clone, key) => {
       clone[key] = object[key];
 
       return clone;
-    }, Object.create(Object.getPrototypeOf(object)));
+    }, create(getPrototypeOf(object)));
 };
 
 /**
@@ -195,13 +221,13 @@ export const getDeeplyMergedObject = (object1, object2) => {
     return object1.concat(object2.map(cloneIfPossible));
   }
 
-  const target = Object.keys(object1).reduce((clone, key) => {
+  const target = keys(object1).reduce((clone, key) => {
     clone[key] = cloneIfPossible(object1[key]);
 
     return clone;
-  }, object1.constructor === Object ? {} : Object.create(Object.getPrototypeOf(object1)));
+  }, object1.constructor === O ? {} : create(getPrototypeOf(object1)));
 
-  return Object.keys(object2).reduce((clone, key) => {
+  return keys(object2).reduce((clone, key) => {
     clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
 
     return clone;
@@ -220,6 +246,28 @@ export const getDeeplyMergedObject = (object1, object2) => {
 export const getParsedPath = (path) => (isArray(path) ? path : parse(path));
 
 /**
+ * @function callNestedProperty
+ *
+ * @description
+ * parse the path passed and call the nested method at that path
+ *
+ * @param {Array<number|string>|number|string} path the path to retrieve values from the object
+ * @param {*} context the context that the method is called with
+ * @param {Array<*>} parameters the parameters to call the method with
+ * @param {*} object the object to get values from
+ * @returns {*} the retrieved values
+ */
+export const callNestedProperty = (path, context, parameters, object) => {
+  const parsedPath = getParsedPath(path);
+
+  return parsedPath.length === 1
+    ? object
+      ? callIfFunction(object[parsedPath[0]], context, parameters)
+      : void 0
+    : onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
+};
+
+/**
  * @function getNestedProperty
  *
  * @description
@@ -234,7 +282,9 @@ export const getNestedProperty = (path, object, noMatchValue) => {
   const parsedPath = getParsedPath(path);
 
   return parsedPath.length === 1
-    ? object ? getCoalescedValue(object[parsedPath[0]], noMatchValue) : noMatchValue
+    ? object
+      ? getCoalescedValue(object[parsedPath[0]], noMatchValue)
+      : noMatchValue
     : onMatchAtPath(parsedPath, object, (ref, key) => getCoalescedValue(ref[key], noMatchValue), false, noMatchValue);
 };
 
@@ -274,8 +324,9 @@ export const getDeepClone = (path, object, onMatch) => {
  */
 export const hasNestedProperty = (path, object) => getNestedProperty(path, object) !== void 0;
 
+/* eslint-disable eqeqeq */
 /**
- * @function isEmptyKey
+ * @function isEmptyPath
  *
  * @description
  * is the object passed an empty key value
@@ -283,7 +334,8 @@ export const hasNestedProperty = (path, object) => getNestedProperty(path, objec
  * @param {*} object the object to test
  * @returns {boolean} is the object an empty key value
  */
-export const isEmptyKey = (object) => object === void 0 || object === null || (isArray(object) && !object.length);
+export const isEmptyPath = (object) => object == null || (isArray(object) && !object.length);
+/* eslint-enable */
 
 /**
  * @function splice

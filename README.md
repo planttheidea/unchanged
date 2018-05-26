@@ -14,6 +14,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
   * [remove](#remove)
   * [add](#add)
   * [merge](#merge)
+  * [call](#call)
 * [Additional objects](#additional-objects)
   * [\_\_](#__)
 * [Differences from other libraries](#differences-from-other-libraries)
@@ -60,7 +61,7 @@ import * as uc from "unchanged";
 
 `get(path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
 
-Getter function for properties on the `object` passed.
+Get the value at the `path` requested on the `object` passed.
 
 ```javascript
 const object = {
@@ -79,7 +80,7 @@ console.log(get(["foo", 0, "bar"], object)); // baz
 
 `getOr(fallbackValue: any, path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
 
-Getter function for properties on the `object` passed, with a fallback value if that path does not exist.
+Get the value at the `path` requested on the `object` passed, with a fallback value if that path does not exist.
 
 ```javascript
 const object = {
@@ -206,6 +207,47 @@ const object2 = {
 
 console.log(merge(null, object2, object1)); // {one: 'new value', oneSpecific: 'value', object: {one: 'value1', two: 'value1'}, three: 'value3'}
 ```
+
+#### call
+
+`call(path: (Array<number|string>|number|string), parameters: Array<any>, object: (Array<any>|Object)[, context: any])`
+
+Call the method at the `path` requested on the `object` passed, and return what it's call returns.
+
+```javascript
+const object = {
+  foo: [
+    {
+      bar(a, b) {
+        return a + b;
+      }
+    }
+  ]
+};
+
+console.log(call("foo[0].bar", [1, 2], object)); // 3
+console.log(call(["foo", 0, "bar"], [1, 2], object)); // 3
+```
+
+You can also provide an optional fourth parameter of `context`, which will be the `this` value in the method call. This will default to the `object` itself.
+
+```javascript
+const object = {
+  calculate: true,
+  foo: [
+    {
+      bar(a, b) {
+        return this.calculate ? a + b : 0;
+      }
+    }
+  ]
+};
+
+console.log(call("foo[0].bar", [1, 2], object)); // 3
+console.log(call("foo[0].bar", [1, 2], object, {})); // 0
+```
+
+**NOTE**: Because `context` is an optional parameter, it cannot be independently curried; you must apply it in the call when the `object` is passed.
 
 ## Additional objects
 
