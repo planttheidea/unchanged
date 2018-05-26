@@ -5,6 +5,8 @@
 .idea
 .npmignore
 .nyc_output
+benchmarks
+benchmark_results.csv
 coverage
 DEV_ONLY
 node_modules
