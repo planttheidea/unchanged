@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.3.0
+
+* Add [`call`](README.md#call) function
+
 ## 1.2.1
 
 * Simplify code for `has`

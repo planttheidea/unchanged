@@ -1,5 +1,6 @@
 // test
 import test from 'ava';
+import sinon from 'sinon';
 
 // src
 import * as index from 'src/index';
@@ -200,6 +201,71 @@ test('if add will handle a ridiculous entry', (t) => {
       }
     ]
   });
+});
+
+// --- call -- //
+
+test('if call will call the top-level method from the object', (t) => {
+  const object = {
+    topLevel: sinon.stub().returnsThis()
+  };
+  const parameters = ['foo', 'bar'];
+  const path = 'topLevel';
+
+  const result = index.call(path, parameters, object);
+
+  t.true(object.topLevel.calledOnce);
+  t.true(object.topLevel.calledWith(...parameters));
+
+  t.is(result, object);
+});
+
+test('if call will call the deeply-nested method from the object', (t) => {
+  const object = {
+    deeply: {
+      nested: {
+        method: sinon.stub().returnsThis()
+      }
+    }
+  };
+  const parameters = ['foo', 'bar'];
+  const path = 'deeply.nested.method';
+
+  const result = index.call(path, parameters, object);
+
+  t.true(object.deeply.nested.method.calledOnce);
+  t.true(object.deeply.nested.method.calledWith(...parameters));
+
+  t.is(result, object);
+});
+
+test('if call will call the method from the object with a custom context', (t) => {
+  const object = {
+    topLevel: sinon.stub().returnsThis()
+  };
+  const parameters = ['foo', 'bar'];
+  const path = 'topLevel';
+  const context = {};
+
+  const result = index.call(path, parameters, object, context);
+
+  t.true(object.topLevel.calledOnce);
+  t.true(object.topLevel.calledWith(...parameters));
+
+  t.is(result, context);
+});
+
+test('if call will call the object itself if the key is empty', (t) => {
+  const object = sinon.stub().returnsThis();
+  const parameters = ['foo', 'bar'];
+  const path = null;
+
+  const result = index.call(path, parameters, object);
+
+  t.true(object.calledOnce);
+  t.true(object.calledWith(...parameters));
+
+  t.is(result, object);
 });
 
 // --- get --- //

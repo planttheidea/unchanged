@@ -3,6 +3,8 @@ import {__, curry} from 'curriable';
 
 // utils
 import {
+  callIfFunction,
+  callNestedProperty,
   getDeepClone,
   getDeeplyMergedObject,
   getNestedProperty,
@@ -10,11 +12,30 @@ import {
   hasNestedProperty,
   isArray,
   isCloneable,
-  isEmptyKey,
+  isEmptyPath,
   splice
 } from './utils';
 
 export {__};
+
+/**
+ * @function call
+ *
+ * @description
+ * call a nested method at the path requested with the parameters provided
+ *
+ * @param {Array<number|string>|null|number|string} path the path to get the value at
+ * @param {Array<*>} parameters the parameters to call the method with
+ * @param {Array<*>|Object} object the object to call the method from
+ * @param {*} context the context to set as "this" in the function call
+ */
+export const call = curry(
+  (path, parameters, object, context = object) =>
+    isEmptyPath(path)
+      ? callIfFunction(object, context, parameters)
+      : callNestedProperty(path, context, parameters, object),
+  3
+);
 
 /**
  * @function get
@@ -26,7 +47,7 @@ export {__};
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const get = curry((path, object) => (isEmptyKey(path) ? object : getNestedProperty(path, object)));
+export const get = curry((path, object) => (isEmptyPath(path) ? object : getNestedProperty(path, object)));
 
 /**
  * @function getOr
@@ -41,7 +62,7 @@ export const get = curry((path, object) => (isEmptyKey(path) ? object : getNeste
  * @returns {*} the value requested
  */
 export const getOr = curry(
-  (noMatchValue, path, object) => (isEmptyKey(path) ? object : getNestedProperty(path, object, noMatchValue))
+  (noMatchValue, path, object) => (isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue))
 );
 
 /**
@@ -55,7 +76,7 @@ export const getOr = curry(
  * @returns {boolean} does the path exist
  */
 /* eslint-disable eqeqeq */
-export const has = curry((path, object) => (isEmptyKey(path) ? object != null : hasNestedProperty(path, object)));
+export const has = curry((path, object) => (isEmptyPath(path) ? object != null : hasNestedProperty(path, object)));
 /* eslint-enable */
 
 /**
@@ -74,7 +95,7 @@ export const merge = curry((path, objectToMerge, object) => {
     return objectToMerge;
   }
 
-  return isEmptyKey(path)
+  return isEmptyPath(path)
     ? getDeeplyMergedObject(object, objectToMerge)
     : getDeepClone(path, object, (ref, key) => {
       ref[key] = getDeeplyMergedObject(ref[key], objectToMerge);
@@ -92,7 +113,7 @@ export const merge = curry((path, objectToMerge, object) => {
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
 export const remove = curry((path, object) => {
-  if (isEmptyKey(path)) {
+  if (isEmptyPath(path)) {
     return getNewEmptyObject(object);
   }
 
@@ -120,7 +141,7 @@ export const remove = curry((path, object) => {
  */
 export const set = curry(
   (path, value, object) =>
-    isEmptyKey(path)
+    isEmptyPath(path)
       ? value
       : getDeepClone(path, object, (ref, key) => {
         ref[key] = value;
@@ -141,7 +162,9 @@ export const set = curry(
 export const add = curry((path, value, object) => {
   const nestedValue = get(path, object);
   const fullPath = isArray(nestedValue)
-    ? isArray(path) ? path.concat([nestedValue.length]) : `${isEmptyKey(path) ? '' : path}[${nestedValue.length}]`
+    ? isArray(path)
+      ? path.concat([nestedValue.length])
+      : `${isEmptyPath(path) ? '' : path}[${nestedValue.length}]`
     : path;
 
   return set(fullPath, value, object);
