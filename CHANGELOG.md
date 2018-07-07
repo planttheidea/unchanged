@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.3.2
+
+- Use direct assignment instead of `.push()` when cloning arrays, to prevent breakage when the array has a custom `push` method
+
 ## 1.3.1
 
 * Remove benchmark files from published package
