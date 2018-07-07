@@ -1,5 +1,8 @@
 // external dependencies
-import {__, curry} from 'curriable';
+import {
+  __,
+  curry
+} from 'curriable';
 
 // utils
 import {
@@ -34,6 +37,7 @@ export const call = curry(
     isEmptyPath(path)
       ? callIfFunction(object, context, parameters)
       : callNestedProperty(path, context, parameters, object),
+  // eslint-disable-next-line no-magic-numbers
   3
 );
 

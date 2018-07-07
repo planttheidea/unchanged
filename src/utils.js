@@ -2,14 +2,12 @@
 import {parse} from 'pathington';
 
 const O = Object;
-const assign = O.assign;
-const create = O.create;
-const getPrototypeOf = O.getPrototypeOf;
-const keys = O.keys;
+const {assign, create, getPrototypeOf, keys} = O;
 
 /**
  * @constant {Symbol} REACT_ELEMENT
  */
+// eslint-disable-next-line no-magic-numbers
 const REACT_ELEMENT = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
 
 /**
@@ -20,7 +18,7 @@ const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
 /**
  * @function isArray
  */
-export const isArray = Array.isArray;
+export const {isArray} = Array;
 
 /**
  * @function isCloneable
@@ -32,10 +30,10 @@ export const isArray = Array.isArray;
  * @returns {boolean} can the object be merged
  */
 export const isCloneable = (object) =>
-  !!object &&
-  typeof object === 'object' &&
-  !(object instanceof Date || object instanceof RegExp) &&
-  object.$$typeof !== REACT_ELEMENT;
+  !!object
+  && typeof object === 'object'
+  && !(object instanceof Date || object instanceof RegExp)
+  && object.$$typeof !== REACT_ELEMENT;
 
 /**
  * @function isGlobalConstructor
@@ -47,10 +45,7 @@ export const isCloneable = (object) =>
  * @returns {boolean} is the function a global constructor
  */
 export const isGlobalConstructor = (fn) =>
-  typeof fn === 'function' &&
-  global[
-    fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]
-  ] === fn;
+  typeof fn === 'function' && global[fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]] === fn;
 
 /**
  * @function callIfFunction
@@ -85,7 +80,7 @@ export const getShallowClone = (object) => {
     const newObject = new object.constructor();
 
     for (let index = 0; index < object.length; index++) {
-      newObject.push(object[index]);
+      newObject[index] = object[index];
     }
 
     return newObject;
@@ -348,8 +343,9 @@ export const isEmptyPath = (object) => object == null || (isArray(object) && !ob
  */
 export const splice = (array, splicedIndex) => {
   if (array.length) {
-    let length = array.length,
-        index = splicedIndex;
+    const {length} = array;
+
+    let index = splicedIndex;
 
     while (index < length) {
       array[index] = array[index + 1];

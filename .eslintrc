@@ -1,5 +1,5 @@
 {
-  "extends": "rapid7/browser",
+  "extends": ["rapid7/browser", "rapid7/strict"],
   "globals": {
     "__dirname": true,
     "global": true,
@@ -8,11 +8,8 @@
     "require": true
   },
   "parser": "babel-eslint",
-  "parserOptions": {
-    "ecmaVersion": 2017,
-    "sourceType": "module"
-  },
   "rules": {
-    "arrow-body-style": [2, "as-needed"]
+    "max-depth": [2, 2],
+    "no-param-reassign": 0
   }
 }
