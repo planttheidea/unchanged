@@ -1,3 +1,5 @@
+/* eslint-disable no-magic-numbers */
+
 // test
 import test from 'ava';
 import * as pathington from 'pathington';
@@ -5,6 +7,40 @@ import sinon from 'sinon';
 
 // src
 import * as utils from 'src/utils';
+
+test('if reduce will reduce the array to a single value', (t) => {
+  const array = [1, 2, 3, 4, 5, 6, 7, 8];
+  const fn = (sum, value) => sum + value;
+  const initialValue = 0;
+
+  const result = utils.reduce(array, fn, initialValue);
+  const expectedResult = array.reduce(fn, initialValue);
+
+  t.is(result, expectedResult);
+});
+
+test('if assignFallback will shallowly merge the objects like native assign', (t) => {
+  const objects = [
+    {},
+    {foo: 'bar'},
+    (() => {
+      const obj = Object.create({
+        bar() {
+          return 'baz';
+        },
+      });
+
+      obj.baz = 'quz';
+
+      return obj;
+    })(),
+  ];
+
+  const result = utils.assignFallback(...objects);
+  const expectedResult = Object.assign(...objects);
+
+  t.deepEqual(result, expectedResult);
+});
 
 test('if callIfFunction will call the object if it is a function', (t) => {
   const object = sinon.stub().returnsThis();
@@ -31,7 +67,7 @@ test('if callIfFunction will not call the object if it is not a function', (t) =
 
 test('if cloneIfPossible will shallowly clone the object if it is cloneable', (t) => {
   const object = {
-    key: 'value'
+    key: 'value',
   };
 
   const result = utils.cloneIfPossible(object);
@@ -184,7 +220,7 @@ test('if getNewChildClone will get a new array when the object doe not exist and
 test('if onMatchAtPath calls onMatch and returns its result if the object exists and returns the result', (t) => {
   const path = ['key'];
   const object = {
-    [path[0]]: 'value'
+    [path[0]]: 'value',
   };
   const onMatch = sinon.stub().returnsArg(1);
   const shouldClone = false;
@@ -201,7 +237,7 @@ test('if onMatchAtPath calls onMatch and returns its result if the object exists
 test('if onMatchAtPath calls onMatch and returns the original object if the object exists and returns the object if it should be cloned', (t) => {
   const path = ['key'];
   const object = {
-    [path[0]]: 'value'
+    [path[0]]: 'value',
   };
   const onMatch = sinon.stub().returnsArg(1);
   const shouldClone = true;
@@ -233,8 +269,8 @@ test('if onMatchAtPath calls itself if the path has more than one value and the 
   const path = ['key', 'otherKey'];
   const object = {
     [path[0]]: {
-      [path[1]]: 'value'
-    }
+      [path[1]]: 'value',
+    },
   };
   const onMatch = sinon.stub().returnsArg(1);
   const shouldClone = false;
@@ -294,12 +330,12 @@ test('if onMatchAtPath calls itself with a new clone if the path has more than o
 test('if callNestedProperty will call the nested method in the object', (t) => {
   const object = {
     deeply: {
-      nested: sinon.stub().returnsThis()
-    }
+      nested: sinon.stub().returnsThis(),
+    },
   };
   const path = 'deeply.nested';
   const parameters = ['foo', 'bar'];
-  
+
   const result = utils.callNestedProperty(path, object, parameters, object);
 
   t.true(object.deeply.nested.calledOnce);
@@ -310,11 +346,11 @@ test('if callNestedProperty will call the nested method in the object', (t) => {
 
 test('if callNestedProperty will call the top-level value when the length of the path is 1', (t) => {
   const object = {
-    path: sinon.stub().returnsThis()
+    path: sinon.stub().returnsThis(),
   };
   const path = 'path';
   const parameters = ['foo', 'bar'];
-  
+
   const result = utils.callNestedProperty(path, object, parameters, object);
 
   t.true(object.path.calledOnce);
@@ -327,7 +363,7 @@ test('if callNestedProperty will return undefined when the object does exist', (
   const object = null;
   const path = 'nope';
   const parameters = ['foo', 'bar'];
-  
+
   const result = utils.callNestedProperty(path, object, parameters, object);
 
   t.is(result, undefined);
@@ -335,11 +371,11 @@ test('if callNestedProperty will return undefined when the object does exist', (
 
 test('if callNestedProperty will return undefined when the object does not have the property', (t) => {
   const object = {
-    path: sinon.stub().returnsThis()
+    path: sinon.stub().returnsThis(),
   };
   const path = 'nope';
   const parameters = ['foo', 'bar'];
-  
+
   const result = utils.callNestedProperty(path, object, parameters, object);
 
   t.true(object.path.notCalled);
@@ -350,8 +386,8 @@ test('if callNestedProperty will return undefined when the object does not have 
 test('if getNestedProperty will get the nested value in the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
   const path = 'deeply.nested';
 
@@ -363,7 +399,7 @@ test('if getNestedProperty will get the nested value in the object', (t) => {
 test('if getNestedProperty will return the top-level value when the length of the path is 1', (t) => {
   const path = 'path';
   const object = {
-    [path]: 'value'
+    [path]: 'value',
   };
 
   const result = utils.getNestedProperty(path, object);
@@ -393,8 +429,8 @@ test('if getNestedProperty with a fallback will return the fallback when the obj
 test('if getNestedProperty with a fallback will return the fallback when the deeply nested value does not exist', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
   const path = 'deeply.nonexistent';
   const fallback = 'fallback';
@@ -409,8 +445,8 @@ test('if getDeepClone will create a deep clone on the object at the path specifi
 
   const object = {
     untouched: {
-      existing: 'values'
-    }
+      existing: 'values',
+    },
   };
   const path = 'deeply[0].nested';
   const callback = (ref, key) => {
@@ -426,9 +462,9 @@ test('if getDeepClone will create a deep clone on the object at the path specifi
     ...object,
     deeply: [
       {
-        nested: value
-      }
-    ]
+        nested: value,
+      },
+    ],
   });
 });
 
@@ -449,9 +485,9 @@ test('if getDeepClone will create a deep clone on a new object if it does not ex
   t.deepEqual(result, {
     deeply: [
       {
-        nested: value
-      }
-    ]
+        nested: value,
+      },
+    ],
   });
 });
 
@@ -480,8 +516,15 @@ test('if getDeeplyMergedObject will merge the arrays if the objects are both arr
 });
 
 test('if getDeeplyMergedObject will merge the objects if the objects are both object types', (t) => {
-  const object1 = {date: {willBe: 'overwritten'}, deep: {key: 'value'}};
-  const object2 = {date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'};
+  const object1 = {
+    date: {willBe: 'overwritten'},
+    deep: {key: 'value'},
+  };
+  const object2 = {
+    date: new Date(),
+    deep: {otherKey: 'otherValue'},
+    untouched: 'value',
+  };
 
   const result = utils.getDeeplyMergedObject(object1, object2);
 
@@ -492,9 +535,9 @@ test('if getDeeplyMergedObject will merge the objects if the objects are both ob
     date: object2.date,
     deep: {
       ...object1.deep,
-      ...object2.deep
+      ...object2.deep,
     },
-    untouched: object2.untouched
+    untouched: object2.untouched,
   });
 });
 
@@ -509,7 +552,7 @@ test('if getDeeplyMergedObject will merge the objects retaining the prototype', 
             reduced[key].value = deepValue;
           } else {
             reduced[key] = {
-              value: deepValue
+              value: deepValue,
             };
           }
 
@@ -523,8 +566,15 @@ test('if getDeeplyMergedObject will merge the objects retaining the prototype', 
     }
   }
 
-  const object1 = {date: {willBe: 'overwritten'}, deep: {key: 'value'}};
-  const object2 = {date: new Date(), deep: {otherKey: 'otherValue'}, untouched: 'value'};
+  const object1 = {
+    date: {willBe: 'overwritten'},
+    deep: {key: 'value'},
+  };
+  const object2 = {
+    date: new Date(),
+    deep: {otherKey: 'otherValue'},
+    untouched: 'value',
+  };
 
   const result = utils.getDeeplyMergedObject(new Foo(object1), new Foo(object2));
 
@@ -537,9 +587,9 @@ test('if getDeeplyMergedObject will merge the objects retaining the prototype', 
       date: object2.date,
       deep: {
         ...object1.deep,
-        ...object2.deep
+        ...object2.deep,
       },
-      untouched: object2.untouched
+      untouched: object2.untouched,
     })
   );
 });
@@ -548,9 +598,9 @@ test('if hasNestedProperty will return true if the nested property exists on the
   const object = {
     deeply: [
       {
-        nested: 'value'
-      }
-    ]
+        nested: 'value',
+      },
+    ],
   };
   const path = 'deeply[0].nested';
 
@@ -561,9 +611,9 @@ test('if hasNestedProperty will return false if the nested property does not exi
   const object = {
     deeply: [
       {
-        nested: 'value'
-      }
-    ]
+        nested: 'value',
+      },
+    ],
   };
   const path = 'deeply[1].nested';
 
@@ -580,7 +630,7 @@ test('if hasNestedProperty will return false if the object does not exist', (t) 
 test('if hasNestedProperty will return the top-level value when the length ofthe path is 1', (t) => {
   const path = 'path';
   const object = {
-    [path]: 'value'
+    [path]: 'value',
   };
 
   t.true(utils.hasNestedProperty(path, object));
@@ -619,7 +669,7 @@ test('if isCloneable returns false if a regexp', (t) => {
 
 test('if isCloneable returns false if a react element', (t) => {
   const object = {
-    $$typeof: Symbol.for('react.element')
+    $$typeof: Symbol.for('react.element'),
   };
 
   t.false(utils.isCloneable(object));
@@ -627,7 +677,7 @@ test('if isCloneable returns false if a react element', (t) => {
 
 test('if isCloneable returns true otherwise', (t) => {
   const object = {
-    valid: true
+    valid: true,
   };
 
   t.true(utils.isCloneable(object));
@@ -695,7 +745,7 @@ test.serial(
     const currentWindow = global.window;
 
     global.window = {
-      RegExp
+      RegExp,
     };
 
     const trueFn = RegExp;
@@ -759,8 +809,9 @@ test('if getParsedPath will parse the path with pathington if not an array', (t)
 test('if splice performs the same operation as the native splice', (t) => {
   const indexToSpice = 1;
 
-  let nativeArray = ['foo', 'bar'],
-      customArray = [...nativeArray];
+  let nativeArray = ['foo', 'bar'];
+
+  let customArray = [...nativeArray];
 
   nativeArray.splice(indexToSpice, 1);
   utils.splice(customArray, indexToSpice);

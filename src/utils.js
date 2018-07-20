@@ -2,7 +2,8 @@
 import {parse} from 'pathington';
 
 const O = Object;
-const {assign, create, getPrototypeOf, keys} = O;
+const {assign: nativeAssign, create, getPrototypeOf, keys} = O;
+const {hasOwnProperty} = O.prototype;
 
 /**
  * @constant {Symbol} REACT_ELEMENT
@@ -14,6 +15,54 @@ const REACT_ELEMENT = typeof Symbol === 'function' && Symbol.for ? Symbol.for('r
  * @constant {RegExp} FUNCTION_NAME
  */
 const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
+
+/**
+ * @function reduce
+ *
+ * @description
+ * a slimmer, simpler reduce than native (for performance)
+ *
+ * @param {Array<any>} array the array to reduce
+ * @param {function} fn the function to reduce each iteration of the array with
+ * @param {any} initialValue the initial value of the reduction
+ * @returns {any} the reduced array value
+ */
+export const reduce = (array, fn, initialValue) => {
+  let value = initialValue;
+
+  for (let index = 0; index < array.length; index++) {
+    value = fn(value, array[index]);
+  }
+
+  return value;
+};
+
+/**
+ * @function assignFallback
+ *
+ * @description
+ * a slimmer fill for Object.assign when not natively supported
+ *
+ * @param {Object} target the target object
+ * @param {Array<Object>} sources the objects to merge into target
+ * @returns {Object} the shallowly-merged object
+ */
+export const assignFallback = (target, ...sources) =>
+  reduce(
+    sources,
+    (assigned, object) => {
+      for (let key in object) {
+        if (hasOwnProperty.call(object, key)) {
+          assigned[key] = object[key];
+        }
+      }
+
+      return assigned;
+    },
+    target
+  );
+
+const assign = nativeAssign || assignFallback;
 
 /**
  * @function isArray
@@ -88,11 +137,15 @@ export const getShallowClone = (object) => {
 
   return isGlobalConstructor(object.constructor)
     ? {}
-    : keys(object).reduce((clone, key) => {
-      clone[key] = object[key];
+    : reduce(
+      keys(object),
+      (clone, key) => {
+        clone[key] = object[key];
 
-      return clone;
-    }, create(getPrototypeOf(object)));
+        return clone;
+      },
+      create(getPrototypeOf(object))
+    );
 };
 
 /**
@@ -216,17 +269,25 @@ export const getDeeplyMergedObject = (object1, object2) => {
     return object1.concat(object2.map(cloneIfPossible));
   }
 
-  const target = keys(object1).reduce((clone, key) => {
-    clone[key] = cloneIfPossible(object1[key]);
+  const target = reduce(
+    keys(object1),
+    (clone, key) => {
+      clone[key] = cloneIfPossible(object1[key]);
 
-    return clone;
-  }, object1.constructor === O ? {} : create(getPrototypeOf(object1)));
+      return clone;
+    },
+    object1.constructor === O ? {} : create(getPrototypeOf(object1))
+  );
 
-  return keys(object2).reduce((clone, key) => {
-    clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+  return reduce(
+    keys(object2),
+    (clone, key) => {
+      clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
 
-    return clone;
-  }, target);
+      return clone;
+    },
+    target
+  );
 };
 
 /**
