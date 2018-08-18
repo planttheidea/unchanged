@@ -1,3 +1,5 @@
+/* eslint-disable no-magic-numbers */
+
 // test
 import test from 'ava';
 import sinon from 'sinon';
@@ -15,13 +17,13 @@ test('if add will add the top-level value to the object', (t) => {
   t.not(result, object);
   t.deepEqual(result, {
     ...object,
-    key: 'value'
+    key: 'value',
   });
 });
 
 test('if add will add the top-level value to the nested array', (t) => {
   const object = {
-    nested: ['top', 'level']
+    nested: ['top', 'level'],
   };
 
   const result = index.add('nested', 'value', object);
@@ -29,15 +31,15 @@ test('if add will add the top-level value to the nested array', (t) => {
   t.not(result, object);
   t.deepEqual(result, {
     ...object,
-    nested: [...object.nested, 'value']
+    nested: [...object.nested, 'value'],
   });
 });
 
 test('if add will add the deeply-nested value to the object when the key is a string', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.add('some.other', 'value', object);
@@ -46,16 +48,16 @@ test('if add will add the deeply-nested value to the object when the key is a st
   t.deepEqual(result, {
     ...object,
     some: {
-      other: 'value'
-    }
+      other: 'value',
+    },
   });
 });
 
 test('if add will add the deeply-nested value to the object when the key is an array', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.add(['some', 'other'], 'value', object);
@@ -64,8 +66,8 @@ test('if add will add the deeply-nested value to the object when the key is an a
   t.deepEqual(result, {
     ...object,
     some: {
-      other: 'value'
-    }
+      other: 'value',
+    },
   });
 });
 
@@ -74,10 +76,10 @@ test('if add will add the deeply-nested value to the array when the key is a str
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.add('[0].some[0].other', 'value', object);
@@ -88,10 +90,10 @@ test('if add will add the deeply-nested value to the array when the key is a str
       ...object[0],
       some: [
         {
-          other: 'value'
-        }
-      ]
-    }
+          other: 'value',
+        },
+      ],
+    },
   ]);
 });
 
@@ -100,10 +102,10 @@ test('if add will add the deeply-nested value to the array when the key is an ar
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.add([0, 'some', 0, 'other'], 'value', object);
@@ -114,10 +116,10 @@ test('if add will add the deeply-nested value to the array when the key is an ar
       ...object[0],
       some: [
         {
-          other: 'value'
-        }
-      ]
-    }
+          other: 'value',
+        },
+      ],
+    },
   ]);
 });
 
@@ -126,10 +128,10 @@ test('if add will append the deeply-nested value to the array when the key is a 
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.add('[0]deeply', 'value', object);
@@ -137,8 +139,8 @@ test('if add will append the deeply-nested value to the array when the key is a 
   t.not(result, object);
   t.deepEqual(result, [
     {
-      deeply: [object[0].deeply[0], 'value']
-    }
+      deeply: [object[0].deeply[0], 'value'],
+    },
   ]);
 });
 
@@ -147,10 +149,10 @@ test('if add will append the deeply-nested value to the array when the key is an
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.add([0, 'deeply'], 'value', object);
@@ -158,8 +160,8 @@ test('if add will append the deeply-nested value to the array when the key is an
   t.not(result, object);
   t.deepEqual(result, [
     {
-      deeply: [object[0].deeply[0], 'value']
-    }
+      deeply: [object[0].deeply[0], 'value'],
+    },
   ]);
 });
 
@@ -195,11 +197,11 @@ test('if add will handle a ridiculous entry', (t) => {
       {
         deeply: [
           {
-            'nested key': value
-          }
-        ]
-      }
-    ]
+            'nested key': value,
+          },
+        ],
+      },
+    ],
   });
 });
 
@@ -207,7 +209,7 @@ test('if add will handle a ridiculous entry', (t) => {
 
 test('if call will call the top-level method from the object', (t) => {
   const object = {
-    topLevel: sinon.stub().returnsThis()
+    topLevel: sinon.stub().returnsThis(),
   };
   const parameters = ['foo', 'bar'];
   const path = 'topLevel';
@@ -224,9 +226,9 @@ test('if call will call the deeply-nested method from the object', (t) => {
   const object = {
     deeply: {
       nested: {
-        method: sinon.stub().returnsThis()
-      }
-    }
+        method: sinon.stub().returnsThis(),
+      },
+    },
   };
   const parameters = ['foo', 'bar'];
   const path = 'deeply.nested.method';
@@ -241,7 +243,7 @@ test('if call will call the deeply-nested method from the object', (t) => {
 
 test('if call will call the method from the object with a custom context', (t) => {
   const object = {
-    topLevel: sinon.stub().returnsThis()
+    topLevel: sinon.stub().returnsThis(),
   };
   const parameters = ['foo', 'bar'];
   const path = 'topLevel';
@@ -289,8 +291,8 @@ test('if get will return the top-level value from the array', (t) => {
 test('if get will return the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.get('deeply.nested', object);
@@ -303,10 +305,10 @@ test('if get will return the deeply-nested value from the array', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.get('[0]deeply[0].nested', object);
@@ -317,8 +319,8 @@ test('if get will return the deeply-nested value from the array', (t) => {
 test('if get will return the object itself when the key is empty', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.get(null, object);
@@ -331,10 +333,10 @@ test('if get will return the array itself when the key is empty', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.get(null, object);
@@ -361,8 +363,8 @@ test('if get will return undefined for a non-match on the top-level value from t
 test('if get will return undefined for a non-match on the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.get('deeply.invalid', object);
@@ -375,10 +377,10 @@ test('if get will return undefined for a non-match on the deeply-nested value fr
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.get('[0]deeply[1].invalid', object);
@@ -417,8 +419,8 @@ test('if getOr will return the top-level value from the array', (t) => {
 test('if getOr will return the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
   const fallback = 'fallback';
 
@@ -432,10 +434,10 @@ test('if getOr will return the deeply-nested value from the array', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
   const fallback = 'fallback';
 
@@ -447,8 +449,8 @@ test('if getOr will return the deeply-nested value from the array', (t) => {
 test('if getOr will return the object itself when the key is empty', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
   const fallback = 'fallback';
 
@@ -462,10 +464,10 @@ test('if getOr will return the array itself when the key is empty', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
   const fallback = 'fallback';
 
@@ -495,8 +497,8 @@ test('if getOr will return the fallback for a non-match on the top-level value f
 test('if getOr will return the fallback for a non-match on the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
   const fallback = 'fallback';
 
@@ -510,10 +512,10 @@ test('if getOr will return the fallback for a non-match on the deeply-nested val
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
   const fallback = 'fallback';
 
@@ -550,10 +552,10 @@ test('if has will return true for the deeply-nested value from the object', (t) 
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   t.true(index.has('[0]deeply[0].nested', object));
@@ -562,8 +564,8 @@ test('if has will return true for the deeply-nested value from the object', (t) 
 test('if has will return true for the object itself when the key is empy', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   t.true(index.has(null, object));
@@ -574,10 +576,10 @@ test('if has will return true for the array itself when the key is empy', (t) =>
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   t.true(index.has(null, object));
@@ -598,8 +600,8 @@ test('if has will return false for a non-matching key on the top-level value fro
 test('if has will return false   for a non-matching key on the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   t.false(index.has('deeply.invalid', object));
@@ -610,10 +612,10 @@ test('if has will return false for a non-matching key on the deeply-nested value
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   t.false(index.has('[0]deeply[1].invalid', object));
@@ -630,7 +632,7 @@ test('if has will return false for an empty object the key is empy', (t) => {
 test('if merge will return the object to merge if the object is not cloneable', (t) => {
   const path = null;
   const objectToMerge = {
-    object: 'to merge'
+    object: 'to merge',
   };
   const object = null;
 
@@ -643,10 +645,10 @@ test('if merge will return the object to merge if the object is not cloneable', 
 test('if merge will merge the complete objects if the key is empty', (t) => {
   const path = null;
   const objectToMerge = {
-    object: 'to merge'
+    object: 'to merge',
   };
   const object = {
-    existing: 'object'
+    existing: 'object',
   };
 
   const result = index.merge(path, objectToMerge, object);
@@ -654,7 +656,7 @@ test('if merge will merge the complete objects if the key is empty', (t) => {
   t.not(result, object);
   t.deepEqual(result, {
     ...object,
-    ...objectToMerge
+    ...objectToMerge,
   });
 });
 
@@ -662,11 +664,11 @@ test('if merge will merge the objects at the path specified when the key is not 
   const path = 'path';
   const objectToMerge = {
     object: 'to merge',
-    [path]: 'final value'
+    [path]: 'final value',
   };
   const object = {
     existing: 'object',
-    [path]: 'overwritten value'
+    [path]: 'overwritten value',
   };
 
   const result = index.merge(path, objectToMerge, object);
@@ -675,8 +677,8 @@ test('if merge will merge the objects at the path specified when the key is not 
   t.deepEqual(result, {
     ...object,
     [path]: {
-      ...objectToMerge
-    }
+      ...objectToMerge,
+    },
   });
 });
 
@@ -685,7 +687,7 @@ test('if merge will merge the objects at the path specified when the key is not 
 test('if remove will return an empty version of the object when the key is empty', (t) => {
   const path = null;
   const object = {
-    existing: 'object'
+    existing: 'object',
   };
 
   const result = index.remove(path, object);
@@ -715,15 +717,15 @@ test('if remove will remove the top-level value from the array', (t) => {
 test('if remove will remove the deeply-nested value from the object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.remove('deeply.nested', object);
 
   t.not(result, object);
   t.deepEqual(result, {
-    deeply: {}
+    deeply: {},
   });
 });
 
@@ -732,10 +734,10 @@ test('if remove will remove the deeply-nested value from the array', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.remove('[0].deeply[0].nested', object);
@@ -743,8 +745,8 @@ test('if remove will remove the deeply-nested value from the array', (t) => {
   t.not(result, object);
   t.deepEqual(result, [
     {
-      deeply: [{}]
-    }
+      deeply: [{}],
+    },
   ]);
 });
 
@@ -764,11 +766,11 @@ test('if remove will handle a ridiculous entry', (t) => {
         deeply: [
           [
             {
-              nested: 'value'
-            }
-          ]
-        ]
-      }
+              nested: 'value',
+            },
+          ],
+        ],
+      },
     ],
     something: {
       totally: [
@@ -778,15 +780,15 @@ test('if remove will handle a ridiculous entry', (t) => {
               [
                 {
                   should: {
-                    be: 'untouched'
-                  }
-                }
-              ]
-            ]
-          }
-        }
-      ]
-    }
+                    be: 'untouched',
+                  },
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
   };
   const path = 'some[1].deeply[0][0].nested';
 
@@ -798,9 +800,9 @@ test('if remove will handle a ridiculous entry', (t) => {
     some: [
       undefined,
       {
-        deeply: [[{}]]
-      }
-    ]
+        deeply: [[{}]],
+      },
+    ],
   });
 });
 
@@ -817,7 +819,7 @@ test('if set will set the value on the top-level object', (t) => {
   t.not(result, object);
   t.deepEqual(result, {
     ...object,
-    [path]: value
+    [path]: value,
   });
 });
 
@@ -836,8 +838,8 @@ test('if set will set the value on the top-level array', (t) => {
 test('if set will set the value on the deeply-nested object', (t) => {
   const object = {
     deeply: {
-      nested: 'value'
-    }
+      nested: 'value',
+    },
   };
 
   const result = index.set('deeply.ensconsed', 'otherValue', object);
@@ -847,8 +849,8 @@ test('if set will set the value on the deeply-nested object', (t) => {
     ...object,
     deeply: {
       ...object.deeply,
-      ensconsed: 'otherValue'
-    }
+      ensconsed: 'otherValue',
+    },
   });
 });
 
@@ -857,10 +859,10 @@ test('if set will set the value on the deeply-nested array', (t) => {
     {
       deeply: [
         {
-          nested: 'value'
-        }
-      ]
-    }
+          nested: 'value',
+        },
+      ],
+    },
   ];
 
   const result = index.set('[0].deeply[0].ensconsed', 'otherValue', object);
@@ -872,10 +874,10 @@ test('if set will set the value on the deeply-nested array', (t) => {
       deeply: [
         {
           ...object[0].deeply[0],
-          ensconsed: 'otherValue'
-        }
-      ]
-    }
+          ensconsed: 'otherValue',
+        },
+      ],
+    },
   ]);
 });
 
@@ -887,11 +889,11 @@ test('if set will handle a ridiculous entry', (t) => {
         deeply: [
           [
             {
-              nested: 'value'
-            }
-          ]
-        ]
-      }
+              nested: 'value',
+            },
+          ],
+        ],
+      },
     ],
     something: {
       totally: [
@@ -901,15 +903,15 @@ test('if set will handle a ridiculous entry', (t) => {
               [
                 {
                   should: {
-                    be: 'untouched'
-                  }
-                }
-              ]
-            ]
-          }
-        }
-      ]
-    }
+                    be: 'untouched',
+                  },
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
   };
   const path = 'some[1].deeply[0][0].nested';
   const value = 'new value';
@@ -925,11 +927,272 @@ test('if set will handle a ridiculous entry', (t) => {
         deeply: [
           [
             {
-              nested: value
-            }
-          ]
-        ]
-      }
-    ]
+              nested: value,
+            },
+          ],
+        ],
+      },
+    ],
+  });
+});
+
+// --- transform --- //
+
+test('if transform will set the value on the top-level object', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = {key: 'value'};
+
+  const path = 'otherKey';
+  const value = 'otherValue';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    [path]: value,
+  });
+});
+
+test('if transform will set the value on the top-level array', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = ['top', 'level'];
+
+  const path = 1;
+  const value = 'otherValue';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, object.map((objectValue, index) => (index === path ? value : objectValue)));
+});
+
+test('if transform will set the value on the deeply-nested object', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = {
+    deeply: {
+      nested: 'value',
+    },
+  };
+  const path = 'deeply.ensconsed';
+  const value = 'otherValue';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    deeply: {
+      ...object.deeply,
+      ensconsed: 'otherValue',
+    },
+  });
+});
+
+test('if transform will set the value on the deeply-nested array', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = [
+    {
+      deeply: [
+        {
+          nested: 'value',
+        },
+      ],
+    },
+  ];
+
+  const path = '[0].deeply[0].ensconsed';
+  const value = 'otherValue';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, [
+    {
+      ...object[0],
+      deeply: [
+        {
+          ...object[0].deeply[0],
+          ensconsed: 'otherValue',
+        },
+      ],
+    },
+  ]);
+});
+
+test('if transform will handle a ridiculous entry', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = {
+    some: [
+      undefined,
+      {
+        deeply: [
+          [
+            {
+              nested: 'value',
+            },
+          ],
+        ],
+      },
+    ],
+    something: {
+      totally: [
+        {
+          different: {
+            that: [
+              [
+                {
+                  should: {
+                    be: 'untouched',
+                  },
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    },
+  };
+  const path = 'some[1].deeply[0][0].nested';
+  const value = 'new value';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    some: [
+      undefined,
+      {
+        deeply: [
+          [
+            {
+              nested: value,
+            },
+          ],
+        ],
+      },
+    ],
+  });
+});
+
+test('if transform will handle an empty path', (t) => {
+  const additionalParams = ['foo', {}, ['bar']];
+
+  const object = {key: 'value'};
+
+  const path = null;
+  const value = 'otherValue';
+
+  const fn = (originalValue, ...extraParams) => {
+    t.is(originalValue, index.get(path, object));
+    t.deepEqual(extraParams, additionalParams);
+
+    return value;
+  };
+
+  const result = index.transform(path, fn, object, ...additionalParams);
+
+  t.not(result, object);
+  t.deepEqual(result, value);
+});
+
+test('if transform specifically handles the redux use-case', (t) => {
+  const state = {
+    foo: {
+      error: null,
+      isLoading: true,
+      values: [],
+    },
+  };
+
+  const type = 'ACTION_TYPE';
+
+  const action = {
+    payload: ['some', 'stuff'],
+    type,
+  };
+
+  const otherAction = {
+    payload: {some: 'stuff'},
+    type: 'OTHER_ACTION_TYPE',
+  };
+
+  const transformer = index.transform('foo', (foo, {payload: values}) => ({
+    ...foo,
+    isLoading: false,
+    values,
+  }));
+
+  const reducer = (currentState, dispatchedAction) => {
+    switch (dispatchedAction.type) {
+      case type:
+        return transformer(currentState, dispatchedAction);
+
+      default:
+        return currentState;
+    }
+  };
+
+  const updatedState = reducer(state, action);
+
+  t.not(updatedState, state);
+  t.deepEqual(updatedState, {
+    foo: {
+      error: null,
+      isLoading: false,
+      values: action.payload,
+    },
+  });
+
+  const notUpdatedState = reducer(updatedState, otherAction);
+
+  t.is(notUpdatedState, updatedState);
+  t.deepEqual(notUpdatedState, {
+    foo: {
+      error: null,
+      isLoading: false,
+      values: action.payload,
+    },
   });
 });

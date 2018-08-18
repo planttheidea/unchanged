@@ -6,9 +6,19 @@ console.log(src.add(['d', 'f'], 'df', {d: {f: []}}));
 
 // import '../benchmarks';
 
-const object = {foo: [{bar: {baz: 'quz'}}], bar: 'baz'};
+const object = {
+  bar: 'baz',
+  foo: [{bar: {baz: 'quz'}}],
+};
 
-const result = src.merge(['foo', 0, 'bar'], {baz: 'nope', quz: 'blah'}, object);
+const result = src.merge(
+  ['foo', 0, 'bar'],
+  {
+    baz: 'nope',
+    quz: 'blah',
+  },
+  object
+);
 
 console.log(result, object);
 
@@ -30,7 +40,7 @@ console.log(src.set(0, 'value', foo));
 const simpleObject = {
   foo,
   regexp: /regexp/,
-  simple: 'value'
+  simple: 'value',
 };
 
 const simpleArray = ['simple', 'value'];
@@ -39,21 +49,21 @@ const deepObject = {
   deeply: [
     {
       nested: {
-        'object with quoted keys': 'value'
+        'object with quoted keys': 'value',
       },
-      untouched: true
+      untouched: true,
     },
-    'untouched'
+    'untouched',
   ],
-  untouched: true
+  untouched: true,
 };
 
 const deepArray = {
   deeply: {
     nested: ['array'],
-    untouched: true
+    untouched: true,
   },
-  untouched: true
+  untouched: true,
 };
 
 console.group('legend');
@@ -96,7 +106,7 @@ const simpleCallObject = Object.assign({}, simpleObject, {
     console.log('simple scope', this);
 
     return 'baz';
-  }
+  },
 });
 
 const deepCallObject = Object.assign({}, deepObject, {
@@ -106,9 +116,9 @@ const deepCallObject = Object.assign({}, deepObject, {
         console.log('deep scope', this);
 
         return quz;
-      }
-    ]
-  }
+      },
+    ],
+  },
 });
 
 console.log(src.get('deeply.nested[0]', deepCallObject));
@@ -126,6 +136,24 @@ console.log(
 );
 console.log('deep method not method', src.call('deeply.untouched', [{quz: 'quz'}], deepCallObject));
 console.log('deep method not found', src.call('deeply.nope', [{quz: 'quz'}], deepCallObject));
+
+console.log('window test', src.call(['addEventListener'], ['click', () => console.log('foo')], window));
+
+class Foo {
+  constructor(value) {
+    this.value = value;
+  }
+
+  __getValue() {
+    return this.value;
+  }
+
+  getValue() {
+    return src.call(['__getValue'], [], this);
+  }
+}
+
+console.log('class test', src.call(['getValue'], [], new Foo('bar')));
 
 console.groupEnd('call');
 
@@ -153,7 +181,14 @@ console.groupEnd('has');
 
 console.group('merge');
 
-const simpleMergeObject = src.merge(null, {simple: 'thing', different: 'value'}, simpleObject);
+const simpleMergeObject = src.merge(
+  null,
+  {
+    different: 'value',
+    simple: 'thing',
+  },
+  simpleObject
+);
 
 console.log('simple object', simpleMergeObject, simpleObject, simpleMergeObject === simpleObject);
 
@@ -163,7 +198,10 @@ console.log('simple array', simpleMergeArray, simpleArray, simpleMergeArray === 
 
 const deepMergeObject = src.merge(
   'deeply[0].nested',
-  {'object with quoted keys': 'thing', different: 'value'},
+  {
+    different: 'value',
+    'object with quoted keys': 'thing',
+  },
   deepObject
 );
 
@@ -218,6 +256,64 @@ const deepSetArray = src.set('deeply.nested[0]', 'new value', deepArray);
 console.log('deep array', deepSetArray, deepArray, deepSetArray === deepArray);
 
 console.groupEnd('set');
+
+console.group('transform');
+
+const additionalParam = 'additionalParam';
+
+const simpleTransformObject = src.transform(
+  'simple',
+  (value, ...extra) => {
+    console.log(value, extra);
+
+    return 'new value';
+  },
+  simpleObject,
+  additionalParam
+);
+
+console.log('simple object', simpleTransformObject, simpleObject, simpleTransformObject === simpleObject);
+
+const simpleTransformArray = src.transform(
+  1,
+  (value, ...extra) => {
+    console.log(value, extra);
+
+    return 'new value';
+  },
+  simpleArray,
+  additionalParam
+);
+
+console.log('simple array', simpleTransformArray, simpleArray, simpleTransformArray === simpleArray);
+
+const deepTransformObject = src.transform(
+  'deeply[0].nested["object with quoted keys"]',
+  (value, ...extra) => {
+    console.log(value, extra);
+
+    return 'new value';
+  },
+  deepObject,
+  additionalParam
+);
+
+console.log('deep object', deepTransformObject, deepObject, deepTransformObject === deepObject);
+
+const deepTransformArray = src.transform(
+  'deeply.nested[0]',
+  (value, ...extra) => {
+    console.log(value, extra);
+
+    return 'new value';
+  },
+  deepArray,
+  additionalParam
+);
+
+console.log('deep array', deepTransformArray, deepArray, deepTransformArray === deepArray);
+
+console.groupEnd('transform');
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
