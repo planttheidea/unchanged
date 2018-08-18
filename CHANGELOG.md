@@ -2,6 +2,11 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.4.0
+
+- Add [`transform`](README.md#transform) function
+- Remove use of native `Object.assign` in favor of local code (faster)
+
 ## 1.3.3
 
 - Provide `Object.assign` fallback for IE support without polyfill

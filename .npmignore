@@ -10,6 +10,7 @@ benchmark_results.csv
 coverage
 DEV_ONLY
 node_modules
+rollup.config.js
 src
 test
 webpack

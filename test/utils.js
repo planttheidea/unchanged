@@ -8,6 +8,19 @@ import sinon from 'sinon';
 // src
 import * as utils from 'src/utils';
 
+test('if cloneArray will shallowly clone an array', (t) => {
+  const array = [1, 'foo', {}, []];
+
+  const result = utils.cloneArray(array);
+
+  t.not(result, array);
+  t.deepEqual(result, array);
+
+  result.forEach((item, index) => {
+    t.is(item, array[index]);
+  });
+});
+
 test('if reduce will reduce the array to a single value', (t) => {
   const array = [1, 2, 3, 4, 5, 6, 7, 8];
   const fn = (sum, value) => sum + value;
@@ -19,10 +32,11 @@ test('if reduce will reduce the array to a single value', (t) => {
   t.is(result, expectedResult);
 });
 
-test('if assignFallback will shallowly merge the objects like native assign', (t) => {
+test('if assign will shallowly merge the objects like native assign', (t) => {
   const objects = [
     {},
     {foo: 'bar'},
+    undefined,
     (() => {
       const obj = Object.create({
         bar() {
@@ -36,7 +50,7 @@ test('if assignFallback will shallowly merge the objects like native assign', (t
     })(),
   ];
 
-  const result = utils.assignFallback(...objects);
+  const result = utils.assign(...objects);
   const expectedResult = Object.assign(...objects);
 
   t.deepEqual(result, expectedResult);
