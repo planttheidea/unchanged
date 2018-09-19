@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.4.2
+
+- Add `"sideEffects": false` for better tree-shaking in webpack
+
 ## 1.4.1
 
 - Update to use `babel@7` (smaller build, slightly better performance)
