@@ -1,7 +1,7 @@
 // external dependencies
 import {
   __,
-  curry
+  curry,
 } from 'curriable';
 
 // utils
@@ -16,7 +16,7 @@ import {
   isArray,
   isCloneable,
   isEmptyPath,
-  splice
+  splice,
 } from './utils';
 
 export {__};
