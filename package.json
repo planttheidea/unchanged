@@ -94,5 +94,6 @@
     "transpile:lib": "npm run clean:lib && BABEL_ENV=lib babel src --out-dir lib",
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
+  "sideEffects": false,
   "version": "1.4.1"
 }
