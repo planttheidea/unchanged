@@ -7,38 +7,38 @@ export default [
     input: 'src/index.js',
     output: {
       exports: 'named',
-      name: 'unchanged',
       file: 'dist/unchanged.js',
       format: 'umd',
-      sourcemap: true
+      name: 'unchanged',
+      sourcemap: true,
     },
     plugins: [
       resolve({
+        main: true,
         module: true,
-        main: true
       }),
       babel({
-        exclude: 'node_modules/**'
-      })
-    ]
+        exclude: 'node_modules/**',
+      }),
+    ],
   },
   {
     input: 'src/index.js',
     output: {
       exports: 'named',
-      name: 'unchanged',
       file: 'dist/unchanged.min.js',
-      format: 'umd'
+      format: 'umd',
+      name: 'unchanged',
     },
     plugins: [
       resolve({
+        main: true,
         module: true,
-        main: true
       }),
       babel({
-        exclude: 'node_modules/**'
+        exclude: 'node_modules/**',
       }),
-      uglify()
-    ]
-  }
+      uglify(),
+    ],
+  },
 ];
