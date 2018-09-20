@@ -505,11 +505,12 @@ test('if getDeepClone will create a deep clone on a new object if it does not ex
   });
 });
 
-test('if getDeeplyMergedObject will clone object2 if the objects are different types', (t) => {
+test('if getMergedObject will shallowly clone object2 if the objects are different types', (t) => {
   const object1 = {key: 'value'};
   const object2 = ['key', 'value'];
+  const isDeep = false;
 
-  const result = utils.getDeeplyMergedObject(object1, object2);
+  const result = utils.getMergedObject(object1, object2, isDeep);
 
   t.not(result, object1);
   t.not(result, object2);
@@ -517,11 +518,25 @@ test('if getDeeplyMergedObject will clone object2 if the objects are different t
   t.deepEqual(result, object2);
 });
 
-test('if getDeeplyMergedObject will merge the arrays if the objects are both array types', (t) => {
+test('if getMergedObject will deeply clone object2 if the objects are different types', (t) => {
+  const object1 = {key: 'value'};
+  const object2 = ['key', 'value'];
+  const isDeep = true;
+
+  const result = utils.getMergedObject(object1, object2, isDeep);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, object2);
+});
+
+test('if getMergedObject will merge the arrays if the objects are both array types and shallow merge is requested', (t) => {
   const object1 = ['one'];
   const object2 = ['two'];
+  const isDeep = false;
 
-  const result = utils.getDeeplyMergedObject(object1, object2);
+  const result = utils.getMergedObject(object1, object2, isDeep);
 
   t.not(result, object1);
   t.not(result, object2);
@@ -529,7 +544,20 @@ test('if getDeeplyMergedObject will merge the arrays if the objects are both arr
   t.deepEqual(result, [...object1, ...object2]);
 });
 
-test('if getDeeplyMergedObject will merge the objects if the objects are both object types', (t) => {
+test('if getMergedObject will merge the arrays if the objects are both array types and deep merge is requested', (t) => {
+  const object1 = ['one'];
+  const object2 = ['two'];
+  const isDeep = true;
+
+  const result = utils.getMergedObject(object1, object2, isDeep);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, [...object1, ...object2]);
+});
+
+test('if getMergedObject will shallowly merge the objects if the objects are both object types', (t) => {
   const object1 = {
     date: {willBe: 'overwritten'},
     deep: {key: 'value'},
@@ -539,8 +567,33 @@ test('if getDeeplyMergedObject will merge the objects if the objects are both ob
     deep: {otherKey: 'otherValue'},
     untouched: 'value',
   };
+  const isDeep = false;
 
-  const result = utils.getDeeplyMergedObject(object1, object2);
+  const result = utils.getMergedObject(object1, object2, isDeep);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(result, {
+    date: object2.date,
+    deep: object2.deep,
+    untouched: object2.untouched,
+  });
+});
+
+test('if getMergedObject will deeply merge the objects if the objects are both object types', (t) => {
+  const object1 = {
+    date: {willBe: 'overwritten'},
+    deep: {key: 'value'},
+  };
+  const object2 = {
+    date: new Date(),
+    deep: {otherKey: 'otherValue'},
+    untouched: 'value',
+  };
+  const isDeep = true;
+
+  const result = utils.getMergedObject(object1, object2, isDeep);
 
   t.not(result, object1);
   t.not(result, object2);
@@ -555,7 +608,7 @@ test('if getDeeplyMergedObject will merge the objects if the objects are both ob
   });
 });
 
-test('if getDeeplyMergedObject will merge the objects retaining the prototype', (t) => {
+test('if getMergedObject will shallowly merge the objects retaining the prototype', (t) => {
   class Foo {
     constructor(value) {
       if (value && value.constructor === Object) {
@@ -589,8 +642,60 @@ test('if getDeeplyMergedObject will merge the objects retaining the prototype', 
     deep: {otherKey: 'otherValue'},
     untouched: 'value',
   };
+  const isDeep = false;
 
-  const result = utils.getDeeplyMergedObject(new Foo(object1), new Foo(object2));
+  const result = utils.getMergedObject(new Foo(object1), new Foo(object2), isDeep);
+
+  t.not(result, object1);
+  t.not(result, object2);
+
+  t.deepEqual(
+    result,
+    new Foo({
+      date: object2.date,
+      deep: object2.deep,
+      untouched: object2.untouched,
+    })
+  );
+});
+
+test('if getMergedObject will deeply merge the objects retaining the prototype', (t) => {
+  class Foo {
+    constructor(value) {
+      if (value && value.constructor === Object) {
+        return Object.keys(value).reduce((reduced, key) => {
+          const deepValue = value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
+
+          if (reduced[key]) {
+            reduced[key].value = deepValue;
+          } else {
+            reduced[key] = {
+              value: deepValue,
+            };
+          }
+
+          return reduced;
+        }, this);
+      }
+
+      this.value = value;
+
+      return this;
+    }
+  }
+
+  const object1 = {
+    date: {willBe: 'overwritten'},
+    deep: {key: 'value'},
+  };
+  const object2 = {
+    date: new Date(),
+    deep: {otherKey: 'otherValue'},
+    untouched: 'value',
+  };
+  const isDeep = true;
+
+  const result = utils.getMergedObject(new Foo(object1), new Foo(object2), isDeep);
 
   t.not(result, object1);
   t.not(result, object2);

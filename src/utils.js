@@ -257,16 +257,17 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
 };
 
 /**
- * @function getDeeplyMergedObject
+ * @function getMergedObject
  *
  * @description
  * get the objects merged into a new object
  *
  * @param {Array<*>|Object} object1 the object to merge into
  * @param {Array<*>|Object} object2 the object to merge
+ * @param {boolean} [isDeep] is the object deeply merged
  * @returns {Array<*>|Object} the merged object
  */
-export const getDeeplyMergedObject = (object1, object2) => {
+export const getMergedObject = (object1, object2, isDeep) => {
   const isObject1Array = isArray(object1);
 
   return isObject1Array !== isArray(object2) || !isCloneable(object1)
@@ -276,7 +277,8 @@ export const getDeeplyMergedObject = (object1, object2) => {
       : reduce(
         keys(object2),
         (clone, key) => {
-          clone[key] = isCloneable(object2[key]) ? getDeeplyMergedObject(object1[key], object2[key]) : object2[key];
+          clone[key] =
+              isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
 
           return clone;
         },

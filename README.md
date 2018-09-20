@@ -1,6 +1,6 @@
 # unchanged
 
-A tiny (~1.9kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
+A tiny (~1.8kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
 
 Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
 
@@ -14,6 +14,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
   - [remove](#remove)
   - [add](#add)
   - [merge](#merge)
+  - [assign](#assign)
   - [call](#call)
   - [transform](#transform)
 - [Additional objects](#additional-objects)
@@ -28,7 +29,18 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 ## Usage
 
 ```javascript
-import { __, add, get, getOr, merge, remove, set } from "unchanged";
+import {
+  __,
+  add,
+  assign,
+  call,
+  get,
+  getOr,
+  merge,
+  remove,
+  set,
+  transform
+} from "unchanged";
 
 const object = {
   foo: "foo",
@@ -173,7 +185,7 @@ console.log(add(null, "bar", object)); // ['foo', 'bar']
 
 `merge(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
 
-Returns a new object that is a deep merge of the two `object`s passed at the `path` specified.
+Returns a new object that is a deep merge of `value` into `object` at the `path` specified. If you want to perform a shallow merge, see [`assign`](#assign).
 
 ```javascript
 const object1 = {
@@ -188,25 +200,149 @@ const object2 = {
   three: "value3"
 };
 
-console.log(merge("object", object2, object1)); // {oneSpecific: 'value', object: {one: 'new value', two: 'value1', three: 'value3'}}
+console.log(merge("object", object2, object1));
+/*
+{
+  oneSpecific: 'value',
+  object: {
+    one: 'value1',
+    deeply: {
+      nested: 'other value',
+      untouched: true,
+    },
+    two: 'value2',
+    three: 'value3
+  }
+}
+*/
 ```
 
-NOTE: If you want to merge the entirety of both objects, pass `null` as the key:
+NOTE: If you want to `merge` the entirety of both objects, pass `null` as the key:
 
 ```javascript
 const object1 = {
   oneSpecific: "value",
   object: {
     one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
     two: "value2"
   }
 };
 const object2 = {
   one: "new value",
+  deeply: {
+    nested: "other value"
+  },
   three: "value3"
 };
 
-console.log(merge(null, object2, object1)); // {one: 'new value', oneSpecific: 'value', object: {one: 'value1', two: 'value1'}, three: 'value3'}
+console.log(merge(null, object2, object1));
+/*
+{
+  one: 'new value',
+  oneSpecific: 'value',
+  object: {
+    one: 'value1',
+    deeply: {
+      nested: 'value',
+      untouched: true,
+    },
+    two: 'value2',
+  },
+  deeply: {
+    nested: 'other value',
+  },
+  three: 'value3
+}
+*/
+```
+
+#### assign
+
+`assign(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+
+Returns a new object that is a shallow merge of `value` into `object` at the `path` specified. If you want to perform a deep merge, see [`merge`](#merge).
+
+```javascript
+const object1 = {
+  oneSpecific: "value",
+  object: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: false
+    },
+    two: "value2"
+  }
+};
+const object2 = {
+  one: "new value",
+  deeply: {
+    nested: "other value"
+  },
+  three: "value3"
+};
+
+console.log(assign("object", object2, object1));
+/*
+{
+  oneSpecific: 'value',
+  object: {
+    one: 'value1',
+    deeply: {
+      nested: 'other value',
+    },
+    two: 'value2',
+    three: 'value3
+  }
+}
+*/
+```
+
+NOTE: If you want to `assign` the entirety of both objects, pass `null` as the key:
+
+```javascript
+const object1 = {
+  oneSpecific: "value",
+  object: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
+    two: "value2"
+  }
+};
+const object2 = {
+  one: "new value",
+  deeply: {
+    nested: "other value"
+  },
+  three: "value3"
+};
+
+console.log(assign(null, object2, object1));
+/*
+{
+  one: 'new value',
+  oneSpecific: 'value',
+  object: {
+    one: 'value1',
+    deeply: {
+      nested: 'value',
+      untouched: true,
+    },
+    two: 'value2',
+  },
+  deeply: {
+    nested: 'other value',
+  },
+  three: 'value3
+}
+*/
 ```
 
 #### call

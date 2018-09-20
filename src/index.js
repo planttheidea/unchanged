@@ -9,7 +9,7 @@ import {
   callIfFunction,
   callNestedProperty,
   getDeepClone,
-  getDeeplyMergedObject,
+  getMergedObject,
   getNestedProperty,
   getNewEmptyObject,
   hasNestedProperty,
@@ -20,6 +20,29 @@ import {
 } from './utils';
 
 export {__};
+
+/**
+ * @function assign
+ *
+ * @description
+ * get the shallowly-merged object at path
+ *
+ * @param {Array<number|string>|null|number|string} path the path to match on the object
+ * @param {Array<*>|Object} objectToAssign the object to merge
+ * @param {Array<*>|Object} object the object to merge with
+ * @returns {Array<*>|Object} the new merged object
+ */
+export const assign = curry((path, objectToAssign, object) => {
+  if (!isCloneable(object)) {
+    return objectToAssign;
+  }
+
+  return isEmptyPath(path)
+    ? getMergedObject(object, objectToAssign, false)
+    : getDeepClone(path, object, (ref, key) => {
+      ref[key] = getMergedObject(ref[key], objectToAssign, false);
+    });
+});
 
 /**
  * @function call
@@ -90,7 +113,7 @@ export const has = curry((path, object) => (isEmptyPath(path) ? object != null :
  * get the deeply-merged object at path
  *
  * @param {Array<number|string>|null|number|string} path the path to match on the object
- * @param {Array<*>|Object} object the object to merge
+ * @param {Array<*>|Object} objectToMerge the object to merge
  * @param {Array<*>|Object} object the object to merge with
  * @returns {Array<*>|Object} the new merged object
  */
@@ -100,9 +123,9 @@ export const merge = curry((path, objectToMerge, object) => {
   }
 
   return isEmptyPath(path)
-    ? getDeeplyMergedObject(object, objectToMerge)
+    ? getMergedObject(object, objectToMerge, true)
     : getDeepClone(path, object, (ref, key) => {
-      ref[key] = getDeeplyMergedObject(ref[key], objectToMerge);
+      ref[key] = getMergedObject(ref[key], objectToMerge, true);
     });
 });
 

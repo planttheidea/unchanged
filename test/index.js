@@ -7,6 +7,26 @@ import sinon from 'sinon';
 // src
 import * as index from 'src/index';
 
+// --- exports --- //
+
+test('if all methods are present', (t) => {
+  const {__esModule: ignored, ...values} = index;
+
+  t.deepEqual(Object.keys(values).sort(), [
+    '__',
+    'add',
+    'assign',
+    'call',
+    'get',
+    'getOr',
+    'has',
+    'merge',
+    'remove',
+    'set',
+    'transform',
+  ]);
+});
+
 // --- add --- //
 
 test('if add will add the top-level value to the object', (t) => {
@@ -202,6 +222,69 @@ test('if add will handle a ridiculous entry', (t) => {
         ],
       },
     ],
+  });
+});
+
+// --- assign --- //
+
+test('if assign will return the object to assign if the object is not cloneable', (t) => {
+  const path = null;
+  const objectToAssign = {
+    object: 'to merge',
+  };
+  const object = null;
+
+  const result = index.assign(path, objectToAssign, object);
+
+  t.not(result, object);
+  t.is(result, objectToAssign);
+});
+
+test('if assign will shallowly merge the complete objects if the key is empty', (t) => {
+  const path = null;
+  const objectToAssign = {
+    object: 'to merge',
+  };
+  const object = {
+    existing: 'object',
+  };
+
+  const result = index.assign(path, objectToAssign, object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    ...objectToAssign,
+  });
+});
+
+test('if assign will shallowly merge the objects at the path specified when the key is not empty', (t) => {
+  const path = 'path';
+  const objectToAssign = {
+    deeply: {
+      nested: {
+        value: 'final value',
+      },
+    },
+  };
+  const object = {
+    existing: 'object',
+    [path]: {
+      deeply: {
+        nested: {
+          untouched: true,
+          value: 'overwritten value',
+        },
+      },
+    },
+  };
+
+  const result = index.assign(path, objectToAssign, object);
+
+  t.not(result, object);
+  t.deepEqual(result, {
+    ...object,
+    [path]: objectToAssign,
   });
 });
 
@@ -642,7 +725,7 @@ test('if merge will return the object to merge if the object is not cloneable', 
   t.is(result, objectToMerge);
 });
 
-test('if merge will merge the complete objects if the key is empty', (t) => {
+test('if merge will deeply merge the complete objects if the key is empty', (t) => {
   const path = null;
   const objectToMerge = {
     object: 'to merge',
@@ -660,15 +743,25 @@ test('if merge will merge the complete objects if the key is empty', (t) => {
   });
 });
 
-test('if merge will merge the objects at the path specified when the key is not empty', (t) => {
+test('if merge will deeply merge the objects at the path specified when the key is not empty', (t) => {
   const path = 'path';
   const objectToMerge = {
-    object: 'to merge',
-    [path]: 'final value',
+    deeply: {
+      nested: {
+        value: 'final value',
+      },
+    },
   };
   const object = {
     existing: 'object',
-    [path]: 'overwritten value',
+    [path]: {
+      deeply: {
+        nested: {
+          untouched: true,
+          value: 'overwritten value',
+        },
+      },
+    },
   };
 
   const result = index.merge(path, objectToMerge, object);
@@ -677,7 +770,12 @@ test('if merge will merge the objects at the path specified when the key is not 
   t.deepEqual(result, {
     ...object,
     [path]: {
-      ...objectToMerge,
+      deeply: {
+        nested: {
+          ...object[path].deeply.nested,
+          ...objectToMerge.deeply.nested,
+        },
+      },
     },
   });
 });
