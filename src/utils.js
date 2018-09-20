@@ -264,7 +264,7 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
  *
  * @param {Array<*>|Object} object1 the object to merge into
  * @param {Array<*>|Object} object2 the object to merge
- * @param {boolean} [isDeep] is the object deeply merged
+ * @param {boolean} isDeep is the object deeply merged
  * @returns {Array<*>|Object} the merged object
  */
 export const getMergedObject = (object1, object2, isDeep) => {
