@@ -179,6 +179,40 @@ console.log('deep array false', src.has('[0].nested["non-existent object"]', dee
 
 console.groupEnd('has');
 
+console.group('assign');
+
+const simpleAssignObject = src.assign(
+  null,
+  {
+    different: 'value',
+    simple: 'thing',
+  },
+  simpleObject
+);
+
+console.log('simple object', simpleAssignObject, simpleObject, simpleAssignObject === simpleObject);
+
+const simpleAssignArray = src.assign(null, ['different', 'value'], simpleArray);
+
+console.log('simple array', simpleAssignArray, simpleArray, simpleAssignArray === simpleArray);
+
+const deepAssignObject = src.assign(
+  'deeply[0].nested',
+  {
+    different: 'value',
+    'object with quoted keys': 'thing',
+  },
+  deepObject
+);
+
+console.log('deep object', deepAssignObject, deepObject, deepAssignObject === deepObject);
+
+const deepAssignArray = src.assign('deeply.nested', ['different', 'value'], deepArray);
+
+console.log('deep array', deepAssignArray, deepArray, deepAssignArray === deepArray);
+
+console.groupEnd('assign');
+
 console.group('merge');
 
 const simpleMergeObject = src.merge(

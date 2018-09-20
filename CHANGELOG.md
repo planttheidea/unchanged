@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.5.0
+
+- Add [`assign](README.md#assign) method
+
 ## 1.4.2
 
 - Add `"sideEffects": false` for better tree-shaking in webpack
