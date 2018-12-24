@@ -7,6 +7,8 @@ import sinon from 'sinon';
 // src
 import * as index from 'src/index';
 
+const SYMBOL = Symbol('foo');
+
 // --- exports --- //
 
 test('if all methods are present', (t) => {
@@ -30,7 +32,10 @@ test('if all methods are present', (t) => {
 // --- add --- //
 
 test('if add will add the top-level value to the object', (t) => {
-  const object = {top: 'level'};
+  const object = {
+    [SYMBOL]: 'bar',
+    top: 'level',
+  };
 
   const result = index.add('key', 'value', object);
 
@@ -57,6 +62,7 @@ test('if add will add the top-level value to the nested array', (t) => {
 
 test('if add will add the deeply-nested value to the object when the key is a string', (t) => {
   const object = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: 'value',
     },
@@ -71,6 +77,7 @@ test('if add will add the deeply-nested value to the object when the key is a st
       other: 'value',
     },
   });
+  t.is(result[SYMBOL], object[SYMBOL]);
 });
 
 test('if add will add the deeply-nested value to the object when the key is an array', (t) => {
@@ -230,6 +237,7 @@ test('if add will handle a ridiculous entry', (t) => {
 test('if assign will return the object to assign if the object is not cloneable', (t) => {
   const path = null;
   const objectToAssign = {
+    [SYMBOL]: 'bar',
     object: 'to merge',
   };
   const object = null;
@@ -238,6 +246,7 @@ test('if assign will return the object to assign if the object is not cloneable'
 
   t.not(result, object);
   t.is(result, objectToAssign);
+  t.is(result[SYMBOL], objectToAssign[SYMBOL]);
 });
 
 test('if assign will shallowly merge the complete objects if the key is empty', (t) => {
@@ -261,6 +270,7 @@ test('if assign will shallowly merge the complete objects if the key is empty', 
 test('if assign will shallowly merge the objects at the path specified when the key is not empty', (t) => {
   const path = 'path';
   const objectToAssign = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: {
         value: 'final value',
@@ -286,6 +296,7 @@ test('if assign will shallowly merge the objects at the path specified when the 
     ...object,
     [path]: objectToAssign,
   });
+  t.is(result[path][SYMBOL], objectToAssign[SYMBOL]);
 });
 
 // --- call -- //
@@ -728,6 +739,7 @@ test('if merge will return the object to merge if the object is not cloneable', 
 test('if merge will deeply merge the complete objects if the key is empty', (t) => {
   const path = null;
   const objectToMerge = {
+    [SYMBOL]: 'bar',
     object: 'to merge',
   };
   const object = {
@@ -741,11 +753,13 @@ test('if merge will deeply merge the complete objects if the key is empty', (t) 
     ...object,
     ...objectToMerge,
   });
+  t.is(result[SYMBOL], objectToMerge[SYMBOL]);
 });
 
 test('if merge will deeply merge the objects at the path specified when the key is not empty', (t) => {
   const path = 'path';
   const objectToMerge = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: {
         value: 'final value',
@@ -770,7 +784,11 @@ test('if merge will deeply merge the objects at the path specified when the key 
   t.deepEqual(result, {
     ...object,
     [path]: {
+      ...object[path],
+      ...objectToMerge,
       deeply: {
+        ...object[path].nested,
+        ...objectToMerge.nested,
         nested: {
           ...object[path].deeply.nested,
           ...objectToMerge.deeply.nested,
@@ -778,6 +796,7 @@ test('if merge will deeply merge the objects at the path specified when the key 
       },
     },
   });
+  t.is(result[path][SYMBOL], objectToMerge[SYMBOL]);
 });
 
 // --- remove --- //
@@ -795,12 +814,15 @@ test('if remove will return an empty version of the object when the key is empty
 });
 
 test('if remove will remove the top-level value from the object', (t) => {
-  const object = {key: 'value'};
+  const object = {
+    [SYMBOL]: 'bar',
+    key: 'value',
+  };
 
   const result = index.remove('key', object);
 
   t.not(result, object);
-  t.deepEqual(result, {});
+  t.deepEqual(result, {[SYMBOL]: object[SYMBOL]});
 });
 
 test('if remove will remove the top-level value from the array', (t) => {
@@ -814,6 +836,7 @@ test('if remove will remove the top-level value from the array', (t) => {
 
 test('if remove will remove the deeply-nested value from the object', (t) => {
   const object = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: 'value',
     },
@@ -823,6 +846,7 @@ test('if remove will remove the deeply-nested value from the object', (t) => {
 
   t.not(result, object);
   t.deepEqual(result, {
+    ...object,
     deeply: {},
   });
 });
@@ -907,10 +931,9 @@ test('if remove will handle a ridiculous entry', (t) => {
 // --- set --- //
 
 test('if set will set the value on the top-level object', (t) => {
-  const symbol = Symbol('foo');
   const object = {
+    [SYMBOL]: 'bar',
     key: 'value',
-    [symbol]: 'bar',
   };
 
   const path = 'otherKey';
@@ -923,6 +946,7 @@ test('if set will set the value on the top-level object', (t) => {
     ...object,
     [path]: value,
   });
+  t.is(result[SYMBOL], object[SYMBOL]);
 });
 
 test('if set will set the value on the top-level array', (t) => {
@@ -938,12 +962,11 @@ test('if set will set the value on the top-level array', (t) => {
 });
 
 test('if set will set the value on the deeply-nested object', (t) => {
-  const symbol = Symbol('foo');
   const object = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: 'value',
     },
-    [symbol]: 'bar',
   };
 
   const result = index.set('deeply.ensconsed', 'otherValue', object);
@@ -956,6 +979,7 @@ test('if set will set the value on the deeply-nested object', (t) => {
       ensconsed: 'otherValue',
     },
   });
+  t.is(result[SYMBOL], object[SYMBOL]);
 });
 
 test('if set will set the value on the deeply-nested array', (t) => {
@@ -1045,7 +1069,10 @@ test('if set will handle a ridiculous entry', (t) => {
 test('if transform will set the value on the top-level object', (t) => {
   const additionalParams = ['foo', {}, ['bar']];
 
-  const object = {key: 'value'};
+  const object = {
+    [SYMBOL]: 'bar',
+    key: 'value',
+  };
 
   const path = 'otherKey';
   const value = 'otherValue';
@@ -1064,6 +1091,7 @@ test('if transform will set the value on the top-level object', (t) => {
     ...object,
     [path]: value,
   });
+  t.is(result[SYMBOL], object[SYMBOL]);
 });
 
 test('if transform will set the value on the top-level array', (t) => {
@@ -1091,6 +1119,7 @@ test('if transform will set the value on the deeply-nested object', (t) => {
   const additionalParams = ['foo', {}, ['bar']];
 
   const object = {
+    [SYMBOL]: 'bar',
     deeply: {
       nested: 'value',
     },
@@ -1115,6 +1144,7 @@ test('if transform will set the value on the deeply-nested object', (t) => {
       ensconsed: 'otherValue',
     },
   });
+  t.is(result[SYMBOL], object[SYMBOL]);
 });
 
 test('if transform will set the value on the deeply-nested array', (t) => {
