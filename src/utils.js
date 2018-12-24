@@ -2,7 +2,7 @@
 import {parse} from 'pathington';
 
 const O = Object;
-const {create, getPrototypeOf, keys} = O;
+const {create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerable} = O;
 
 /**
  * @constant {Symbol} REACT_ELEMENT
@@ -61,32 +61,56 @@ export const reduce = (array, fn, initialValue) => {
 };
 
 /**
+ * @function getOwnProperties
+ *
+ * @description
+ * get the own properties of an object, either keys or symbols
+ *
+ * @param {Object} object the object to get all keys and symbols of
+ * @returns {Array<string|symbol>} the own properties of the object
+ */
+export const getOwnProperties = (object) => {
+  const ownSymbols = getOwnPropertySymbols(object);
+
+  return ownSymbols.length
+    ? keys(object).concat(
+      reduce(
+        ownSymbols,
+        (enumerableSymbols, symbol) => {
+          if (propertyIsEnumerable.call(object, symbol)) {
+            enumerableSymbols.push(symbol);
+          }
+
+          return enumerableSymbols;
+        },
+        []
+      )
+    )
+    : keys(object);
+};
+
+/**
  * @function assign
  *
  * @description
- * a slimmer, faster version of Object.assign
+ * a slimmer version of Object.assign that includes symbols
  *
  * @param {Object} target the target object
- * @param {Array<Object>} sources the objects to merge into target
+ * @param {Object} source the object to merge into target
  * @returns {Object} the shallowly-merged object
  */
-export const assign = (target, ...sources) =>
-  reduce(
-    sources,
-    (assigned, object) =>
-      object
-        ? reduce(
-          keys(object),
-          (assignedTarget, key) => {
-            assignedTarget[key] = object[key];
+export const assign = (target, source) =>
+  source
+    ? reduce(
+      getOwnProperties(source),
+      (clonedObject, property) => {
+        clonedObject[property] = source[property];
 
-            return assignedTarget;
-          },
-          assigned
-        )
-        : assigned,
-    target
-  );
+        return clonedObject;
+      },
+      target
+    )
+    : target;
 
 /**
  * @function isCloneable
@@ -146,15 +170,7 @@ export const getShallowClone = (object) =>
       ? cloneArray(object)
       : isGlobalConstructor(object.constructor)
         ? {}
-        : reduce(
-          keys(object),
-          (clone, key) => {
-            clone[key] = object[key];
-
-            return clone;
-          },
-          create(getPrototypeOf(object))
-        );
+        : assign(create(getPrototypeOf(object)), object);
 
 /**
  * @function getNewEmptyChild
@@ -275,15 +291,15 @@ export const getMergedObject = (object1, object2, isDeep) => {
     : isObject1Array
       ? object1.concat(object2.map(cloneIfPossible))
       : reduce(
-        keys(object2),
+        getOwnProperties(object2),
         (clone, key) => {
           clone[key] =
-              isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
+            isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
 
           return clone;
         },
         reduce(
-          keys(object1),
+          getOwnProperties(object1),
           (clone, key) => {
             clone[key] = cloneIfPossible(object1[key]);
 

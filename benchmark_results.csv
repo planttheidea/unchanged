@@ -1,57 +1,57 @@
 Test,1000 ops,5000 ops,10000 ops,50000 ops,100000 ops,500000 ops,1000000 ops,5000000 ops
 ---,---,---,---,---,---,---,---,---
-[get object property] native,0.042ms,0.070ms,0.138ms,0.901ms,0.062ms,0.304ms,0.679ms,3.432ms
-[get object property] lodash fp (array),2.041ms,6.207ms,3.642ms,14.486ms,16.735ms,95.866ms,177.366ms,737.373ms
-[get object property] lodash fp (dotty),0.697ms,2.786ms,2.939ms,10.371ms,18.480ms,91.726ms,185.249ms,921.115ms
-[get object property] ramda,0.359ms,1.638ms,2.912ms,2.951ms,2.024ms,9.946ms,19.566ms,95.167ms
-[get object property] unchanged (array),0.642ms,2.421ms,2.765ms,3.805ms,3.528ms,15.592ms,31.560ms,159.980ms
-[get object property] unchanged (dotty),1.186ms,1.572ms,3.030ms,3.084ms,2.999ms,15.497ms,30.280ms,156.166ms
+[get object property] native,0.117ms,0.086ms,0.168ms,0.809ms,0.052ms,0.257ms,0.514ms,2.610ms
+[get object property] lodash fp (array),1.877ms,4.082ms,2.552ms,7.625ms,10.697ms,84.968ms,172.649ms,509.006ms
+[get object property] lodash fp (dotty),0.755ms,3.465ms,2.476ms,6.978ms,14.178ms,70.672ms,138.538ms,694.136ms
+[get object property] ramda,0.380ms,1.508ms,1.207ms,2.885ms,1.358ms,6.440ms,12.800ms,63.660ms
+[get object property] unchanged (array),0.557ms,2.041ms,1.156ms,3.661ms,3.007ms,13.827ms,29.358ms,130.424ms
+[get object property] unchanged (dotty),0.681ms,1.886ms,1.027ms,3.213ms,2.646ms,13.125ms,26.544ms,131.929ms
 ---,---,---,---,---,---,---,---,---
-[get array index] native,0.138ms,0.291ms,0.958ms,1.028ms,1.083ms,4.577ms,11.027ms,49.737ms
-[get array index] lodash fp (array),0.586ms,3.682ms,4.242ms,8.756ms,17.375ms,87.668ms,188.382ms,890.395ms
-[get array index] lodash fp (dotty),0.325ms,1.641ms,2.636ms,9.636ms,18.590ms,90.312ms,182.613ms,914.274ms
-[get array index] ramda,0.475ms,2.155ms,1.985ms,5.534ms,5.420ms,25.342ms,51.198ms,256.650ms
-[get array index] unchanged (array),0.611ms,2.334ms,1.943ms,4.221ms,4.193ms,22.123ms,43.326ms,228.155ms
-[get array index] unchanged (dotty),0.249ms,1.064ms,2.467ms,3.844ms,4.889ms,23.221ms,50.710ms,236.938ms
+[get array index] native,0.141ms,0.304ms,1.427ms,0.514ms,0.823ms,4.175ms,8.805ms,48.223ms
+[get array index] lodash fp (array),0.655ms,2.804ms,3.456ms,6.868ms,13.578ms,67.524ms,138.251ms,677.771ms
+[get array index] lodash fp (dotty),0.313ms,1.040ms,2.609ms,7.557ms,13.569ms,68.295ms,135.850ms,680.727ms
+[get array index] ramda,0.552ms,1.831ms,1.664ms,5.046ms,4.425ms,21.776ms,44.683ms,222.715ms
+[get array index] unchanged (array),0.825ms,3.001ms,2.122ms,2.032ms,3.790ms,18.839ms,37.659ms,184.681ms
+[get array index] unchanged (dotty),0.824ms,2.788ms,2.316ms,3.559ms,3.818ms,19.075ms,37.981ms,193.455ms
 ---,---,---,---,---,---,---,---,---
-[get nested object property] native,0.225ms,0.095ms,0.177ms,1.297ms,0.062ms,0.304ms,0.626ms,3.138ms
-[get nested object property] lodash fp (array),0.264ms,1.013ms,2.790ms,11.021ms,18.823ms,84.123ms,166.749ms,828.196ms
-[get nested object property] lodash fp (dotty),1.865ms,6.958ms,4.289ms,17.067ms,31.843ms,162.217ms,323.481ms,1617.572ms
-[get nested object property] ramda,0.286ms,0.515ms,1.185ms,6.362ms,5.306ms,26.342ms,52.059ms,263.898ms
-[get nested object property] unchanged (array),0.626ms,3.194ms,1.287ms,8.118ms,9.059ms,45.125ms,88.543ms,443.584ms
-[get nested object property] unchanged (dotty),1.645ms,3.702ms,2.659ms,11.421ms,15.710ms,69.960ms,138.531ms,732.482ms
+[get nested object property] native,0.114ms,0.114ms,0.641ms,0.461ms,0.052ms,0.257ms,0.514ms,2.575ms
+[get nested object property] lodash fp (array),0.215ms,0.854ms,2.486ms,7.304ms,12.832ms,69.894ms,126.517ms,632.404ms
+[get nested object property] lodash fp (dotty),1.724ms,6.031ms,4.246ms,15.344ms,30.595ms,154.345ms,307.978ms,1538.415ms
+[get nested object property] ramda,0.190ms,0.447ms,2.980ms,4.829ms,4.740ms,24.126ms,47.871ms,238.715ms
+[get nested object property] unchanged (array),0.589ms,3.590ms,1.644ms,4.569ms,4.828ms,24.175ms,48.872ms,240.174ms
+[get nested object property] unchanged (dotty),1.209ms,2.786ms,1.743ms,5.050ms,6.078ms,30.509ms,60.684ms,304.138ms
 ---,---,---,---,---,---,---,---,---
-[get nested array index] native,0.186ms,0.415ms,1.298ms,1.335ms,1.673ms,4.727ms,11.367ms,62.902ms
-[get nested array index] lodash fp (array),0.559ms,1.329ms,3.808ms,9.742ms,20.208ms,98.527ms,198.541ms,998.341ms
-[get nested array index] lodash fp (dotty),1.795ms,7.179ms,7.337ms,26.782ms,54.691ms,270.462ms,541.160ms,2690.732ms
-[get nested array index] ramda,0.261ms,0.765ms,2.373ms,6.240ms,5.929ms,31.102ms,60.372ms,298.241ms
-[get nested array index] unchanged (array),0.510ms,2.447ms,6.006ms,6.944ms,13.423ms,67.049ms,130.155ms,644.101ms
-[get nested array index] unchanged (dotty),3.101ms,4.887ms,8.527ms,19.009ms,34.280ms,171.293ms,345.611ms,1696.493ms
+[get nested array index] native,0.152ms,0.329ms,1.078ms,1.130ms,0.817ms,4.250ms,8.646ms,45.066ms
+[get nested array index] lodash fp (array),0.358ms,1.273ms,4.003ms,7.914ms,16.004ms,80.639ms,155.201ms,778.822ms
+[get nested array index] lodash fp (dotty),2.277ms,8.148ms,5.460ms,22.961ms,46.326ms,230.680ms,460.883ms,2303.267ms
+[get nested array index] ramda,0.267ms,0.701ms,1.831ms,5.756ms,5.362ms,26.439ms,52.641ms,264.967ms
+[get nested array index] unchanged (array),0.615ms,3.257ms,5.399ms,3.226ms,5.753ms,28.512ms,57.295ms,287.314ms
+[get nested array index] unchanged (dotty),0.854ms,4.420ms,5.510ms,8.333ms,16.808ms,83.865ms,165.584ms,828.892ms
 ---,---,---,---,---,---,---,---,---
-[set object property] native,0.502ms,1.895ms,4.816ms,17.002ms,30.767ms,134.259ms,272.376ms,1368.680ms
-[set object property] lodash fp (array),7.039ms,25.087ms,10.142ms,38.974ms,78.553ms,389.646ms,786.546ms,3892.505ms
-[set object property] lodash fp (dotty),1.797ms,8.207ms,10.145ms,44.438ms,88.429ms,451.773ms,885.864ms,4413.154ms
-[set object property] ramda,0.497ms,2.350ms,2.898ms,4.218ms,7.058ms,34.657ms,71.019ms,349.318ms
-[set object property] unchanged (array),1.067ms,5.493ms,8.857ms,11.057ms,16.427ms,80.920ms,155.557ms,783.832ms
-[set object property] unchanged (dotty),1.203ms,3.507ms,5.576ms,13.291ms,20.638ms,96.702ms,198.493ms,989.442ms
+[set object property] native,0.231ms,0.560ms,1.713ms,3.184ms,4.808ms,25.587ms,51.306ms,242.365ms
+[set object property] lodash fp (array),7.481ms,17.571ms,7.367ms,30.029ms,59.996ms,299.644ms,598.944ms,2999.060ms
+[set object property] lodash fp (dotty),2.513ms,7.907ms,8.067ms,36.750ms,73.642ms,367.500ms,736.773ms,3674.297ms
+[set object property] ramda,0.471ms,4.096ms,1.080ms,2.639ms,5.172ms,25.877ms,51.266ms,256.372ms
+[set object property] unchanged (array),0.924ms,6.222ms,3.226ms,6.574ms,12.832ms,64.442ms,128.695ms,647.505ms
+[set object property] unchanged (dotty),0.658ms,7.379ms,3.580ms,8.451ms,16.776ms,83.617ms,167.188ms,836.375ms
 ---,---,---,---,---,---,---,---,---
-[set array index] native,0.330ms,1.208ms,3.606ms,6.707ms,14.285ms,69.310ms,131.360ms,646.339ms
-[set array index] lodash fp (array),2.127ms,14.857ms,10.433ms,41.736ms,86.477ms,427.807ms,856.966ms,4275.610ms
-[set array index] lodash fp (dotty),1.712ms,9.257ms,10.522ms,45.468ms,92.538ms,460.445ms,923.719ms,4630.488ms
-[set array index] ramda,1.399ms,6.778ms,8.827ms,36.964ms,74.713ms,374.575ms,732.861ms,3675.753ms
-[set array index] unchanged (array),1.217ms,8.858ms,6.741ms,12.926ms,25.191ms,129.339ms,256.498ms,1285.735ms
-[set array index] unchanged (dotty),0.439ms,4.222ms,4.709ms,12.734ms,25.472ms,132.016ms,257.252ms,1296.751ms
+[set array index] native,0.316ms,1.037ms,3.375ms,5.944ms,12.026ms,62.033ms,117.747ms,590.958ms
+[set array index] lodash fp (array),2.904ms,13.909ms,9.821ms,42.044ms,83.887ms,419.357ms,836.041ms,4186.102ms
+[set array index] lodash fp (dotty),2.217ms,9.127ms,11.367ms,45.566ms,90.959ms,454.415ms,908.478ms,4529.144ms
+[set array index] ramda,1.468ms,5.925ms,8.178ms,34.763ms,69.812ms,352.747ms,700.366ms,3509.202ms
+[set array index] unchanged (array),2.069ms,5.276ms,4.453ms,10.874ms,21.577ms,107.819ms,214.006ms,1067.912ms
+[set array index] unchanged (dotty),0.414ms,3.983ms,4.080ms,10.788ms,21.620ms,107.420ms,216.297ms,1066.942ms
 ---,---,---,---,---,---,---,---,---
-[set nested object property] native,1.230ms,3.749ms,8.082ms,33.388ms,57.268ms,282.217ms,565.447ms,2825.300ms
-[set nested object property] lodash fp (array),10.416ms,18.284ms,15.846ms,73.942ms,149.345ms,735.909ms,1518.883ms,7383.387ms
-[set nested object property] lodash fp (dotty),2.155ms,13.040ms,18.483ms,85.956ms,169.614ms,844.466ms,1687.579ms,8411.721ms
-[set nested object property] ramda,1.313ms,5.106ms,7.394ms,33.107ms,64.942ms,311.414ms,626.173ms,3055.858ms
-[set nested object property] unchanged (array),1.462ms,7.896ms,8.325ms,30.388ms,52.759ms,263.412ms,523.500ms,2732.601ms
-[set nested object property] unchanged (dotty),0.630ms,2.589ms,9.705ms,30.644ms,58.129ms,293.619ms,582.784ms,2904.440ms
+[set nested object property] native,0.343ms,1.003ms,3.104ms,4.738ms,10.144ms,54.259ms,97.806ms,490.916ms
+[set nested object property] lodash fp (array),6.848ms,15.186ms,14.935ms,68.889ms,135.893ms,680.190ms,1351.840ms,6839.361ms
+[set nested object property] lodash fp (dotty),2.217ms,11.322ms,17.326ms,82.506ms,163.153ms,821.185ms,1632.197ms,8167.405ms
+[set nested object property] ramda,1.463ms,5.124ms,5.947ms,26.089ms,51.676ms,261.438ms,529.921ms,2669.681ms
+[set nested object property] unchanged (array),1.988ms,6.429ms,7.715ms,23.811ms,42.682ms,211.225ms,412.733ms,2040.431ms
+[set nested object property] unchanged (dotty),0.601ms,2.472ms,6.695ms,23.205ms,42.154ms,214.779ms,433.535ms,2151.527ms
 ---,---,---,---,---,---,---,---,---
-[set nested array index] native,0.620ms,4.408ms,7.591ms,16.987ms,31.963ms,126.656ms,255.634ms,1272.060ms
-[set nested array index] lodash fp (array),4.539ms,18.741ms,15.264ms,65.446ms,127.031ms,640.365ms,1278.636ms,6449.089ms
-[set nested array index] lodash fp (dotty),2.620ms,12.466ms,16.316ms,72.966ms,149.059ms,733.971ms,1463.429ms,7350.257ms
-[set nested array index] ramda,2.162ms,8.698ms,13.052ms,53.884ms,109.513ms,549.473ms,1093.289ms,5431.014ms
-[set nested array index] unchanged (array),1.277ms,11.408ms,15.102ms,42.874ms,84.700ms,423.761ms,806.993ms,3992.079ms
-[set nested array index] unchanged (dotty),2.358ms,11.965ms,13.280ms,50.504ms,102.631ms,508.657ms,1021.369ms,5091.356ms
+[set nested array index] native,0.516ms,3.568ms,4.279ms,12.425ms,31.120ms,126.472ms,251.869ms,1243.003ms
+[set nested array index] lodash fp (array),4.615ms,12.950ms,16.148ms,71.693ms,139.674ms,697.890ms,1391.234ms,6948.356ms
+[set nested array index] lodash fp (dotty),2.561ms,13.437ms,17.924ms,82.197ms,168.269ms,827.621ms,1660.799ms,8290.595ms
+[set nested array index] ramda,1.948ms,8.473ms,12.773ms,52.845ms,105.991ms,527.500ms,1053.515ms,5257.773ms
+[set nested array index] unchanged (array),1.351ms,11.927ms,10.662ms,38.057ms,75.446ms,377.701ms,757.329ms,3811.307ms
+[set nested array index] unchanged (dotty),1.562ms,10.044ms,11.902ms,47.681ms,95.453ms,476.993ms,953.004ms,4757.163ms

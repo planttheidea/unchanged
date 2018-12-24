@@ -907,7 +907,11 @@ test('if remove will handle a ridiculous entry', (t) => {
 // --- set --- //
 
 test('if set will set the value on the top-level object', (t) => {
-  const object = {key: 'value'};
+  const symbol = Symbol('foo');
+  const object = {
+    key: 'value',
+    [symbol]: 'bar',
+  };
 
   const path = 'otherKey';
   const value = 'otherValue';
@@ -934,10 +938,12 @@ test('if set will set the value on the top-level array', (t) => {
 });
 
 test('if set will set the value on the deeply-nested object', (t) => {
+  const symbol = Symbol('foo');
   const object = {
     deeply: {
       nested: 'value',
     },
+    [symbol]: 'bar',
   };
 
   const result = index.set('deeply.ensconsed', 'otherValue', object);

@@ -88,8 +88,8 @@ export const get = curry((path, object) => (isEmptyPath(path) ? object : getNest
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const getOr = curry(
-  (noMatchValue, path, object) => (isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue))
+export const getOr = curry((noMatchValue, path, object) =>
+  isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue)
 );
 
 /**
@@ -166,13 +166,12 @@ export const remove = curry((path, object) => {
  * @param {Array<*>|Object} object the object to set the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const set = curry(
-  (path, value, object) =>
-    isEmptyPath(path)
-      ? value
-      : getDeepClone(path, object, (ref, key) => {
-        ref[key] = value;
-      })
+export const set = curry((path, value, object) =>
+  isEmptyPath(path)
+    ? value
+    : getDeepClone(path, object, (ref, key) => {
+      ref[key] = value;
+    })
 );
 
 /**

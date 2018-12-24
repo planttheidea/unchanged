@@ -32,28 +32,33 @@ test('if reduce will reduce the array to a single value', (t) => {
   t.is(result, expectedResult);
 });
 
-test('if assign will shallowly merge the objects like native assign', (t) => {
+test('if assign will shallowly merge the objects including symbols', (t) => {
+  const symbol = Symbol('baz');
   const objects = [
-    {},
-    {foo: 'bar'},
-    undefined,
-    (() => {
-      const obj = Object.create({
-        bar() {
-          return 'baz';
-        },
-      });
-
-      obj.baz = 'quz';
-
-      return obj;
-    })(),
+    {some: 'thing'},
+    {
+      foo: 'bar',
+      [symbol]: 'quz',
+    },
   ];
 
   const result = utils.assign(...objects);
-  const expectedResult = Object.assign(...objects);
+  const expectedResult = {
+    foo: 'bar',
+    some: 'thing',
+    [symbol]: 'quz',
+  };
 
+  t.is(result, objects[0]);
   t.deepEqual(result, expectedResult);
+});
+
+test('if assign returns the target when the source is falsy', (t) => {
+  const objects = [{some: 'thing'}, null];
+
+  const result = utils.assign(...objects);
+
+  t.is(result, objects[0]);
 });
 
 test('if callIfFunction will call the object if it is a function', (t) => {
@@ -96,6 +101,53 @@ test('if cloneIfPossible will return the object if it is not cloneable', (t) => 
   const result = utils.cloneIfPossible(object);
 
   t.is(result, object);
+});
+
+test('if getOwnProperties will return the keys when there are no symbols', (t) => {
+  const object = {
+    bar: 'baz',
+    foo: 'bar',
+  };
+
+  const result = utils.getOwnProperties(object);
+
+  t.deepEqual(result, Object.keys(object));
+});
+
+test('if getOwnProperties will return the keys when there are symbols', (t) => {
+  const object = {
+    bar: 'baz',
+    foo: 'bar',
+    [Symbol('baz')]: 'quz',
+  };
+
+  const result = utils.getOwnProperties(object);
+
+  t.deepEqual(result, Object.keys(object).concat(Object.getOwnPropertySymbols(object)));
+});
+
+test('if getOwnProperties will return the keys when there are symbols, some of which are not enumerable', (t) => {
+  const object = {
+    bar: 'baz',
+    foo: 'bar',
+    [Symbol('baz')]: 'quz',
+  };
+
+  Object.defineProperty(object, Symbol('quz'), {
+    configurable: false,
+    enumerable: false,
+    value: 'blah',
+    writable: false,
+  });
+
+  const result = utils.getOwnProperties(object);
+
+  t.deepEqual(
+    result,
+    Object.keys(object).concat(
+      Object.getOwnPropertySymbols(object).filter((symbol) => Object.propertyIsEnumerable.call(object, symbol))
+    )
+  );
 });
 
 test('if getShallowClone shallowly clones the object when it is an array', (t) => {
