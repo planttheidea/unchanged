@@ -2,6 +2,11 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.5.1
+
+- Return support for `Symbol` keys when using `assign`, `merge`, `remove`, and `set`
+- Add documentation for `has` method
+
 ## 1.5.0
 
 - Add [`assign](README.md#assign) method

@@ -72,45 +72,52 @@ export const reduce = (array, fn, initialValue) => {
 export const getOwnProperties = (object) => {
   const ownSymbols = getOwnPropertySymbols(object);
 
-  return ownSymbols.length
-    ? keys(object).concat(
-      reduce(
-        ownSymbols,
-        (enumerableSymbols, symbol) => {
-          if (propertyIsEnumerable.call(object, symbol)) {
-            enumerableSymbols.push(symbol);
-          }
+  if (!ownSymbols.length) {
+    return keys(object);
+  }
 
-          return enumerableSymbols;
-        },
-        []
-      )
+  return keys(object).concat(
+    reduce(
+      ownSymbols,
+      (enumerableSymbols, symbol) => {
+        if (propertyIsEnumerable.call(object, symbol)) {
+          enumerableSymbols.push(symbol);
+        }
+
+        return enumerableSymbols;
+      },
+      []
     )
-    : keys(object);
+  );
 };
 
 /**
- * @function assign
+ * @function assignFallback
  *
  * @description
- * a slimmer version of Object.assign that includes symbols
+ * a simple implementation of Object.assign
  *
  * @param {Object} target the target object
  * @param {Object} source the object to merge into target
  * @returns {Object} the shallowly-merged object
  */
-export const assign = (target, source) =>
-  source
-    ? reduce(
-      getOwnProperties(source),
-      (clonedObject, property) => {
-        clonedObject[property] = source[property];
+export const assignFallback = (target, source) => {
+  if (!source) {
+    return target;
+  }
 
-        return clonedObject;
-      },
-      target
-    )
-    : target;
+  return reduce(
+    getOwnProperties(source),
+    (clonedObject, property) => {
+      clonedObject[property] = source[property];
+
+      return clonedObject;
+    },
+    Object(target)
+  );
+};
+
+const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
 
 /**
  * @function isCloneable
@@ -163,14 +170,17 @@ export const callIfFunction = (object, context, parameters) =>
  * @param {number|string} key the key to base the object type fromisReactElement(object) ||
  * @returns {Array<*>|Object} a shallow clone of the value
  */
-export const getShallowClone = (object) =>
-  object.constructor === O
-    ? assign({}, object)
-    : isArray(object)
-      ? cloneArray(object)
-      : isGlobalConstructor(object.constructor)
-        ? {}
-        : assign(create(getPrototypeOf(object)), object);
+export const getShallowClone = (object) => {
+  if (object.constructor === O) {
+    return assign({}, object);
+  }
+
+  if (isArray(object)) {
+    return cloneArray(object);
+  }
+
+  return isGlobalConstructor(object.constructor) ? {} : assign(create(getPrototypeOf(object)), object);
+};
 
 /**
  * @function getNewEmptyChild
@@ -286,28 +296,34 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
 export const getMergedObject = (object1, object2, isDeep) => {
   const isObject1Array = isArray(object1);
 
-  return isObject1Array !== isArray(object2) || !isCloneable(object1)
-    ? cloneIfPossible(object2)
-    : isObject1Array
-      ? object1.concat(object2.map(cloneIfPossible))
-      : reduce(
-        getOwnProperties(object2),
-        (clone, key) => {
-          clone[key] =
-            isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
+  if (isObject1Array !== isArray(object2) || !isCloneable(object1)) {
+    return cloneIfPossible(object2);
+  }
 
-          return clone;
-        },
-        reduce(
-          getOwnProperties(object1),
-          (clone, key) => {
-            clone[key] = cloneIfPossible(object1[key]);
+  if (isObject1Array) {
+    return object1.concat(object2.map(cloneIfPossible));
+  }
 
-            return clone;
-          },
-          object1.constructor === O ? {} : create(getPrototypeOf(object1))
-        )
-      );
+  const target = reduce(
+    getOwnProperties(object1),
+    (clone, key) => {
+      clone[key] = cloneIfPossible(object1[key]);
+
+      return clone;
+    },
+    object1.constructor === O ? {} : create(getPrototypeOf(object1))
+  );
+
+  return reduce(
+    getOwnProperties(object2),
+    (clone, key) => {
+      clone[key] =
+        isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
+
+      return clone;
+    },
+    target
+  );
 };
 
 /**
@@ -336,11 +352,11 @@ export const getParsedPath = (path) => (isArray(path) ? path : parse(path));
 export const callNestedProperty = (path, context, parameters, object) => {
   const parsedPath = getParsedPath(path);
 
-  return parsedPath.length === 1
-    ? object
-      ? callIfFunction(object[parsedPath[0]], context, parameters)
-      : void 0
-    : onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
+  if (parsedPath.length === 1) {
+    return object ? callIfFunction(object[parsedPath[0]], context, parameters) : void 0;
+  }
+
+  return onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
 };
 
 /**
@@ -357,11 +373,17 @@ export const callNestedProperty = (path, context, parameters, object) => {
 export const getNestedProperty = (path, object, noMatchValue) => {
   const parsedPath = getParsedPath(path);
 
-  return parsedPath.length === 1
-    ? object
-      ? getCoalescedValue(object[parsedPath[0]], noMatchValue)
-      : noMatchValue
-    : onMatchAtPath(parsedPath, object, (ref, key) => getCoalescedValue(ref[key], noMatchValue), false, noMatchValue);
+  if (parsedPath.length === 1) {
+    return object ? getCoalescedValue(object[parsedPath[0]], noMatchValue) : noMatchValue;
+  }
+
+  return onMatchAtPath(
+    parsedPath,
+    object,
+    (ref, key) => getCoalescedValue(ref[key], noMatchValue),
+    false,
+    noMatchValue
+  );
 };
 
 /**

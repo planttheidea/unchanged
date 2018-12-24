@@ -32,7 +32,7 @@ test('if reduce will reduce the array to a single value', (t) => {
   t.is(result, expectedResult);
 });
 
-test('if assign will shallowly merge the objects including symbols', (t) => {
+test('if assignFallback will shallowly merge the objects including symbols', (t) => {
   const symbol = Symbol('baz');
   const objects = [
     {some: 'thing'},
@@ -42,7 +42,7 @@ test('if assign will shallowly merge the objects including symbols', (t) => {
     },
   ];
 
-  const result = utils.assign(...objects);
+  const result = utils.assignFallback(...objects);
   const expectedResult = {
     foo: 'bar',
     some: 'thing',
@@ -53,10 +53,10 @@ test('if assign will shallowly merge the objects including symbols', (t) => {
   t.deepEqual(result, expectedResult);
 });
 
-test('if assign returns the target when the source is falsy', (t) => {
+test('if assignFallback returns the target when the source is falsy', (t) => {
   const objects = [{some: 'thing'}, null];
 
-  const result = utils.assign(...objects);
+  const result = utils.assignFallback(...objects);
 
   t.is(result, objects[0]);
 });
@@ -233,7 +233,7 @@ test('if getNewChildClone will get a shallow clone of the object when it is an a
   t.deepEqual(result, object);
 });
 
-test('if getNewChildClone will assign the numeric key to the object when the object is not an array (even though the key says it should be)', (t) => {
+test('if getNewChildClone will assignFallback the numeric key to the object when the object is not an array (even though the key says it should be)', (t) => {
   const object = {array: false};
   const nextKey = 0;
 
