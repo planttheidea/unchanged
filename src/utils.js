@@ -3,12 +3,15 @@ import {parse} from 'pathington';
 
 const O = Object;
 const {create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerable} = O;
+const {toString: toStringObject} = O.prototype;
+
+const {toString: toStringFunction} = Function.prototype;
 
 /**
  * @constant {Symbol} REACT_ELEMENT
  */
 // eslint-disable-next-line no-magic-numbers
-const REACT_ELEMENT = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
+const REACT_ELEMENT = typeof Symbol === 'function' && typeof Symbol.for === 'function' ? Symbol.for('react.element') : 0xeac7;
 
 /**
  * @constant {RegExp} FUNCTION_NAME
@@ -123,16 +126,24 @@ const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
  * @function isCloneable
  *
  * @description
- * can the object be merged
+ * can the object be cloned
+ * 
+ * - the object exists and is an object
+ * - the object is not a Date or RegExp
+ * - the object is not a React element
  *
  * @param {*} object the object to test
  * @returns {boolean} can the object be merged
  */
-export const isCloneable = (object) =>
-  !!object
-  && typeof object === 'object'
-  && !(object instanceof Date || object instanceof RegExp)
-  && object.$$typeof !== REACT_ELEMENT;
+export const isCloneable = (object) => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+
+  const type = toStringObject.call(object);
+
+  return type !== '[object Date]' && type !== '[object RegExp]' && object.$$typeof !== REACT_ELEMENT;
+};
 
 /**
  * @function isGlobalConstructor
@@ -144,7 +155,7 @@ export const isCloneable = (object) =>
  * @returns {boolean} is the function a global constructor
  */
 export const isGlobalConstructor = (fn) =>
-  typeof fn === 'function' && global[fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]] === fn;
+  typeof fn === 'function' && global[fn.name || toStringFunction.call(fn).split(FUNCTION_NAME)[1]] === fn;
 
 /**
  * @function callIfFunction
@@ -233,7 +244,7 @@ export const getNewChildClone = (object, nextKey) =>
  *
  * @description
  * get the value if it is not undefined, else get the fallback
- *
+ *`
  * @param {any} value the main value to return
  * @param {any} fallbackValue the value to return if main is undefined
  * @returns {any} the coalesced value
@@ -301,18 +312,11 @@ export const getMergedObject = (object1, object2, isDeep) => {
   }
 
   if (isObject1Array) {
-    return object1.concat(object2.map(cloneIfPossible));
+    return object1.concat(object2);
   }
 
-  const target = reduce(
-    getOwnProperties(object1),
-    (clone, key) => {
-      clone[key] = cloneIfPossible(object1[key]);
-
-      return clone;
-    },
-    object1.constructor === O ? {} : create(getPrototypeOf(object1))
-  );
+  const target =
+    object1.constructor === O || isGlobalConstructor(object1.constructor) ? {} : create(getPrototypeOf(object1));
 
   return reduce(
     getOwnProperties(object2),
@@ -322,7 +326,7 @@ export const getMergedObject = (object1, object2, isDeep) => {
 
       return clone;
     },
-    target
+    assign(target, object1)
   );
 };
 
@@ -450,12 +454,12 @@ export const splice = (array, splicedIndex) => {
 
     let index = splicedIndex;
 
-    while (index < length) {
+    while (index < length - 1) {
       array[index] = array[index + 1];
 
-      index++;
+      ++index;
     }
 
-    array.length--;
+    --array.length;
   }
 };

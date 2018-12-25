@@ -6,6 +6,9 @@ Yes, the irony is not lost on me. :)
 
 - Return support for `Symbol` keys when using `assign`, `merge`, `remove`, and `set`
 - Add documentation for `has` method
+- Improve speed of `merge` by eliminating unneeded extra cloning
+- Improve speed of `remove` by eliminating unneeded iterations
+- Allow cloning to work consistently even with data from across realms
 
 ## 1.5.0
 
