@@ -208,7 +208,7 @@ export const transform = curry(
  * @returns {Array<*>|Object} a new object with the same structure and the value added
  */
 export const add = curry((path, value, object) => {
-  const nestedValue = get(path, object);
+  const nestedValue = getNestedProperty(path, object);
   const fullPath = isArray(nestedValue)
     ? isArray(path)
       ? path.concat([nestedValue.length])
