@@ -2111,10 +2111,10 @@ currently-unhandled@^0.4.1:
   dependencies:
     array-find-index "^1.0.1"
 
-curriable@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.0.tgz#1b30e60192aa3a4f96691773bd0bca8d159d0781"
-  integrity sha512-5e5ebDywnjSiS4ZfZcndffCuCyBi8VVWrocBPlH962bCezd06uSFWXL6Cb8wkMqMfAh3S1NgX4OAQOVjhtJyAg==
+curriable@^1.0.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.2.tgz#07529e2d82c7bdcc16469511a65682b0f02c1158"
+  integrity sha512-gCvU0Hl8EYScI0mPksUiI+kLEV5M9Cva357EWMQGwXI3vc9mBWv7VnqN90YfMhd8tyDuTxakzuZv7lAdPBozow==
 
 cyclist@~0.2.2:
   version "0.2.2"
