@@ -2,6 +2,15 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.5.1
+
+- Return support for `Symbol` keys when using `assign`, `merge`, `remove`, and `set`
+- Add documentation for `has` method
+- Improve speed of `add` by eliminating unneeded call to curried wrapper
+- Improve speed of `merge` by eliminating unneeded extra cloning
+- Improve speed of `remove` by eliminating unneeded iterations
+- Allow cloning to work consistently even with data from across realms
+
 ## 1.5.0
 
 - Add [`assign](README.md#assign) method

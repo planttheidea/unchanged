@@ -1,6 +1,6 @@
 # unchanged
 
-A tiny (~1.8kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
+A tiny (~1.9kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
 
 Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
 
@@ -12,6 +12,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
   - [getOr](#getor)
   - [set](#set)
   - [remove](#remove)
+  - [has](#has)
   - [add](#add)
   - [merge](#merge)
   - [assign](#assign)
@@ -145,6 +146,26 @@ const object = {
 
 console.log(remove("foo[0].bar", object)); // {foo: [{}]}
 console.log(remove(["foo", 0, "bar"], object)); // {foo: [{}]}
+```
+
+#### has
+
+`has(path: (Array<number|string>|number|string), object: (Array<any>|object)): boolean`
+
+Returns `true` if the object has the path provided, `false` otherwise.
+
+```javascript
+const object = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+
+console.log(has("foo[0].bar", object)); // true
+console.log(has(["foo", 0, "bar"], object)); // true
+console.log(has("bar", object)); // false
 ```
 
 #### add

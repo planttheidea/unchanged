@@ -2,13 +2,16 @@
 import {parse} from 'pathington';
 
 const O = Object;
-const {create, getPrototypeOf, keys} = O;
+const {create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerable} = O;
+const {toString: toStringObject} = O.prototype;
+
+const {toString: toStringFunction} = Function.prototype;
 
 /**
  * @constant {Symbol} REACT_ELEMENT
  */
 // eslint-disable-next-line no-magic-numbers
-const REACT_ELEMENT = typeof Symbol === 'function' && Symbol.for ? Symbol.for('react.element') : 0xeac7;
+const REACT_ELEMENT = typeof Symbol === 'function' && typeof Symbol.for === 'function' ? Symbol.for('react.element') : 0xeac7;
 
 /**
  * @constant {RegExp} FUNCTION_NAME
@@ -61,47 +64,86 @@ export const reduce = (array, fn, initialValue) => {
 };
 
 /**
- * @function assign
+ * @function getOwnProperties
  *
  * @description
- * a slimmer, faster version of Object.assign
+ * get the own properties of an object, either keys or symbols
+ *
+ * @param {Object} object the object to get all keys and symbols of
+ * @returns {Array<string|symbol>} the own properties of the object
+ */
+export const getOwnProperties = (object) => {
+  const ownSymbols = getOwnPropertySymbols(object);
+
+  if (!ownSymbols.length) {
+    return keys(object);
+  }
+
+  return keys(object).concat(
+    reduce(
+      ownSymbols,
+      (enumerableSymbols, symbol) => {
+        if (propertyIsEnumerable.call(object, symbol)) {
+          enumerableSymbols.push(symbol);
+        }
+
+        return enumerableSymbols;
+      },
+      []
+    )
+  );
+};
+
+/**
+ * @function assignFallback
+ *
+ * @description
+ * a simple implementation of Object.assign
  *
  * @param {Object} target the target object
- * @param {Array<Object>} sources the objects to merge into target
+ * @param {Object} source the object to merge into target
  * @returns {Object} the shallowly-merged object
  */
-export const assign = (target, ...sources) =>
-  reduce(
-    sources,
-    (assigned, object) =>
-      object
-        ? reduce(
-          keys(object),
-          (assignedTarget, key) => {
-            assignedTarget[key] = object[key];
+export const assignFallback = (target, source) => {
+  if (!source) {
+    return target;
+  }
 
-            return assignedTarget;
-          },
-          assigned
-        )
-        : assigned,
-    target
+  return reduce(
+    getOwnProperties(source),
+    (clonedObject, property) => {
+      clonedObject[property] = source[property];
+
+      return clonedObject;
+    },
+    Object(target)
   );
+};
+
+const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
 
 /**
  * @function isCloneable
  *
  * @description
- * can the object be merged
+ * can the object be cloned
+ * 
+ * - the object exists and is an object
+ * - the object is not a Date or RegExp
+ * - the object is not a React element
  *
  * @param {*} object the object to test
  * @returns {boolean} can the object be merged
  */
-export const isCloneable = (object) =>
-  !!object
-  && typeof object === 'object'
-  && !(object instanceof Date || object instanceof RegExp)
-  && object.$$typeof !== REACT_ELEMENT;
+export const isCloneable = (object) => {
+  if (!object || typeof object !== 'object') {
+    return false;
+  }
+
+  const type = toStringObject.call(object);
+
+  return type !== '[object Date]' && type !== '[object RegExp]' && object.$$typeof !== REACT_ELEMENT;
+};
 
 /**
  * @function isGlobalConstructor
@@ -113,7 +155,7 @@ export const isCloneable = (object) =>
  * @returns {boolean} is the function a global constructor
  */
 export const isGlobalConstructor = (fn) =>
-  typeof fn === 'function' && global[fn.name || Function.prototype.toString.call(fn).split(FUNCTION_NAME)[1]] === fn;
+  typeof fn === 'function' && global[fn.name || toStringFunction.call(fn).split(FUNCTION_NAME)[1]] === fn;
 
 /**
  * @function callIfFunction
@@ -139,22 +181,17 @@ export const callIfFunction = (object, context, parameters) =>
  * @param {number|string} key the key to base the object type fromisReactElement(object) ||
  * @returns {Array<*>|Object} a shallow clone of the value
  */
-export const getShallowClone = (object) =>
-  object.constructor === O
-    ? assign({}, object)
-    : isArray(object)
-      ? cloneArray(object)
-      : isGlobalConstructor(object.constructor)
-        ? {}
-        : reduce(
-          keys(object),
-          (clone, key) => {
-            clone[key] = object[key];
+export const getShallowClone = (object) => {
+  if (object.constructor === O) {
+    return assign({}, object);
+  }
 
-            return clone;
-          },
-          create(getPrototypeOf(object))
-        );
+  if (isArray(object)) {
+    return cloneArray(object);
+  }
+
+  return isGlobalConstructor(object.constructor) ? {} : assign(create(getPrototypeOf(object)), object);
+};
 
 /**
  * @function getNewEmptyChild
@@ -207,7 +244,7 @@ export const getNewChildClone = (object, nextKey) =>
  *
  * @description
  * get the value if it is not undefined, else get the fallback
- *
+ *`
  * @param {any} value the main value to return
  * @param {any} fallbackValue the value to return if main is undefined
  * @returns {any} the coalesced value
@@ -270,28 +307,27 @@ export const onMatchAtPath = (path, object, onMatch, shouldClone, noMatchValue, 
 export const getMergedObject = (object1, object2, isDeep) => {
   const isObject1Array = isArray(object1);
 
-  return isObject1Array !== isArray(object2) || !isCloneable(object1)
-    ? cloneIfPossible(object2)
-    : isObject1Array
-      ? object1.concat(object2.map(cloneIfPossible))
-      : reduce(
-        keys(object2),
-        (clone, key) => {
-          clone[key] =
-              isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
+  if (isObject1Array !== isArray(object2) || !isCloneable(object1)) {
+    return cloneIfPossible(object2);
+  }
 
-          return clone;
-        },
-        reduce(
-          keys(object1),
-          (clone, key) => {
-            clone[key] = cloneIfPossible(object1[key]);
+  if (isObject1Array) {
+    return object1.concat(object2);
+  }
 
-            return clone;
-          },
-          object1.constructor === O ? {} : create(getPrototypeOf(object1))
-        )
-      );
+  const target =
+    object1.constructor === O || isGlobalConstructor(object1.constructor) ? {} : create(getPrototypeOf(object1));
+
+  return reduce(
+    getOwnProperties(object2),
+    (clone, key) => {
+      clone[key] =
+        isDeep && isCloneable(object2[key]) ? getMergedObject(object1[key], object2[key], isDeep) : object2[key];
+
+      return clone;
+    },
+    assign(target, object1)
+  );
 };
 
 /**
@@ -320,11 +356,11 @@ export const getParsedPath = (path) => (isArray(path) ? path : parse(path));
 export const callNestedProperty = (path, context, parameters, object) => {
   const parsedPath = getParsedPath(path);
 
-  return parsedPath.length === 1
-    ? object
-      ? callIfFunction(object[parsedPath[0]], context, parameters)
-      : void 0
-    : onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
+  if (parsedPath.length === 1) {
+    return object ? callIfFunction(object[parsedPath[0]], context, parameters) : void 0;
+  }
+
+  return onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
 };
 
 /**
@@ -341,11 +377,17 @@ export const callNestedProperty = (path, context, parameters, object) => {
 export const getNestedProperty = (path, object, noMatchValue) => {
   const parsedPath = getParsedPath(path);
 
-  return parsedPath.length === 1
-    ? object
-      ? getCoalescedValue(object[parsedPath[0]], noMatchValue)
-      : noMatchValue
-    : onMatchAtPath(parsedPath, object, (ref, key) => getCoalescedValue(ref[key], noMatchValue), false, noMatchValue);
+  if (parsedPath.length === 1) {
+    return object ? getCoalescedValue(object[parsedPath[0]], noMatchValue) : noMatchValue;
+  }
+
+  return onMatchAtPath(
+    parsedPath,
+    object,
+    (ref, key) => getCoalescedValue(ref[key], noMatchValue),
+    false,
+    noMatchValue
+  );
 };
 
 /**
@@ -412,12 +454,12 @@ export const splice = (array, splicedIndex) => {
 
     let index = splicedIndex;
 
-    while (index < length) {
+    while (index < length - 1) {
       array[index] = array[index + 1];
 
-      index++;
+      ++index;
     }
 
-    array.length--;
+    --array.length;
   }
 };

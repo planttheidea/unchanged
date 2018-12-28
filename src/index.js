@@ -88,8 +88,8 @@ export const get = curry((path, object) => (isEmptyPath(path) ? object : getNest
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const getOr = curry(
-  (noMatchValue, path, object) => (isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue))
+export const getOr = curry((noMatchValue, path, object) =>
+  isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue)
 );
 
 /**
@@ -166,13 +166,12 @@ export const remove = curry((path, object) => {
  * @param {Array<*>|Object} object the object to set the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const set = curry(
-  (path, value, object) =>
-    isEmptyPath(path)
-      ? value
-      : getDeepClone(path, object, (ref, key) => {
-        ref[key] = value;
-      })
+export const set = curry((path, value, object) =>
+  isEmptyPath(path)
+    ? value
+    : getDeepClone(path, object, (ref, key) => {
+      ref[key] = value;
+    })
 );
 
 /**
@@ -209,11 +208,12 @@ export const transform = curry(
  * @returns {Array<*>|Object} a new object with the same structure and the value added
  */
 export const add = curry((path, value, object) => {
-  const nestedValue = get(path, object);
-  const fullPath = isArray(nestedValue)
+  const isPathEmpty = isEmptyPath(path);
+  const valueAtPath = isPathEmpty ? object : getNestedProperty(path, object);
+  const fullPath = isArray(valueAtPath)
     ? isArray(path)
-      ? path.concat([nestedValue.length])
-      : `${isEmptyPath(path) ? '' : path}[${nestedValue.length}]`
+      ? path.concat([valueAtPath.length])
+      : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
     : path;
 
   return set(fullPath, value, object);

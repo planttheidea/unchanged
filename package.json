@@ -95,5 +95,5 @@
     "transpile:es": "npm run clean:es && BABEL_ENV=es babel src --out-dir es"
   },
   "sideEffects": false,
-  "version": "1.5.0"
+  "version": "1.5.1"
 }
