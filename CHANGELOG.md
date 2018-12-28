@@ -2,6 +2,10 @@
 
 Yes, the irony is not lost on me. :)
 
+## 1.5.2
+
+- Fix `rollup` build setup with latest `curriable` and `pathington` setups
+
 ## 1.5.1
 
 - Return support for `Symbol` keys when using `assign`, `merge`, `remove`, and `set`

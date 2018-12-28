@@ -2,42 +2,45 @@ import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
 import {uglify} from 'rollup-plugin-uglify';
 
-export default [
-  {
-    input: 'src/index.js',
-    output: {
-      exports: 'named',
-      file: 'dist/unchanged.js',
-      format: 'umd',
-      name: 'unchanged',
-      sourcemap: true,
-    },
-    plugins: [
-      resolve({
-        main: true,
-        module: true,
-      }),
-      babel({
-        exclude: 'node_modules/**',
-      }),
-    ],
+import pkg from './package.json';
+
+const DEV_CONFIG = {
+  external: Object.keys(pkg.dependencies),
+  input: 'src/index.js',
+  output: {
+    exports: 'named',
+    file: 'dist/unchanged.js',
+    format: 'umd',
+    globals: Object.keys(pkg.dependencies).reduce((globals, pkgName) => {
+      globals[pkgName] = pkgName;
+
+      return globals;
+    }, {}),
+    name: 'unchanged',
+    sourcemap: true,
   },
+  plugins: [
+    resolve({
+      main: true,
+      module: true,
+    }),
+    babel({
+      exclude: 'node_modules/**',
+    }),
+  ],
+};
+
+export default [
+  DEV_CONFIG,
   {
-    input: 'src/index.js',
+    ...DEV_CONFIG,
     output: {
-      exports: 'named',
+      ...DEV_CONFIG.output,
       file: 'dist/unchanged.min.js',
-      format: 'umd',
-      name: 'unchanged',
+      sourcemap: false,
     },
     plugins: [
-      resolve({
-        main: true,
-        module: true,
-      }),
-      babel({
-        exclude: 'node_modules/**',
-      }),
+      ...DEV_CONFIG.plugins,
       uglify(),
     ],
   },
