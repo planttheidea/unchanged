@@ -5,7 +5,6 @@ import {
   getMergedObject,
   getNestedProperty,
   getNewEmptyObject,
-  isArray,
   isCloneable,
   isEmptyPath,
   isSameValueZero,
@@ -13,7 +12,10 @@ import {
   throwInvalidFnError,
 } from './utils';
 
-export const assignWith = (fn, path, objectToAssign, object, ...extraArgs) => {
+const {isArray} = Array;
+const {slice} = Array.prototype;
+
+export const assignWith = function(path, objectToAssign, object, fn) {
   if (!isCloneable(object)) {
     return objectToAssign;
   }
@@ -23,8 +25,11 @@ export const assignWith = (fn, path, objectToAssign, object, ...extraArgs) => {
       throwInvalidFnError();
     }
 
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 4);
+
     return isEmptyPath(path)
-      ? fn(getMergedObject(object, objectToAssign, false))
+      ? fn(getMergedObject(object, objectToAssign, false), ...extraArgs)
       : getDeepClone(path, object, (ref, key) => {
         ref[key] = fn(getMergedObject(ref[key], objectToAssign, false), ...extraArgs);
       });
@@ -43,18 +48,21 @@ export const assignWith = (fn, path, objectToAssign, object, ...extraArgs) => {
  * @description
  * call a nested method at the path requested with the parameters provided
  *
- * @param {function} fn the function to validate if the function should be called
  * @param {Array<number|string>|null|number|string} path the path to get the value at
  * @param {Array<*>} parameters the parameters to call the method with
  * @param {Array<*>|Object} object the object to call the method from
  * @param {*} context the context to set as "this" in the function call
+ * @param {function} fn the function to validate if the function should be called
  * @returns {*} the return of the function call
  */
-export const callWith = (fn, path, parameters, object, context = object, ...extraArgs) => {
+export const callWith = function(path, parameters, object, context = object, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
+
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 5);
 
     if (isEmptyPath(path)) {
       return callIfFunction(fn(object, ...extraArgs), context, parameters);
@@ -64,16 +72,23 @@ export const callWith = (fn, path, parameters, object, context = object, ...extr
 
     return fn(value, ...extraArgs) ? callIfFunction(value, context, parameters) : void 0;
   }
+
+  const callable = isEmptyPath(path) ? object : getNestedProperty(path, object);
+
+  return callIfFunction(callable, context, parameters);
 };
 
-export const getWith = (fn, path, object, noMatchValue, ...extraArgs) => {
+export const getWith = function(path, object, noMatchValue, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
 
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 4);
+
     if (isEmptyPath(path)) {
-      return fn(object);
+      return fn(object, ...extraArgs);
     }
 
     const value = getNestedProperty(path, object, noMatchValue);
@@ -88,7 +103,7 @@ export const getWith = (fn, path, object, noMatchValue, ...extraArgs) => {
   return isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue);
 };
 
-export const hasWith = (fn, path, object, ...extraArgs) => {
+export const hasWith = function(path, object, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
@@ -100,6 +115,8 @@ export const hasWith = (fn, path, object, ...extraArgs) => {
     }
 
     const value = getNestedProperty(path, object);
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 3);
 
     return value !== void 0 && !!fn(value, ...extraArgs);
   }
@@ -108,11 +125,14 @@ export const hasWith = (fn, path, object, ...extraArgs) => {
   return isEmptyPath(path) ? object != null : getNestedProperty(path, object) !== void 0;
 };
 
-export const isWith = (fn, path, value, object, ...extraArgs) => {
+export const isWith = function(path, value, object, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
+
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 4);
 
     if (isEmptyPath(path)) {
       // eslint-disable-next-line eqeqeq
@@ -131,13 +151,13 @@ export const isWith = (fn, path, value, object, ...extraArgs) => {
  * @description
  * get the deeply-merged object at path
  *
- * @param {function} fn the function to compute the value to merge
  * @param {Array<number|string>|null|number|string} path the path to match on the object
  * @param {Array<*>|Object} objectToMerge the object to merge
  * @param {Array<*>|Object} object the object to merge with
+ * @param {function} fn the function to compute the value to merge
  * @returns {Array<*>|Object} the new merged object
  */
-export const mergeWith = (fn, path, objectToMerge, object, ...extraArgs) => {
+export const mergeWith = function(path, objectToMerge, object, fn) {
   if (!isCloneable(object)) {
     return objectToMerge;
   }
@@ -146,6 +166,9 @@ export const mergeWith = (fn, path, objectToMerge, object, ...extraArgs) => {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
+
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 4);
 
     return isEmptyPath(path)
       ? fn(getMergedObject(object, objectToMerge, true), ...extraArgs)
@@ -167,16 +190,19 @@ export const mergeWith = (fn, path, objectToMerge, object, ...extraArgs) => {
  * @description
  * remove the value in the object at the path requested
  *
- * @param {function} fn the function to validate if the value should be removed
  * @param {Array<number|string>|number|string} path the path to remove the value at
  * @param {Array<*>|Object} object the object to remove the value from
+ * @param {function} fn the function to validate if the value should be removed
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
-export const removeWith = (fn, path, object, ...extraArgs) => {
+export const removeWith = function(path, object, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
+
+    // eslint-disable-next-line
+    const extraArgs = slice.call(arguments, 3);
 
     if (isEmptyPath(path)) {
       return fn(getNewEmptyObject(object), ...extraArgs);
@@ -215,18 +241,20 @@ export const removeWith = (fn, path, object, ...extraArgs) => {
  * perform same operation as set, but using a callback function that receives
  * the value (and additional parameters, if provided) to get the value to set
  *
- * @param {function} fn the function to set the retrieved value with
  * @param {Array<number|string>|number|string} path the path to set the value at
  * @param {*} value the value to set in the object
  * @param {Array<*>|Object} object the object to set the value in
- * @param {...Array<any>} extraArgs additional arguments to pass to the transform function
+ * @param {function} fn the function to set the retrieved value with
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const setWith = (fn, path, value, object, ...extraArgs) => {
+export const setWith = function(path, value, object, fn) {
   if (fn) {
     if (typeof fn !== 'function') {
       throwInvalidFnError();
     }
+
+    // eslint-disable-next-line prefer-rest-params
+    const extraArgs = slice.call(arguments, 4);
 
     return isEmptyPath(path)
       ? fn(object, ...extraArgs)
@@ -248,13 +276,13 @@ export const setWith = (fn, path, value, object, ...extraArgs) => {
  * @description
  * add the value to the object at the path requested
  *
- * @param {function} fn the function that will determine the value to add
  * @param {Array<number|string>|null|number|string} path the path to assign the value at
  * @param {*} value the value to assign
  * @param {Array<*>|Object} object the object to assignobject the value in
+ * @param {function} fn the function that will determine the value to add
  * @returns {Array<*>|Object} a new object with the same structure and the value added
  */
-export const addWith = (fn, path, value, object, ...extraArgs) => {
+export const addWith = function(path, value, object, fn) {
   const isPathEmpty = isEmptyPath(path);
   const valueAtPath = isPathEmpty ? object : getNestedProperty(path, object);
   const fullPath = isArray(valueAtPath)
@@ -263,5 +291,6 @@ export const addWith = (fn, path, value, object, ...extraArgs) => {
       : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
     : path;
 
-  return setWith(fn, fullPath, value, object, ...extraArgs);
+  // eslint-disable-next-line prefer-rest-params
+  return setWith(fullPath, value, object, fn, ...slice.call(arguments, 4));
 };

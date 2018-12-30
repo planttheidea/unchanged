@@ -30,9 +30,9 @@ export {__};
  * @param {Array<*>|Object} object the object to assignobject the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value added
  */
-export const add = curry((path, value, object) => uncurriedAddWith(null, path, value, object));
+export const add = curry(uncurriedAddWith, 3);
 
-export const addWith = curry(uncurriedAddWith, 4);
+export const addWith = curry((fn, path, value, object) => uncurriedAddWith(path, value, object, fn));
 
 /**
  * @function assign
@@ -45,9 +45,11 @@ export const addWith = curry(uncurriedAddWith, 4);
  * @param {Array<*>|Object} object the object to merge with
  * @returns {Array<*>|Object} the new merged object
  */
-export const assign = curry((path, objectToAssign, object) => uncurriedAssignWith(null, path, objectToAssign, object));
+export const assign = curry(uncurriedAssignWith, 3);
 
-export const assignWith = curry(uncurriedAssignWith);
+export const assignWith = curry((fn, path, objectToAssign, object, ...extraArgs) =>
+  uncurriedAssignWith(path, objectToAssign, object, fn, ...extraArgs)
+);
 
 /**
  * @function call
@@ -60,12 +62,13 @@ export const assignWith = curry(uncurriedAssignWith);
  * @param {Array<*>|Object} object the object to call the method from
  * @param {*} context the context to set as "this" in the function call
  */
-export const call = curry(
-  (path, parameters, object, context = object) => uncurriedCallWith(null, path, parameters, object, context),
-  3
-);
+export const call = curry(uncurriedCallWith, 3);
 
-export const callWith = curry(uncurriedCallWith, 4);
+export const callWith = curry(
+  (fn, path, parameters, object, context = object, ...extraArgs) =>
+    uncurriedCallWith(path, parameters, object, context, fn, ...extraArgs),
+  4
+);
 
 /**
  * @function get
@@ -77,7 +80,7 @@ export const callWith = curry(uncurriedCallWith, 4);
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const get = curry((path, object) => uncurriedGetWith(null, path, object));
+export const get = curry(uncurriedGetWith, 2);
 
 /**
  * @function getOr
@@ -91,15 +94,15 @@ export const get = curry((path, object) => uncurriedGetWith(null, path, object))
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const getOr = curry((noMatchValue, path, object) => uncurriedGetWith(null, path, object, noMatchValue));
+export const getOr = curry(uncurriedGetWith, 3);
 
 export const getWith = curry(
-  (fn, path, object, ...extraArgs) => uncurriedGetWith(fn, path, object, void 0, ...extraArgs),
+  (fn, path, object, ...extraArgs) => uncurriedGetWith(path, object, void 0, fn, ...extraArgs),
   3
 );
 
 export const getWithOr = curry(
-  (fn, noMatchValue, path, object, ...extraArgs) => uncurriedGetWith(fn, path, object, noMatchValue, ...extraArgs),
+  (fn, noMatchValue, path, object, ...extraArgs) => uncurriedGetWith(path, object, noMatchValue, fn, ...extraArgs),
   4
 );
 
@@ -114,14 +117,17 @@ export const getWithOr = curry(
  * @returns {boolean} does the path exist
  */
 /* eslint-disable eqeqeq */
-export const has = curry((path, object) => uncurriedHasWith(null, path, object));
+export const has = curry(uncurriedHasWith, 2);
 /* eslint-enable */
 
-export const hasWith = curry(uncurriedHasWith, 3);
+export const hasWith = curry((fn, path, object, ...extraArgs) => uncurriedHasWith(path, object, fn, ...extraArgs), 3);
 
-export const is = curry((path, value, object) => uncurriedIsWith(null, path, value, object));
+export const is = curry(uncurriedIsWith, 3);
 
-export const isWith = curry(uncurriedIsWith);
+export const isWith = curry(
+  (fn, path, value, object, ...extraArgs) => uncurriedIsWith(path, value, object, fn, ...extraArgs),
+  4
+);
 
 /**
  * @function merge
@@ -134,9 +140,12 @@ export const isWith = curry(uncurriedIsWith);
  * @param {Array<*>|Object} object the object to merge with
  * @returns {Array<*>|Object} the new merged object
  */
-export const merge = curry((path, objectToMerge, object) => uncurriedMergeWith(null, path, objectToMerge, object));
+export const merge = curry(uncurriedMergeWith, 3);
 
-export const mergeWith = curry(uncurriedMergeWith, 4);
+export const mergeWith = curry(
+  (fn, path, objectToMerge, object, ...extraArgs) => uncurriedMergeWith(path, objectToMerge, object, fn, ...extraArgs),
+  4
+);
 
 /**
  * @function removeobject with quoted keys
@@ -148,9 +157,12 @@ export const mergeWith = curry(uncurriedMergeWith, 4);
  * @param {Array<*>|Object} object the object to remove the value from
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
-export const remove = curry((path, object) => uncurriedRemoveWith(null, path, object));
+export const remove = curry(uncurriedRemoveWith, 2);
 
-export const removeWith = curry(uncurriedRemoveWith, 2);
+export const removeWith = curry(
+  (fn, path, object, ...extraArgs) => uncurriedRemoveWith(path, object, fn, ...extraArgs),
+  3
+);
 
 /**
  * @function set
@@ -163,7 +175,7 @@ export const removeWith = curry(uncurriedRemoveWith, 2);
  * @param {Array<*>|Object} object the object to set the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const set = curry((path, value, object) => uncurriedSetWith(null, path, value, object));
+export const set = curry(uncurriedSetWith, 3);
 
 /**
  * @function setWith
@@ -179,6 +191,6 @@ export const set = curry((path, value, object) => uncurriedSetWith(null, path, v
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
 export const setWith = curry(
-  (fn, path, object, ...extraArgs) => uncurriedSetWith(fn, path, null, object, ...extraArgs),
+  (fn, path, object, ...extraArgs) => uncurriedSetWith(path, null, object, fn, ...extraArgs),
   3
 );

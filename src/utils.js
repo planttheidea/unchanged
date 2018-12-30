@@ -18,10 +18,7 @@ const REACT_ELEMENT =
  */
 const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
 
-/**
- * @function isArray
- */
-export const {isArray} = Array;
+const {isArray} = Array;
 
 export const isSameValueZero = (value1, value2) => value1 === value2 || (value1 !== value1 && value2 !== value2);
 

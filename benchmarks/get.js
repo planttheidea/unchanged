@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
 const {path} = require('ramda');
-const {get} = require('../lib');
+const {get} = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -71,7 +71,7 @@ module.exports = {
   arrayGetNative(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -81,7 +81,7 @@ module.exports = {
   arrayGetLodashFp(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -91,7 +91,7 @@ module.exports = {
   arrayGetLodashFpDotty(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -101,7 +101,7 @@ module.exports = {
   arrayGetRamda(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -111,7 +111,7 @@ module.exports = {
   arrayGetUnchanged(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -121,11 +121,11 @@ module.exports = {
   arrayGetUnchangedDotty(cycles) {
     const maxIndex = array.length - 1;
 
-    let index, val;
+    let index; let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
       val = get(0, array);
     }
-  }
+  },
 };

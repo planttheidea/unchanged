@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
 const {assoc} = require('ramda');
-const {set} = require('../lib');
+const {set} = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -84,7 +84,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -98,7 +98,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -112,7 +112,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -126,7 +126,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -140,7 +140,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -154,7 +154,7 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr, index, newVal;
+    let newArr; let index; let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -163,5 +163,5 @@ module.exports = {
 
       set(index, newVal, newArr);
     }
-  }
+  },
 };

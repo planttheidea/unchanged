@@ -1,20 +1,29 @@
 import babel from 'rollup-plugin-babel';
 import resolve from 'rollup-plugin-node-resolve';
-import {uglify} from 'rollup-plugin-uglify';
+import minify from 'rollup-plugin-babel-minify';
 
 import pkg from './package.json';
 
-const DEV_CONFIG = {
+const EXTERNALS = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+
+const UMD_CONFIG = {
+  external: EXTERNALS,
   input: 'src/index.js',
   output: {
     exports: 'named',
-    file: 'dist/unchanged.js',
+    file: pkg.browser,
     format: 'umd',
-    name: 'unchanged',
+    globals: EXTERNALS.reduce((globals, name) => {
+      globals[name] = name;
+
+      return globals;
+    }, {}),
+    name: pkg.name,
     sourcemap: true,
   },
   plugins: [
     resolve({
+      browser: true,
       main: true,
       module: true,
     }),
@@ -24,15 +33,38 @@ const DEV_CONFIG = {
   ],
 };
 
+const FORMATTED_CONFIG = {
+  ...UMD_CONFIG,
+  output: [
+    {
+      ...UMD_CONFIG.output,
+      file: pkg.main,
+      format: 'cjs',
+    },
+    {
+      ...UMD_CONFIG.output,
+      file: pkg.module,
+      format: 'es',
+    },
+  ],
+};
+
 export default [
-  DEV_CONFIG,
+  UMD_CONFIG,
+  FORMATTED_CONFIG,
   {
-    ...DEV_CONFIG,
+    ...UMD_CONFIG,
     output: {
-      ...DEV_CONFIG.output,
-      file: 'dist/unchanged.min.js',
+      ...UMD_CONFIG.output,
+      file: pkg.browser.replace('.js', '.min.js'),
       sourcemap: false,
     },
-    plugins: [...DEV_CONFIG.plugins, uglify()],
+    plugins: [
+      ...UMD_CONFIG.plugins,
+      minify({
+        comments: false,
+        sourceMap: false,
+      }),
+    ],
   },
 ];
