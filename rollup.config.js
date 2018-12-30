@@ -5,17 +5,11 @@ import {uglify} from 'rollup-plugin-uglify';
 import pkg from './package.json';
 
 const DEV_CONFIG = {
-  external: Object.keys(pkg.dependencies),
   input: 'src/index.js',
   output: {
     exports: 'named',
     file: 'dist/unchanged.js',
     format: 'umd',
-    globals: Object.keys(pkg.dependencies).reduce((globals, pkgName) => {
-      globals[pkgName] = pkgName;
-
-      return globals;
-    }, {}),
     name: 'unchanged',
     sourcemap: true,
   },
@@ -39,9 +33,6 @@ export default [
       file: 'dist/unchanged.min.js',
       sourcemap: false,
     },
-    plugins: [
-      ...DEV_CONFIG.plugins,
-      uglify(),
-    ],
+    plugins: [...DEV_CONFIG.plugins, uglify()],
   },
 ];

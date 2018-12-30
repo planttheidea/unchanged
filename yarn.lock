@@ -2112,9 +2112,9 @@ currently-unhandled@^0.4.1:
     array-find-index "^1.0.1"
 
 curriable@^1.0.0:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.2.tgz#07529e2d82c7bdcc16469511a65682b0f02c1158"
-  integrity sha512-gCvU0Hl8EYScI0mPksUiI+kLEV5M9Cva357EWMQGwXI3vc9mBWv7VnqN90YfMhd8tyDuTxakzuZv7lAdPBozow==
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.3.tgz#b98c5c6b9e556cf808861297141c6c98a2a44a75"
+  integrity sha512-/D69W52ElxiTjtvzBNmAHm+conb397LwR8dArqKB8L8Uy5NUNy2AmK+Ur/iVEGslM4cm19WmcGfPQ8YU04O06Q==
 
 cyclist@~0.2.2:
   version "0.2.2"
@@ -4953,9 +4953,9 @@ node-pre-gyp@^0.10.0:
     tar "^4"
 
 node-releases@^1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.2.tgz#93c17fba5eec8650ad908de5433fa8763baebe4d"
-  integrity sha512-j1gEV/zX821yxdWp/1vBMN0pSUjuH9oGUdLCb4PfUko6ZW7KdRs3Z+QGGwDUhYtSpQvdVVyLd2V0YvLsmdg5jQ==
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.3.tgz#aad9ce0dcb98129c753f772c0aa01360fb90fbd2"
+  integrity sha512-6VrvH7z6jqqNFY200kdB6HdzkgM96Oaj9v3dqGfgp6mF+cHmU4wyQKZ2/WPDRVoR0Jz9KqbamaBN0ZhdUaysUQ==
   dependencies:
     semver "^5.3.0"
 
@@ -5510,9 +5510,9 @@ path-type@^3.0.0:
     pify "^3.0.0"
 
 pathington@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.1.5.tgz#9c0110287e769d1ee26f6758c7339d920a6cf5c7"
-  integrity sha512-lDBQm2mJjMgL+tL/y2xpa/2fm1PVA6jtzGGZcTVXWQt0X3UwJbyoalQsl+PoNpdduuGiAp7zmVNuRaoYyhAYew==
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/pathington/-/pathington-1.1.6.tgz#50a67698cd9e7413a1ec338a854b120a49a7a6ef"
+  integrity sha512-ckHVyoWKT9WZ1hrpQu+H4T/9xj8CkoUjo3W+kUP7TkZ1D2/SPW+35hZQPhuXOBkYVMHXsbOgEqHlBj6rd5fuWQ==
 
 pbkdf2@^3.0.3:
   version "3.0.17"
@@ -6166,9 +6166,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     inherits "^2.0.1"
 
 rollup-plugin-babel@^4.0.1:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-babel/-/rollup-plugin-babel-4.1.0.tgz#c97f50c82aa8e89ddaa116cdc5c832b8ba74db17"
-  integrity sha512-4IYv/yTNyH4P/Cma1mWdqy42gc051i1mTe/6oe8F055WzJGSb2qs1mSDwZTo93wA6kMBgHBIR/OcBk7JMnL59Q==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-babel/-/rollup-plugin-babel-4.2.0.tgz#9a2c119b5c923928842783ec2abd306fa733054f"
+  integrity sha512-DBZbItGcru3iZM8aqVOS6+9GgIE+u0eX1HHN2iUIOjeXKMN8MK9/DaCOmQEt/le0sxqQOLIG+rPIhhm8uhJA7Q==
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
     rollup-pluginutils "^2.3.0"
@@ -7358,9 +7358,9 @@ webpack-sources@^1.1.0, webpack-sources@^1.3.0:
     source-map "~0.6.1"
 
 webpack@^4.16.5:
-  version "4.28.2"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.28.2.tgz#6b534a8bc91a45787ed631dc2e87aec94e9e4db7"
-  integrity sha512-PK3uVg3/NuNVOjPfYleFI6JF7khO7c2kIlksH7mivQm+QDcwiqV1x6+q89dDeOioh5FNxJHr3LKbDu3oSAhl9g==
+  version "4.28.3"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-4.28.3.tgz#8acef6e77fad8a01bfd0c2b25aa3636d46511874"
+  integrity sha512-vLZN9k5I7Nr/XB1IDG9GbZB4yQd1sPuvufMFgJkx0b31fi2LD97KQIjwjxE7xytdruAYfu5S0FLBLjdxmwGJCg==
   dependencies:
     "@webassemblyjs/ast" "1.7.11"
     "@webassemblyjs/helper-module-context" "1.7.11"

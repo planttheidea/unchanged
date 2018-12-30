@@ -10,8 +10,8 @@ const {toString: toStringFunction} = Function.prototype;
 /**
  * @constant {Symbol} REACT_ELEMENT
  */
-// eslint-disable-next-line no-magic-numbers
-const REACT_ELEMENT = typeof Symbol === 'function' && typeof Symbol.for === 'function' ? Symbol.for('react.element') : 0xeac7;
+const REACT_ELEMENT =
+  typeof Symbol === 'function' && typeof Symbol.for === 'function' ? Symbol.for('react.element') : 0xeac7;
 
 /**
  * @constant {RegExp} FUNCTION_NAME
@@ -22,6 +22,8 @@ const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
  * @function isArray
  */
 export const {isArray} = Array;
+
+export const isSameValueZero = (value1, value2) => value1 === value2 || (value1 !== value1 && value2 !== value2);
 
 /**
  * @function cloneArray
@@ -127,7 +129,7 @@ const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
  *
  * @description
  * can the object be cloned
- * 
+ *
  * - the object exists and is an object
  * - the object is not a Date or RegExp
  * - the object is not a React element
@@ -342,28 +344,6 @@ export const getMergedObject = (object1, object2, isDeep) => {
 export const getParsedPath = (path) => (isArray(path) ? path : parse(path));
 
 /**
- * @function callNestedProperty
- *
- * @description
- * parse the path passed and call the nested method at that path
- *
- * @param {Array<number|string>|number|string} path the path to retrieve values from the object
- * @param {*} context the context that the method is called with
- * @param {Array<*>} parameters the parameters to call the method with
- * @param {*} object the object to get values from
- * @returns {*} the retrieved values
- */
-export const callNestedProperty = (path, context, parameters, object) => {
-  const parsedPath = getParsedPath(path);
-
-  if (parsedPath.length === 1) {
-    return object ? callIfFunction(object[parsedPath[0]], context, parameters) : void 0;
-  }
-
-  return onMatchAtPath(parsedPath, object, (ref, key) => callIfFunction(ref[key], context, parameters));
-};
-
-/**
  * @function getNestedProperty
  *
  * @description
@@ -414,18 +394,6 @@ export const getDeepClone = (path, object, onMatch) => {
   return onMatchAtPath(parsedPath, topLevelClone, onMatch, true);
 };
 
-/**
- * @function hasNestedProperty
- *
- * @description
- * parse the path passed and determine if a value at the path exists
- *
- * @param {Array<number|string>|number|string} path the path to retrieve values from the object
- * @param {*} object the object to get values from
- * @returns {boolean} does the nested path exist
- */
-export const hasNestedProperty = (path, object) => getNestedProperty(path, object) !== void 0;
-
 /* eslint-disable eqeqeq */
 /**
  * @function isEmptyPath
@@ -462,4 +430,8 @@ export const splice = (array, splicedIndex) => {
 
     --array.length;
   }
+};
+
+export const throwInvalidFnError = () => {
+  throw new TypeError('handler passed is not of type "function".');
 };

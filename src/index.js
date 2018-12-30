@@ -4,22 +4,35 @@ import {
   curry,
 } from 'curriable';
 
-// utils
+// handlers
 import {
-  callIfFunction,
-  callNestedProperty,
-  getDeepClone,
-  getMergedObject,
-  getNestedProperty,
-  getNewEmptyObject,
-  hasNestedProperty,
-  isArray,
-  isCloneable,
-  isEmptyPath,
-  splice,
-} from './utils';
+  addWith as uncurriedAddWith,
+  assignWith as uncurriedAssignWith,
+  callWith as uncurriedCallWith,
+  getWith as uncurriedGetWith,
+  hasWith as uncurriedHasWith,
+  isWith as uncurriedIsWith,
+  mergeWith as uncurriedMergeWith,
+  removeWith as uncurriedRemoveWith,
+  setWith as uncurriedSetWith,
+} from './handlers';
 
 export {__};
+
+/**
+ * @function add
+ *
+ * @description
+ * add the value to the object at the path requested
+ *
+ * @param {Array<number|string>|null|number|string} path the path to assign the value at
+ * @param {*} value the value to assign
+ * @param {Array<*>|Object} object the object to assignobject the value in
+ * @returns {Array<*>|Object} a new object with the same structure and the value added
+ */
+export const add = curry((path, value, object) => uncurriedAddWith(null, path, value, object));
+
+export const addWith = curry(uncurriedAddWith, 4);
 
 /**
  * @function assign
@@ -32,17 +45,9 @@ export {__};
  * @param {Array<*>|Object} object the object to merge with
  * @returns {Array<*>|Object} the new merged object
  */
-export const assign = curry((path, objectToAssign, object) => {
-  if (!isCloneable(object)) {
-    return objectToAssign;
-  }
+export const assign = curry((path, objectToAssign, object) => uncurriedAssignWith(null, path, objectToAssign, object));
 
-  return isEmptyPath(path)
-    ? getMergedObject(object, objectToAssign, false)
-    : getDeepClone(path, object, (ref, key) => {
-      ref[key] = getMergedObject(ref[key], objectToAssign, false);
-    });
-});
+export const assignWith = curry(uncurriedAssignWith);
 
 /**
  * @function call
@@ -56,13 +61,11 @@ export const assign = curry((path, objectToAssign, object) => {
  * @param {*} context the context to set as "this" in the function call
  */
 export const call = curry(
-  (path, parameters, object, context = object) =>
-    isEmptyPath(path)
-      ? callIfFunction(object, context, parameters)
-      : callNestedProperty(path, context, parameters, object),
-  // eslint-disable-next-line no-magic-numbers
+  (path, parameters, object, context = object) => uncurriedCallWith(null, path, parameters, object, context),
   3
 );
+
+export const callWith = curry(uncurriedCallWith, 4);
 
 /**
  * @function get
@@ -74,7 +77,7 @@ export const call = curry(
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const get = curry((path, object) => (isEmptyPath(path) ? object : getNestedProperty(path, object)));
+export const get = curry((path, object) => uncurriedGetWith(null, path, object));
 
 /**
  * @function getOr
@@ -88,8 +91,16 @@ export const get = curry((path, object) => (isEmptyPath(path) ? object : getNest
  * @param {Array<*>|Object} object the object to get the value from
  * @returns {*} the value requested
  */
-export const getOr = curry((noMatchValue, path, object) =>
-  isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue)
+export const getOr = curry((noMatchValue, path, object) => uncurriedGetWith(null, path, object, noMatchValue));
+
+export const getWith = curry(
+  (fn, path, object, ...extraArgs) => uncurriedGetWith(fn, path, object, void 0, ...extraArgs),
+  3
+);
+
+export const getWithOr = curry(
+  (fn, noMatchValue, path, object, ...extraArgs) => uncurriedGetWith(fn, path, object, noMatchValue, ...extraArgs),
+  4
 );
 
 /**
@@ -103,8 +114,14 @@ export const getOr = curry((noMatchValue, path, object) =>
  * @returns {boolean} does the path exist
  */
 /* eslint-disable eqeqeq */
-export const has = curry((path, object) => (isEmptyPath(path) ? object != null : hasNestedProperty(path, object)));
+export const has = curry((path, object) => uncurriedHasWith(null, path, object));
 /* eslint-enable */
+
+export const hasWith = curry(uncurriedHasWith, 3);
+
+export const is = curry((path, value, object) => uncurriedIsWith(null, path, value, object));
+
+export const isWith = curry(uncurriedIsWith);
 
 /**
  * @function merge
@@ -117,17 +134,9 @@ export const has = curry((path, object) => (isEmptyPath(path) ? object != null :
  * @param {Array<*>|Object} object the object to merge with
  * @returns {Array<*>|Object} the new merged object
  */
-export const merge = curry((path, objectToMerge, object) => {
-  if (!isCloneable(object)) {
-    return objectToMerge;
-  }
+export const merge = curry((path, objectToMerge, object) => uncurriedMergeWith(null, path, objectToMerge, object));
 
-  return isEmptyPath(path)
-    ? getMergedObject(object, objectToMerge, true)
-    : getDeepClone(path, object, (ref, key) => {
-      ref[key] = getMergedObject(ref[key], objectToMerge, true);
-    });
-});
+export const mergeWith = curry(uncurriedMergeWith, 4);
 
 /**
  * @function removeobject with quoted keys
@@ -139,21 +148,9 @@ export const merge = curry((path, objectToMerge, object) => {
  * @param {Array<*>|Object} object the object to remove the value from
  * @returns {Array<*>|Object} a new object with the same structure and the value removed
  */
-export const remove = curry((path, object) => {
-  if (isEmptyPath(path)) {
-    return getNewEmptyObject(object);
-  }
+export const remove = curry((path, object) => uncurriedRemoveWith(null, path, object));
 
-  return hasNestedProperty(path, object)
-    ? getDeepClone(path, object, (ref, key) => {
-      if (isArray(ref)) {
-        splice(ref, key);
-      } else {
-        delete ref[key];
-      }
-    })
-    : object;
-});
+export const removeWith = curry(uncurriedRemoveWith, 2);
 
 /**
  * @function set
@@ -166,16 +163,10 @@ export const remove = curry((path, object) => {
  * @param {Array<*>|Object} object the object to set the value in
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const set = curry((path, value, object) =>
-  isEmptyPath(path)
-    ? value
-    : getDeepClone(path, object, (ref, key) => {
-      ref[key] = value;
-    })
-);
+export const set = curry((path, value, object) => uncurriedSetWith(null, path, value, object));
 
 /**
- * @function transform
+ * @function setWith
  *
  * @description
  * perform same operation as set, but using a callback function that receives
@@ -187,34 +178,7 @@ export const set = curry((path, value, object) =>
  * @param {...Array<any>} extraArgs additional arguments to pass to the transform function
  * @returns {Array<*>|Object} a new object with the same structure and the value assigned
  */
-export const transform = curry(
-  (path, fn, object, ...extraArgs) =>
-    isEmptyPath(path)
-      ? fn(object, ...extraArgs)
-      : getDeepClone(path, object, (ref, key) => (ref[key] = fn(ref[key], ...extraArgs))),
-  // eslint-disable-next-line no-magic-numbers
+export const setWith = curry(
+  (fn, path, object, ...extraArgs) => uncurriedSetWith(fn, path, null, object, ...extraArgs),
   3
 );
-
-/**
- * @function add
- *
- * @description
- * add the value to the object at the path requested
- *
- * @param {Array<number|string>|null|number|string} path the path to assign the value at
- * @param {*} value the value to assign
- * @param {Array<*>|Object} object the object to assignobject the value in
- * @returns {Array<*>|Object} a new object with the same structure and the value added
- */
-export const add = curry((path, value, object) => {
-  const isPathEmpty = isEmptyPath(path);
-  const valueAtPath = isPathEmpty ? object : getNestedProperty(path, object);
-  const fullPath = isArray(valueAtPath)
-    ? isArray(path)
-      ? path.concat([valueAtPath.length])
-      : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
-    : path;
-
-  return set(fullPath, value, object);
-});

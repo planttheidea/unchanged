@@ -10,6 +10,7 @@
   "parser": "babel-eslint",
   "rules": {
     "max-depth": [2, 2],
+    "no-magic-numbers": 0,
     "no-param-reassign": 0
   }
 }

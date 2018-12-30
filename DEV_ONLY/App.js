@@ -291,63 +291,63 @@ console.log('deep array', deepSetArray, deepArray, deepSetArray === deepArray);
 
 console.groupEnd('set');
 
-console.group('transform');
+console.group('setWith');
 
 const additionalParam = 'additionalParam';
 
-const simpleTransformObject = src.transform(
-  'simple',
+const simpleTransformObject = src.setWith(
   (value, ...extra) => {
     console.log(value, extra);
 
     return 'new value';
   },
+  'simple',
   simpleObject,
   additionalParam
 );
 
 console.log('simple object', simpleTransformObject, simpleObject, simpleTransformObject === simpleObject);
 
-const simpleTransformArray = src.transform(
-  1,
+const simpleTransformArray = src.setWith(
   (value, ...extra) => {
     console.log(value, extra);
 
     return 'new value';
   },
+  1,
   simpleArray,
   additionalParam
 );
 
 console.log('simple array', simpleTransformArray, simpleArray, simpleTransformArray === simpleArray);
 
-const deepTransformObject = src.transform(
-  'deeply[0].nested["object with quoted keys"]',
+const deepTransformObject = src.setWith(
   (value, ...extra) => {
     console.log(value, extra);
 
     return 'new value';
   },
+  'deeply[0].nested["object with quoted keys"]',
   deepObject,
   additionalParam
 );
 
 console.log('deep object', deepTransformObject, deepObject, deepTransformObject === deepObject);
 
-const deepTransformArray = src.transform(
-  'deeply.nested[0]',
+const deepTransformArray = src.setWith(
   (value, ...extra) => {
     console.log(value, extra);
 
     return 'new value';
   },
+  'deeply.nested[0]',
   deepArray,
   additionalParam
 );
 
 console.log('deep array', deepTransformArray, deepArray, deepTransformArray === deepArray);
 
-console.groupEnd('transform');
+console.groupEnd('setWith');
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
