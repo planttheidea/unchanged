@@ -18,9 +18,10 @@
   },
   "description": "A tiny, fast, unopinionated handler for updating JS objects and arrays immutably",
   "devDependencies": {
-    "@types/jest": "^23.3.8",
+    "@types/jest": "^23.3.11",
     "@types/node": "^10.12.18",
     "@types/ramda": "^0.25.45",
+    "@types/react": "^16.7.18",
     "babel-loader": "^8.0.0",
     "benchmark": "^2.1.4",
     "cli-table": "^0.3.1",
@@ -31,7 +32,7 @@
     "lodash": "^4.17.10",
     "nyc": "^13.0.1",
     "ramda": "^0.26.1",
-    "react": "^16.4.1",
+    "react": "^16.7.0",
     "react-dom": "^16.4.2",
     "rollup": "^0.68.2",
     "rollup-plugin-babel-minify": "^6.2.0",
@@ -71,9 +72,9 @@
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
     "prepublish:compile": "npm run lint && npm run test:coverage && npm run dist",
     "start": "npm run dev",
-    "test": "NODE_PATH=. NODE_ENV=production BABEL_ENV=test ava",
-    "test:coverage": "nyc npm test",
-    "test:watch": "npm test -- --watch"
+    "test": "NODE_PATH=. jest",
+    "test:coverage": "npm run test -- --coverage",
+    "test:watch": "npm run test -- --watch"
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",

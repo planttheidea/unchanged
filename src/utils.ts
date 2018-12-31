@@ -96,17 +96,17 @@ const assign: Function =
   typeof O.assign === 'function' ? O.assign : assignFallback;
 
 export const isCloneable: Function = (object: any): boolean => {
-  if (!object || typeof object !== 'object') {
+  if (
+    !object ||
+    typeof object !== 'object' ||
+    object.$$typeof === REACT_ELEMENT
+  ) {
     return false;
   }
 
   const type: string = toStringObject.call(object);
 
-  return (
-    type !== '[object Date]' &&
-    type !== '[object RegExp]' &&
-    object.$$typeof !== REACT_ELEMENT
-  );
+  return type !== '[object Date]' && type !== '[object RegExp]';
 };
 
 export const isEmptyPath: Function = (object: any): boolean =>
@@ -124,6 +124,13 @@ export const callIfFunction = (
 ): any =>
   typeof object === 'function' ? object.apply(context, parameters) : void 0;
 
+export const getNewEmptyChild: Function = (key: any): unchanged.Unchangeable =>
+  typeof key === 'number' ? [] : {};
+
+export const getNewEmptyObject: Function = (
+  object: unchanged.Unchangeable,
+): unchanged.Unchangeable => (isArray(object) ? [] : {});
+
 export const getShallowClone = (
   object: unchanged.Unchangeable,
 ): unchanged.Unchangeable => {
@@ -139,13 +146,6 @@ export const getShallowClone = (
     ? {}
     : assign(create(getPrototypeOf(object)), object);
 };
-
-export const getNewEmptyChild: Function = (key: any): unchanged.Unchangeable =>
-  typeof key === 'number' ? [] : {};
-
-export const getNewEmptyObject: Function = (
-  object: unchanged.Unchangeable,
-): unchanged.Unchangeable => (isArray(object) ? [] : {});
 
 export const cloneIfPossible: Function = (object: any): any =>
   isCloneable(object) ? getShallowClone(object) : object;
@@ -284,7 +284,7 @@ export const getDeepClone: Function = (
   return onMatchAtPath(parsedPath, topLevelClone, onMatch, true);
 };
 
-export const splice: Function = (array: any[], splicedIndex: number) => {
+export const splice: Function = (array: any[], splicedIndex: number): void => {
   if (array.length) {
     const { length } = array;
 
