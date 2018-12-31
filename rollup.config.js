@@ -52,22 +52,20 @@ const FORMATTED_CONFIG = {
   ]
 };
 
-export default [
-  UMD_CONFIG,
-  FORMATTED_CONFIG,
-  {
-    ...UMD_CONFIG,
-    output: {
-      ...UMD_CONFIG.output,
-      file: pkg.browser.replace(".js", ".min.js"),
-      sourcemap: false
-    },
-    plugins: [
-      ...UMD_CONFIG.plugins,
-      minify({
-        comments: false,
-        sourceMap: false
-      })
-    ]
-  }
-];
+const MINIFIED_CONFIG = {
+  ...UMD_CONFIG,
+  output: {
+    ...UMD_CONFIG.output,
+    file: pkg.browser.replace(".js", ".min.js"),
+    sourcemap: false
+  },
+  plugins: [
+    ...UMD_CONFIG.plugins,
+    minify({
+      comments: false,
+      sourceMap: false
+    })
+  ]
+};
+
+export default [UMD_CONFIG, FORMATTED_CONFIG, MINIFIED_CONFIG];

@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "declaration": true,
-    "declarationDir": "./",
     "esModuleInterop": true,
     "jsx": "react",
     "lib": ["dom", "es2015"],

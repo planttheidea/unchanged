@@ -1,6 +1,6 @@
 {
   "author": "tony_quetano@planttheidea.com",
-  "browser": "dist/unchanged.umd.js",
+  "browser": "dist/unchanged.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
