@@ -79,11 +79,9 @@ export const createCall: Function = (isWith: boolean): Function => {
         return callIfFunction(fn(object, ...extraArgs), context, parameters);
       }
 
-      const value = getNestedProperty(path, object);
+      const result: any = fn(getNestedProperty(path, object), ...extraArgs);
 
-      return fn(value, ...extraArgs)
-        ? callIfFunction(value, context, parameters)
-        : void 0;
+      return callIfFunction(result, context, parameters);
     };
   }
 

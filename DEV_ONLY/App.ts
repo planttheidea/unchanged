@@ -137,6 +137,64 @@ console.log('deep array', deepAddArray, deepArray, deepAddArray === deepArray);
 
 console.groupEnd();
 
+console.group('assign');
+
+const simpleAssignObject = src.assign(
+  null,
+  {
+    different: 'value',
+    simple: 'thing',
+  },
+  simpleObject,
+);
+
+console.log(
+  'simple object',
+  simpleAssignObject,
+  simpleObject,
+  simpleAssignObject === simpleObject,
+);
+
+const simpleAssignArray = src.assign(null, ['different', 'value'], simpleArray);
+
+console.log(
+  'simple array',
+  simpleAssignArray,
+  simpleArray,
+  simpleAssignArray === simpleArray,
+);
+
+const deepAssignObject = src.assign(
+  'deeply[0].nested',
+  {
+    different: 'value',
+    'object with quoted keys': 'thing',
+  },
+  deepObject,
+);
+
+console.log(
+  'deep object',
+  deepAssignObject,
+  deepObject,
+  deepAssignObject === deepObject,
+);
+
+const deepAssignArray = src.assign(
+  'deeply.nested',
+  ['different', 'value'],
+  deepArray,
+);
+
+console.log(
+  'deep array',
+  deepAssignArray,
+  deepArray,
+  deepAssignArray === deepArray,
+);
+
+console.groupEnd();
+
 console.group('call');
 
 const simpleCallObject = Object.assign({}, simpleObject, {
@@ -178,6 +236,24 @@ console.log(
   'simple method not found',
   src.call('nope', ['foo', 'bar'], simpleCallObject),
 );
+console.log(
+  'simple method matches validator',
+  src.callWith(
+    (value: any): boolean => value,
+    'method',
+    ['foo', 'bar'],
+    simpleCallObject,
+  ),
+);
+console.log(
+  'simple method does not match validator',
+  src.callWith(
+    (value: any): boolean => value.toString(),
+    'method',
+    ['foo', 'bar'],
+    simpleCallObject,
+  ),
+);
 
 console.log(
   'native method',
@@ -205,6 +281,24 @@ console.log(
 console.log(
   'deep method not found',
   src.call('deeply.nope', [{ quz: 'quz' }], deepCallObject),
+);
+console.log(
+  'deep method matches validator',
+  src.callWith(
+    (value: any) => value,
+    'deeply.nested[0]',
+    [{ quz: 'quz' }],
+    deepCallObject,
+  ),
+);
+console.log(
+  'deep method does not match validator',
+  src.callWith(
+    (value: any) => value.toString(),
+    'deeply.nested[0]',
+    [{ quz: 'quz' }],
+    deepCallObject,
+  ),
 );
 
 console.log(
@@ -269,63 +363,21 @@ console.log(
   'deep array false',
   src.has('[0].nested["non-existent object"]', deepObject.deeply),
 );
-
-console.groupEnd();
-
-console.group('assign');
-
-const simpleAssignObject = src.assign(
-  null,
-  {
-    different: 'value',
-    simple: 'thing',
-  },
-  simpleObject,
-);
-
 console.log(
-  'simple object',
-  simpleAssignObject,
-  simpleObject,
-  simpleAssignObject === simpleObject,
+  'simple object passes validator',
+  src.hasWith((value: any) => typeof value === 'string', 'simple', simpleObject),
 );
-
-const simpleAssignArray = src.assign(null, ['different', 'value'], simpleArray);
-
 console.log(
-  'simple array',
-  simpleAssignArray,
-  simpleArray,
-  simpleAssignArray === simpleArray,
+  'simple object fails validator',
+  src.hasWith((value: any) => typeof value === 'number', 'simple', simpleObject),
 );
-
-const deepAssignObject = src.assign(
-  'deeply[0].nested',
-  {
-    different: 'value',
-    'object with quoted keys': 'thing',
-  },
-  deepObject,
-);
-
 console.log(
-  'deep object',
-  deepAssignObject,
-  deepObject,
-  deepAssignObject === deepObject,
+  'simple array passes validator',
+  src.hasWith((value: any) => typeof value === 'string', 1, simpleArray),
 );
-
-const deepAssignArray = src.assign(
-  'deeply.nested',
-  ['different', 'value'],
-  deepArray,
-);
-
 console.log(
-  'deep array',
-  deepAssignArray,
-  deepArray,
-  deepAssignArray === deepArray,
+  'simple array fails validator',
+  src.hasWith((value: any) => typeof value === 'number', 1, simpleArray),
 );
 
 console.groupEnd();
