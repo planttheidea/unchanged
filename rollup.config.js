@@ -1,36 +1,39 @@
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import minify from 'rollup-plugin-babel-minify';
+import resolve from "rollup-plugin-node-resolve";
+import minify from "rollup-plugin-babel-minify";
+import typescript from "rollup-plugin-typescript2";
 
-import pkg from './package.json';
+import pkg from "./package.json";
 
-const EXTERNALS = [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})];
+const EXTERNALS = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {})
+];
 
 const UMD_CONFIG = {
   external: EXTERNALS,
-  input: 'src/index.js',
+  input: "src/index.ts",
   output: {
-    exports: 'named',
+    exports: "named",
     file: pkg.browser,
-    format: 'umd',
+    format: "umd",
     globals: EXTERNALS.reduce((globals, name) => {
       globals[name] = name;
 
       return globals;
     }, {}),
     name: pkg.name,
-    sourcemap: true,
+    sourcemap: true
   },
   plugins: [
     resolve({
       browser: true,
       main: true,
-      module: true,
+      module: true
     }),
-    babel({
-      exclude: 'node_modules/**',
-    }),
-  ],
+    typescript({
+      typescript: require("typescript")
+    })
+  ]
 };
 
 const FORMATTED_CONFIG = {
@@ -39,14 +42,14 @@ const FORMATTED_CONFIG = {
     {
       ...UMD_CONFIG.output,
       file: pkg.main,
-      format: 'cjs',
+      format: "cjs"
     },
     {
       ...UMD_CONFIG.output,
       file: pkg.module,
-      format: 'es',
-    },
-  ],
+      format: "es"
+    }
+  ]
 };
 
 export default [
@@ -56,15 +59,15 @@ export default [
     ...UMD_CONFIG,
     output: {
       ...UMD_CONFIG.output,
-      file: pkg.browser.replace('.js', '.min.js'),
-      sourcemap: false,
+      file: pkg.browser.replace(".js", ".min.js"),
+      sourcemap: false
     },
     plugins: [
       ...UMD_CONFIG.plugins,
       minify({
         comments: false,
-        sourceMap: false,
-      }),
-    ],
-  },
+        sourceMap: false
+      })
+    ]
+  }
 ];

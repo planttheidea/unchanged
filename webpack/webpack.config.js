@@ -1,46 +1,63 @@
-'use strict';
+"use strict";
 
-const path = require('path');
-const webpack = require('webpack');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require("path");
+const webpack = require("webpack");
 
-const ROOT = path.resolve(__dirname, '..');
+const ROOT = path.resolve(__dirname, "..");
 
 module.exports = {
-  devtool: '#source-map',
+  devServer: {
+    contentBase: "./dist",
+    inline: true,
+    port: 3000,
+    stats: {
+      assets: false,
+      chunks: true,
+      chunkModules: false,
+      colors: true,
+      hash: false,
+      timings: true,
+      version: false
+    }
+  },
 
-  entry: path.join(ROOT, 'src/index.js'),
+  devtool: "#source-map",
 
-  mode: 'development',
+  entry: path.join(ROOT, "DEV_ONLY", "App.ts"),
+
+  mode: "development",
 
   module: {
     rules: [
       {
-        enforce: 'pre',
-        include: [path.resolve(ROOT, 'src')],
-        options: {
-          emitError: true,
-          failOnError: true,
-          failOnWarning: true,
-          formatter: require('eslint-friendly-formatter')
-        },
-        loader: 'eslint-loader',
-        test: /\.js$/
+        enforce: "pre",
+        include: [path.resolve(ROOT, "src")],
+        loader: "tslint-loader",
+        test: /\.ts$/
       },
       {
-        include: [path.resolve(ROOT, 'src'), /DEV_ONLY/],
-        loader: 'babel-loader',
-        test: /\.js$/
+        include: [path.resolve(ROOT, "src"), /DEV_ONLY/],
+        loader: "ts-loader",
+        test: /\.tsx?$/
       }
     ]
   },
 
   output: {
-    filename: 'unchanged.js',
-    library: 'unchanged',
-    libraryTarget: 'umd',
-    path: path.resolve(ROOT, 'dist'),
+    filename: "unchanged.js",
+    library: "unchanged",
+    libraryTarget: "umd",
+    path: path.resolve(ROOT, "dist"),
     umdNamedDefine: true
   },
 
-  plugins: [new webpack.EnvironmentPlugin(['NODE_ENV'])]
+  plugins: [
+    new webpack.EnvironmentPlugin(["NODE_ENV"]),
+    new HtmlWebpackPlugin()
+  ],
+
+  resolve: {
+    extensions: [".ts", ".js"]
+  }
 };

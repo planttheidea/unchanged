@@ -5,6 +5,7 @@
 .idea
 .npmignore
 .nyc_output
+.rpt2_cache
 benchmarks
 benchmark_results.csv
 coverage
