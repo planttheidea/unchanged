@@ -1764,10 +1764,10 @@ csstype@^2.2.0:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.0.tgz#6cf7b2fa7fc32aab3d746802c244d4eda71371a2"
   integrity sha512-by8hi8BlLbowQq0qtkx54d9aN73R9oUW20HISpka5kmgsR9F7nnxgfsemuR2sdCKZh+CDNf5egW9UZMm4mgJRg==
 
-curriable@^1.0.0:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.3.tgz#b98c5c6b9e556cf808861297141c6c98a2a44a75"
-  integrity sha512-/D69W52ElxiTjtvzBNmAHm+conb397LwR8dArqKB8L8Uy5NUNy2AmK+Ur/iVEGslM4cm19WmcGfPQ8YU04O06Q==
+curriable@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.4.tgz#0bbdd0fea2679f195c8f83a33e1a5904ce2b5978"
+  integrity sha512-ztdZozdCEpuzsTW0ruWqhO3TEOjsj3KG3wTiotd2joU7+3XJY/1NqrsDJr2gdnLGM8g3ZLIwenG34EWp9Jrt2A==
 
 cyclist@~0.2.2:
   version "0.2.2"

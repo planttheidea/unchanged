@@ -44,6 +44,10 @@ module.exports = {
     ]
   },
 
+  node: {
+    fs: "empty"
+  },
+
   output: {
     filename: "unchanged.js",
     library: "unchanged",

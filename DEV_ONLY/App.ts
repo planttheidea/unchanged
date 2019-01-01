@@ -12,10 +12,10 @@ div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
 
+// import '../benchmarks';
+
 console.log(src.add('d.f', 'df', { d: { f: [] } }));
 console.log(src.add(['d', 'f'], 'df', { d: { f: [] } }));
-
-// // import '../benchmarks';
 
 const object = {
   bar: 'baz',

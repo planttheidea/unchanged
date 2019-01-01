@@ -13,7 +13,7 @@
     "url": "https://github.com/planttheidea/unchanged/issues"
   },
   "dependencies": {
-    "curriable": "^1.0.0",
+    "curriable": "^1.2.4",
     "pathington": "^1.1.5"
   },
   "description": "A tiny, fast, unopinionated handler for updating JS objects and arrays immutably",
