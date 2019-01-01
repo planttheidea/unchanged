@@ -223,61 +223,61 @@ test('if getNewEmptyObject will return an object when the object passed is not a
   t.deepEqual(result, {});
 });
 
-test('if getNewChildClone will get a shallow clone of the object when it is an array and the key type should be an array', (t) => {
+test('if getCloneOrEmptyObject will get a shallow clone of the object when it is an array and the key type should be an array', (t) => {
   const object = ['array'];
   const nextKey = 0;
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, object);
 });
 
-test('if getNewChildClone will assignFallback the numeric key to the object when the object is not an array (even though the key says it should be)', (t) => {
+test('if getCloneOrEmptyObject will assignFallback the numeric key to the object when the object is not an array (even though the key says it should be)', (t) => {
   const object = {array: false};
   const nextKey = 0;
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, {...object});
 });
 
-test('if getNewChildClone will get a shallow clone of the object when it is an object and the key type should be an object', (t) => {
+test('if getCloneOrEmptyObject will get a shallow clone of the object when it is an object and the key type should be an object', (t) => {
   const object = {array: true};
   const nextKey = 'key';
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, object);
 });
 
-test('if getNewChildClone will get a new array when the key type should be an array', (t) => {
+test('if getCloneOrEmptyObject will get a new array when the key type should be an array', (t) => {
   const object = undefined;
   const nextKey = 0;
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, []);
 });
 
-test('if getNewChildClone will get a new object when the object doe not exist and the key type should be an object', (t) => {
+test('if getCloneOrEmptyObject will get a new object when the object doe not exist and the key type should be an object', (t) => {
   const object = undefined;
   const nextKey = 'key';
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, {});
 });
 
-test('if getNewChildClone will get a new array when the object doe not exist and the key type should be an array', (t) => {
+test('if getCloneOrEmptyObject will get a new array when the object doe not exist and the key type should be an array', (t) => {
   const object = undefined;
   const nextKey = 0;
 
-  const result = utils.getNewChildClone(object, nextKey);
+  const result = utils.getCloneOrEmptyObject(object, nextKey);
 
   t.not(result, object);
   t.deepEqual(result, []);

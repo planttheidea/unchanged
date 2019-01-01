@@ -11,7 +11,7 @@ import {
   getOwnProperties,
   getMergedObject,
   getNestedProperty,
-  getNewChildClone,
+  getCloneOrEmptyObject,
   getNewEmptyChild,
   getNewEmptyObject,
   getParsedPath,
@@ -20,7 +20,7 @@ import {
   isEmptyPath,
   isGlobalConstructor,
   isSameValueZero,
-  onMatchAtPath,
+  getCloneAtPath,
   reduce,
   splice,
   throwInvalidFnError,
@@ -190,7 +190,7 @@ describe('getDeepClone', () => {
     });
   });
 
-  it('should create a deep clone on a new object if it does not exist at the path specified', () => {
+  it('should create a deep clone on a new object if not present at the path specified', () => {
     const value: string = 'value';
 
     const path: unchanged.Path = 'deeply[0].nested';
@@ -535,7 +535,19 @@ describe('getMergedObject', () => {
 });
 
 describe('getNestedProperty', () => {
-  it('should get the nested value in the object', () => {
+  it('should return the matching value when there is a simple path', () => {
+    const path: unchanged.Path = 'path';
+    const object: unchanged.Unchangeable = {
+      [path]: 'value',
+    };
+    const fallbackValue: undefined = undefined;
+
+    const result: string = getNestedProperty(path, object, fallbackValue);
+
+    expect(result).toEqual(object[path]);
+  });
+
+  it('should return the matching value when there is a nested path', () => {
     const path: unchanged.Path = 'deeply.nested';
     const object: unchanged.Unchangeable = {
       deeply: {
@@ -549,18 +561,6 @@ describe('getNestedProperty', () => {
     expect(result).toEqual(object.deeply.nested);
   });
 
-  it('should return the top-level value when the length of the path is 1', () => {
-    const path: unchanged.Path = 'path';
-    const object: unchanged.Unchangeable = {
-      [path]: 'value',
-    };
-    const fallbackValue: undefined = undefined;
-
-    const result: string = getNestedProperty(path, object, fallbackValue);
-
-    expect(result).toEqual(object[path]);
-  });
-
   it('should return undefined when the object does not exist', () => {
     const path: unchanged.Path = 'path';
     const object: null = null;
@@ -571,7 +571,7 @@ describe('getNestedProperty', () => {
     expect(result).toBe(undefined);
   });
 
-  it('should return the fallback when the object does not exist and one is provided', () => {
+  it('should return the fallback when the object does not exist and a fallback is provided', () => {
     const path: unchanged.Path = 'path';
     const object: null = null;
     const fallbackValue: string = 'fallback';
@@ -581,7 +581,21 @@ describe('getNestedProperty', () => {
     expect(result).toBe(fallbackValue);
   });
 
-  it('should return the fallback when the object does not have a deep match and one is provided', () => {
+  it('should return the fallback when the object does not have a simple path match', () => {
+    const path: unchanged.Path = 'nonexistent.nested';
+    const object: unchanged.Unchangeable = {
+      deeply: {
+        nested: 'value',
+      },
+    };
+    const fallbackValue: string = 'fallback';
+
+    const result: void = getNestedProperty(path, object, fallbackValue);
+
+    expect(result).toBe(fallbackValue);
+  });
+
+  it('should return the fallback when the object does not have a nested path match', () => {
     const path: unchanged.Path = 'deeply.nonexistent';
     const object: unchanged.Unchangeable = {
       deeply: {
@@ -596,12 +610,15 @@ describe('getNestedProperty', () => {
   });
 });
 
-describe('getNewChildClone', () => {
+describe('getCloneOrEmptyObject', () => {
   it('should get a shallow clone of the object if it is cloneable', () => {
     const object: object = { foo: 'bar' };
     const nextKey: number = 0;
 
-    const result: unchanged.Unchangeable = getNewChildClone(object, nextKey);
+    const result: unchanged.Unchangeable = getCloneOrEmptyObject(
+      object,
+      nextKey,
+    );
 
     expect(result).not.toBe(object);
     expect(result).toEqual(object);
@@ -611,7 +628,10 @@ describe('getNewChildClone', () => {
     const object: RegExp = /foo/;
     const nextKey: number = 0;
 
-    const result: unchanged.Unchangeable = getNewChildClone(object, nextKey);
+    const result: unchanged.Unchangeable = getCloneOrEmptyObject(
+      object,
+      nextKey,
+    );
 
     expect(result).not.toBe(object);
     expect(result).toEqual([]);
@@ -702,7 +722,7 @@ describe('getShallowClone', () => {
     expect(result).toEqual({});
   });
 
-  it('should return a shallow clone of the custom object with the prototype when a custom object', () => {
+  it('should return a shallow clone of the custom object when a custom object', () => {
     class Foo {
       value: any;
 
@@ -905,169 +925,57 @@ describe('isSameValueZero', () => {
   });
 });
 
-describe('onMatchAtPath', () => {
-  it('should call onMatch and return its result if the object exists', () => {
+describe('getCloneAtPath', () => {
+  it('should call onMatch and return the object based on a simple path', () => {
     const path: unchanged.ParsedPath = ['key'];
     const object: unchanged.Unchangeable = {
       [path[0]]: 'value',
+      untouched: true,
     };
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = false;
-    const noMatchValue: string = 'NO_MATCH';
+    const onMatch: Function = jest.fn().mockImplementation((a, b) => {
+      a[b] = 'new value';
+    });
 
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
+    const result: string = getCloneAtPath(path, object, onMatch, 0);
 
     expect(onMatch).toBeCalledTimes(1);
     expect(onMatch).toBeCalledWith(object, path[0]);
 
-    expect(result).toBe(path[0]);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: 'new value',
+    });
   });
 
-  it('should call onMatch and return the original object if the object exists and should be cloned', () => {
-    const path: unchanged.ParsedPath = ['key'];
-    const object: unchanged.Unchangeable = {
-      [path[0]]: 'value',
-    };
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = true;
-    const noMatchValue: string = 'NO_MATCH';
-
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
-
-    expect(onMatch).toBeCalledTimes(1);
-    expect(onMatch).toBeCalledWith(object, path[0]);
-
-    expect(result).toBe(object);
-  });
-
-  it('should return noMatchValue if the object does not exist and should not be cloned', () => {
-    const path: unchanged.ParsedPath = ['key'];
-    const object: null = null;
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = false;
-    const noMatchValue: string = 'NO_MATCH';
-
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
-
-    expect(onMatch).toBeCalledTimes(0);
-
-    expect(result).toBe(noMatchValue);
-  });
-
-  it('should call itself if the path has more than one value and the next object exists', () => {
-    const path: unchanged.ParsedPath = [
-      (Symbol('foo') as unknown) as string,
-      'key',
-    ];
+  it('should call onMatch and return the object based on a nested path', () => {
+    const path: unchanged.ParsedPath = ['deeply', 'nested', 'key'];
     const object: unchanged.Unchangeable = {
       [path[0]]: {
-        [path[1]]: 'value',
+        [path[1]]: {
+          [path[2]]: 'value',
+        },
       },
+      untouched: true,
     };
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = false;
-    const noMatchValue: string = 'NO_MATCH';
+    const onMatch: Function = jest.fn().mockImplementation((a, b) => {
+      a[b] = 'new value';
+    });
 
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
+    const result: string = getCloneAtPath(path, object, onMatch, 0);
 
     expect(onMatch).toBeCalledTimes(1);
-    expect(onMatch).toBeCalledWith(object[path[0]], path[1]);
+    expect(onMatch).toBeCalledWith(object[path[0]][path[1]], path[2]);
 
-    expect(result).toBe(path[1]);
-  });
-
-  it('should not call itself if the path has more than one value but the next object does not exist', () => {
-    const path: unchanged.ParsedPath = [
-      (Symbol('foo') as unknown) as string,
-      'key',
-    ];
-    const object: null = null;
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = false;
-    const noMatchValue: string = 'NO_MATCH';
-
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
-
-    expect(onMatch).toBeCalledTimes(0);
-
-    expect(result).toBe(noMatchValue);
-  });
-
-  it('should not call itself if the path has more than one value but the next key does not exist', () => {
-    const path: unchanged.ParsedPath = [
-      (Symbol('foo') as unknown) as string,
-      'key',
-    ];
-    const object: unchanged.Unchangeable = {};
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = false;
-    const noMatchValue: string = 'NO_MATCH';
-
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
-
-    expect(onMatch).toBeCalledTimes(0);
-
-    expect(result).toBe(noMatchValue);
-  });
-
-  it('should call itself with a new clone if the path has more than one value and the next key does not exist', () => {
-    const path: unchanged.ParsedPath = [
-      (Symbol('foo') as unknown) as string,
-      'key',
-    ];
-    const object: unchanged.Unchangeable = {};
-    const onMatch: Function = jest.fn().mockImplementation((a, b) => b);
-    const shouldClone: boolean = true;
-    const noMatchValue: string = 'NO_MATCH';
-
-    const result: string = onMatchAtPath(
-      path,
-      object,
-      onMatch,
-      shouldClone,
-      noMatchValue,
-    );
-
-    expect(onMatch).toBeCalledTimes(1);
-    expect(onMatch).toBeCalledWith(object[path[0]], path[1]);
-
-    expect(result).toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: {
+        ...object[path[0]],
+        [path[1]]: {
+          ...object[path[1]],
+          [path[2]]: 'new value',
+        },
+      },
+    });
   });
 });
 

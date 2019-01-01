@@ -2,13 +2,7 @@
 import { parse } from 'pathington';
 
 const O = Object;
-const {
-  create,
-  getOwnPropertySymbols,
-  getPrototypeOf,
-  keys,
-  propertyIsEnumerable,
-} = O;
+const { create, getOwnPropertySymbols, keys, propertyIsEnumerable } = O;
 const { toString: toStringObject } = O.prototype;
 
 const { toString: toStringFunction } = Function.prototype;
@@ -144,13 +138,13 @@ export const getShallowClone = (
 
   return isGlobalConstructor(object.constructor)
     ? {}
-    : assign(create(getPrototypeOf(object)), object);
+    : assign(create(object.__proto__), object);
 };
 
 export const cloneIfPossible: Function = (object: any): any =>
   isCloneable(object) ? getShallowClone(object) : object;
 
-export const getNewChildClone: Function = (
+export const getCloneOrEmptyObject: Function = (
   object: unchanged.Unchangeable,
   nextKey: any,
 ): unchanged.Unchangeable =>
@@ -161,53 +155,57 @@ export const getCoalescedValue: Function = (
   fallbackValue: any,
 ): any => (value === void 0 ? fallbackValue : value);
 
-export const onMatchAtPath: Function = (
+export const getParsedPath: Function = (
+  path: unchanged.Path,
+): unchanged.ParsedPath => (isArray(path) ? path : parse(path));
+
+export const getCloneAtPath: Function = (
   path: unchanged.ParsedPath,
   object: unchanged.Unchangeable,
   onMatch: Function,
-  shouldClone?: boolean,
-  noMatchValue?: any,
-  index: number = 0,
+  index: number,
 ): any => {
   const key: unchanged.PathItem = path[index];
   const nextIndex: number = index + 1;
 
   if (nextIndex === path.length) {
-    const result: any =
-      object || shouldClone ? onMatch(object, key) : noMatchValue;
-
-    return shouldClone ? object : result;
-  }
-
-  if (shouldClone) {
-    object[key] = onMatchAtPath(
+    onMatch(object, key);
+  } else {
+    object[key] = getCloneAtPath(
       path,
-      getNewChildClone(object[key], path[nextIndex]),
+      getCloneOrEmptyObject(object[key], path[nextIndex]),
       onMatch,
-      shouldClone,
-      noMatchValue,
       nextIndex,
     );
-
-    return object;
   }
 
-  return object && object[key]
-    ? onMatchAtPath(
-        path,
-        object[key],
-        onMatch,
-        shouldClone,
-        noMatchValue,
-        nextIndex,
-      )
-    : noMatchValue;
+  return object;
+};
+
+export const getDeepClone: Function = (
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  onMatch: Function,
+): unchanged.Unchangeable => {
+  const parsedPath: unchanged.ParsedPath = getParsedPath(path);
+  const topLevelClone: unchanged.Unchangeable = getCloneOrEmptyObject(
+    object,
+    parsedPath[0],
+  );
+
+  if (parsedPath.length === 1) {
+    onMatch(topLevelClone, parsedPath[0]);
+
+    return topLevelClone;
+  }
+
+  return getCloneAtPath(parsedPath, topLevelClone, onMatch, 0);
 };
 
 export const getMergedObject: Function = (
   object1: unchanged.Unchangeable,
   object2: unchanged.Unchangeable,
-  isDeep?: boolean,
+  isDeep: boolean,
 ): unchanged.Unchangeable => {
   const isObject1Array: boolean = isArray(object1);
 
@@ -222,7 +220,7 @@ export const getMergedObject: Function = (
   const target: unchanged.Unchangeable =
     object1.constructor === O || isGlobalConstructor(object1.constructor)
       ? {}
-      : create(getPrototypeOf(object1));
+      : create(object1.__proto__);
 
   return reduce(
     getOwnProperties(object2),
@@ -238,10 +236,6 @@ export const getMergedObject: Function = (
   );
 };
 
-export const getParsedPath: Function = (
-  path: unchanged.Path,
-): unchanged.ParsedPath => (isArray(path) ? path : parse(path));
-
 export const getNestedProperty: Function = (
   path: unchanged.Path,
   object: unchanged.Unchangeable,
@@ -255,33 +249,19 @@ export const getNestedProperty: Function = (
       : noMatchValue;
   }
 
-  return onMatchAtPath(
-    parsedPath,
-    object,
-    (ref: unchanged.Unchangeable, key: string): any =>
-      getCoalescedValue(ref[key], noMatchValue),
-    false,
-    noMatchValue,
-  );
-};
+  let ref: any = object;
+  let key: number | string = parsedPath[0];
 
-export const getDeepClone: Function = (
-  path: unchanged.Path,
-  object: unchanged.Unchangeable,
-  onMatch: Function,
-): unchanged.Unchangeable => {
-  const parsedPath: unchanged.ParsedPath = getParsedPath(path);
-  const topLevelClone: unchanged.Unchangeable = isCloneable(object)
-    ? getShallowClone(object)
-    : getNewEmptyChild(parsedPath[0]);
+  for (let index: number = 0; index < parsedPath.length - 1; index++) {
+    if (!ref || !ref[key]) {
+      return noMatchValue;
+    }
 
-  if (parsedPath.length === 1) {
-    onMatch(topLevelClone, parsedPath[0]);
-
-    return topLevelClone;
+    ref = ref[key];
+    key = parsedPath[index + 1];
   }
 
-  return onMatchAtPath(parsedPath, topLevelClone, onMatch, true);
+  return ref ? getCoalescedValue(ref[key], noMatchValue) : noMatchValue;
 };
 
 export const splice: Function = (array: any[], splicedIndex: number): void => {
