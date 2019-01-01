@@ -79,7 +79,13 @@ export const createCall: Function = (isWith: boolean): Function => {
         return callIfFunction(fn(object, ...extraArgs), context, parameters);
       }
 
-      const result: any = fn(getNestedProperty(path, object), ...extraArgs);
+      const value: any = getNestedProperty(path, object);
+
+      if (value === void 0) {
+        return;
+      }
+
+      const result: any = fn(value, ...extraArgs);
 
       return callIfFunction(result, context, parameters);
     };
@@ -338,7 +344,9 @@ export const createRemove: Function = (isWith: boolean): Function => {
         return fn(emptyObject, ...extraArgs) ? emptyObject : object;
       }
 
-      return fn(getNestedProperty(path, object), ...extraArgs)
+      const value: any = getNestedProperty(path, object);
+
+      return value !== void 0 && fn(value, ...extraArgs)
         ? getDeepClone(
             path,
             object,

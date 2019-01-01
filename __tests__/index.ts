@@ -31,9 +31,327 @@ describe('assign', () => {});
 
 describe('assignWith', () => {});
 
-describe('call', () => {});
+describe('call', () => {
+  it('should call the function at the simple array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
 
-describe('callWith', () => {});
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: fn };
+
+    const result: string = call(path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should call the function at the simple string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const path: unchanged.Path = 'foo';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path]: fn };
+
+    const result: string = call(path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should call the function at the nested array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const path: unchanged.Path = ['foo', 0];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: [fn] };
+
+    const result: string = call(path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should call the function at the nested string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const path: unchanged.Path = 'foo[0]';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path.split('[')[0]]: [fn] };
+
+    const result: string = call(path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if no match found at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = {};
+
+    const result: string = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = {};
+
+    const result: string = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { foo: [] };
+
+    const result: string = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { foo: [] };
+
+    const result: string = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the object if the path is empty and the object is a function', () => {
+    const path: unchanged.Path = [];
+    const parameters: any[] = [123, null];
+    const object: Function = jest.fn().mockReturnValue('called');
+
+    const result: any = call(path, parameters, object);
+
+    expect(object).toBeCalledTimes(1);
+    expect(object).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if the path is empty and the object is not function', () => {
+    const path: unchanged.Path = [];
+    const parameters: any[] = [123, null];
+    const object: null = null;
+
+    const result: any = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+});
+
+describe('callWith', () => {
+  it('should call the function returned by fn at the simple array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): Function => value;
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: fn };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if fn returns a non-function at the simple array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): boolean => value === fn;
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: fn };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(0);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the function returned by fn at the simple string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value;
+    const path: unchanged.Path = 'foo';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path]: fn };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if fn returns a non-function at the simple string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value === fn;
+    const path: unchanged.Path = 'foo';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path]: fn };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(0);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the function returned by fn at the nested array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value;
+    const path: unchanged.Path = ['foo', 0];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: [fn] };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if fn returns a non-function at the nested array path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value === fn;
+    const path: unchanged.Path = ['foo', 0];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path[0]]: [fn] };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(0);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the function returned by fn at the nested string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value;
+    const path: unchanged.Path = 'foo[0]';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path.split('[')[0]]: [fn] };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if fn returns a non-function at the nested string path', () => {
+    const fn: Function = jest.fn().mockReturnValue('called');
+
+    const fnWith: Function = (value: any): any => value === fn;
+    const path: unchanged.Path = 'foo[0]';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { [path.split('[')[0]]: [fn] };
+
+    const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(0);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the simple array path', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = {};
+
+    const result: string = callWith(fn, path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the simple string path', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = 'foo';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = {};
+
+    const result: string = callWith(fn, path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the nested array path', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = ['foo', 0];
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { foo: [] };
+
+    const result: string = callWith(fn, path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should return undefined if no match found at the nested string path', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = 'foo[0]';
+    const parameters: any[] = [123, null];
+    const object: unchanged.Unchangeable = { foo: [] };
+
+    const result: string = callWith(fn, path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+
+  it('should call the object if the path is empty and the object returned from fn is a function', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = [];
+    const parameters: any[] = [123, null];
+    const object: Function = jest.fn().mockReturnValue('called');
+
+    const result: any = callWith(fn, path, parameters, object);
+
+    expect(object).toBeCalledTimes(1);
+    expect(object).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should return undefined if the path is empty and the object returned from fn is a not function', () => {
+    const fn: Function = (value: any) => !value;
+    const path: unchanged.Path = [];
+    const parameters: any[] = [123, null];
+    const object: Function = jest.fn().mockReturnValue('called');
+
+    const result: any = callWith(fn, path, parameters, object);
+
+    expect(object).toBeCalledTimes(0);
+
+    expect(result).toBe(undefined);
+  });
+});
 
 describe('get', () => {
   it('should get the value at the simple array path', () => {
@@ -1264,6 +1582,16 @@ describe('merge', () => {
       ...value,
     });
   });
+
+  it('should return the value if the object is not cloneable', () => {
+    const path: unchanged.Path = [];
+    const value: any = { foo: 'bar' };
+    const object: any = 123;
+
+    const result: any = merge(path, value, object);
+
+    expect(result).toBe(value);
+  });
 });
 
 describe('mergeWith', () => {
@@ -1516,9 +1844,278 @@ describe('mergeWith', () => {
 
     expect(result).toBe(object);
   });
+
+  it('should throw if the function passed is not a function', () => {
+    const fn: null = null;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+
+    expect(() => mergeWith(fn, path, object)).toThrowError();
+  });
 });
 
-describe('remove', () => {});
+describe('remove', () => {
+  it('should remove the key from the object in the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      bar: 'baz',
+    });
+  });
+
+  it('should remove the key from the object in the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      bar: 'baz',
+    });
+  });
+
+  it('should remove the key from the object in the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      foo: ['quz'],
+      bar: 'baz',
+    });
+  });
+
+  it('should remove the key from the object in the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      foo: ['quz'],
+      bar: 'baz',
+    });
+  });
+
+  it('should return the object if no match found in the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return a new empty object if the path is empty', () => {
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = remove(path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({});
+  });
+});
+
+describe('removeWith', () => {
+  it('should remove the key from the object if fn returns truthy in the simple array path', () => {
+    const fn: Function = (value: any) => value === 'bar';
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      bar: 'baz',
+    });
+  });
+
+  it('should return the object if fn returns falsy in the simple array path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should remove the key from the object if fn returns truthy in the simple string path', () => {
+    const fn: Function = (value: any) => value === 'bar';
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      bar: 'baz',
+    });
+  });
+
+  it('should return the object if fn returns falsy in the simple string path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should remove the key from the object if fn returns truthy in the nested array path', () => {
+    const fn: Function = (value: any) => value === 'bar';
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      foo: ['quz'],
+      bar: 'baz',
+    });
+  });
+
+  it('should return the object if fn returns falsy in the nested array path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should remove the key from the object if fn returns truthy in the nested string path', () => {
+    const fn: Function = (value: any) => value === 'bar';
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      foo: ['quz'],
+      bar: 'baz',
+    });
+  });
+
+  it('should return the object if fn returns falsy in the nested string path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the simple array path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the simple string path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the nested array path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return the object if no match found in the nested string path', () => {
+    const fn: Function = (value: any) => value === 'baz';
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should return a new empty object if fn returns truthy and the path is empty', () => {
+    const fn: Function = (value: any) => value;
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({});
+  });
+
+  it('should return the object if fn returns falsy and the path is empty', () => {
+    const fn: Function = (value: any) => Array.isArray(value);
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
+
+    const result = removeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+
+  it('should throw if the function passed is not a function', () => {
+    const fn: null = null;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+
+    expect(() => removeWith(fn, path, object)).toThrowError();
+  });
+});
 
 describe('set', () => {
   it('should create a new object with the value set at the simple array path', () => {
@@ -1734,5 +2331,13 @@ describe('setWith', () => {
     const result: any = setWith(fn, path, object);
 
     expect(result).toBe('--true--');
+  });
+
+  it('should throw if the function passed is not a function', () => {
+    const fn: null = null;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+
+    expect(() => setWith(fn, path, object)).toThrowError();
   });
 });
