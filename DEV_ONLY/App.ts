@@ -1,6 +1,8 @@
 import * as src from '../src';
 import { assoc } from 'ramda';
 
+// import '../benchmarks';
+
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
 document.body.style.margin = '0px';
@@ -11,11 +13,6 @@ const div = document.createElement('div');
 div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
-
-// import '../benchmarks';
-
-console.log(src.add('d.f', 'df', { d: { f: [] } }));
-console.log(src.add(['d', 'f'], 'df', { d: { f: [] } }));
 
 const object = {
   bar: 'baz',
@@ -30,8 +27,6 @@ const result = src.merge(
   },
   object,
 );
-
-console.log(result, object);
 
 const foo = (() => {
   class Foo {
@@ -48,9 +43,6 @@ const foo = (() => {
 
   return new Foo('foo');
 })();
-
-console.log(assoc('0', 'value', foo));
-console.log(src.set(0, 'value', foo));
 
 const simpleObject = {
   foo,
@@ -86,6 +78,14 @@ console.group('legend');
 console.log('title | updated object | original object | are objects equal');
 
 console.groupEnd();
+
+console.log(result, object);
+
+console.log(src.add('d.f', 'df', { d: { f: [] } }));
+console.log(src.add(['d', 'f'], 'df', { d: { f: [] } }));
+
+console.log(assoc('0', 'value', foo));
+console.log(src.set(0, 'value', foo));
 
 console.group('add');
 
@@ -337,6 +337,55 @@ console.log(
 console.log(
   'deep array',
   src.get('[0].nested["object with quoted keys"]', deepObject.deeply),
+);
+
+console.groupEnd();
+
+console.group('getWithOr');
+
+const gwoGetter = (value: any): boolean => value === 'value';
+
+console.log(
+  'simple object true',
+  src.getWithOr(gwoGetter, 'fallback', 'simple', simpleObject),
+);
+console.log(
+  'simple object false',
+  src.getWithOr(gwoGetter, 'fallback', 'nope', simpleObject),
+);
+console.log(
+  'simple array true',
+  src.getWithOr(gwoGetter, 'fallback', 1, simpleArray),
+);
+console.log(
+  'simple array false',
+  src.getWithOr(gwoGetter, 'fallback', 10, simpleArray),
+);
+console.log(
+  'deep object true',
+  src.getWithOr(
+    gwoGetter,
+    'fallback',
+    'deeply[0].nested["object with quoted keys"]',
+    deepObject,
+  ),
+);
+console.log(
+  'deep object false',
+  src.getWithOr(gwoGetter, 'fallback', 'deeply[0].nested.nope', deepObject),
+);
+console.log(
+  'deep array true',
+  src.getWithOr(
+    gwoGetter,
+    'fallback',
+    '[0].nested["object with quoted keys"]',
+    deepObject.deeply,
+  ),
+);
+console.log(
+  'deep array false',
+  src.getWithOr(gwoGetter, 'fallback', '[0].nested.nope', deepObject.deeply),
 );
 
 console.groupEnd();

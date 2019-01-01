@@ -99,16 +99,12 @@ export const createCall: Function = (isWith: boolean): Function => {
   };
 };
 
-export const createGet: Function = (
-  isWith: boolean,
-  isOr: boolean,
-): Function => {
+export const createGet: Function = (isWith: boolean): Function => {
   if (isWith) {
     return function (
       fn: Function,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-      noMatchValue?: any,
     ): any {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
@@ -120,28 +116,46 @@ export const createGet: Function = (
         return fn(object, ...extraArgs);
       }
 
-      const value: any = getNestedProperty(
-        path,
-        object,
-        isOr ? noMatchValue : void 0,
-      );
+      const value: any = getNestedProperty(path, object);
 
-      if (value === void 0) {
-        return;
+      return value === void 0 ? value : fn(value, ...extraArgs);
+    };
+  }
+
+  return (path: unchanged.Path, object: unchanged.Unchangeable): any =>
+    isEmptyPath(path) ? object : getNestedProperty(path, object);
+};
+
+export const createGetOr: Function = (isWith: boolean): Function => {
+  if (isWith) {
+    return function (
+      fn: Function,
+      noMatchValue: any,
+      path: unchanged.Path,
+      object: unchanged.Unchangeable,
+    ): any {
+      if (typeof fn !== 'function') {
+        throwInvalidFnError();
       }
 
-      return fn(value, ...extraArgs) ? value : void 0;
+      const extraArgs: any[] = slice.call(arguments, 4);
+
+      if (isEmptyPath(path)) {
+        return fn(object, ...extraArgs);
+      }
+
+      const value: any = getNestedProperty(path, object);
+
+      return value === void 0 ? noMatchValue : fn(value, ...extraArgs);
     };
   }
 
   return (
+    noMatchValue: any,
     path: unchanged.Path,
     object: unchanged.Unchangeable,
-    noMatchValue?: any,
   ): any =>
-    isEmptyPath(path)
-      ? object
-      : getNestedProperty(path, object, isOr ? noMatchValue : void 0);
+    isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue);
 };
 
 export const createGetFullPath: Function = (isWith: boolean): Function => {
@@ -192,12 +206,13 @@ export const createHas: Function = (isWith: boolean): Function => {
         throwInvalidFnError();
       }
 
+      const extraArgs: any[] = slice.call(arguments, 3);
+
       if (isEmptyPath(path)) {
-        return object == null;
+        return !!fn(object, ...extraArgs);
       }
 
       const value: any = getNestedProperty(path, object);
-      const extraArgs: any[] = slice.call(arguments, 3);
 
       return value !== void 0 && !!fn(value, ...extraArgs);
     };
@@ -224,7 +239,7 @@ export const createIs: Function = (isWith: boolean): Function => {
       const extraArgs: any[] = slice.call(arguments, 4);
 
       if (isEmptyPath(path)) {
-        return fn(object, ...extraArgs) == null;
+        return isSameValueZero(fn(object, ...extraArgs), value);
       }
 
       return isSameValueZero(

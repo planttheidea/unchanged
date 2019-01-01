@@ -7,6 +7,7 @@ import {
   createAssign,
   createCall,
   createGet,
+  createGetOr,
   createHas,
   createIs,
   createMerge,
@@ -28,13 +29,13 @@ export const call: Function = curry(createCall(false), 3);
 
 export const callWith: Function = curry(createCall(true), 4);
 
-export const get: Function = curry(createGet(false, false), 2);
+export const get: Function = curry(createGet(false), 2);
 
-export const getOr: Function = curry(createGet(false, true), 3);
+export const getOr: Function = curry(createGetOr(false), 3);
 
-export const getWith: Function = curry(createSet(true, false), 3);
+export const getWith: Function = curry(createGet(true), 3);
 
-export const getWithOr: Function = curry(createSet(true, true), 4);
+export const getWithOr: Function = curry(createGetOr(true), 4);
 
 export const has: Function = curry(createHas(false), 2);
 
