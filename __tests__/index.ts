@@ -1,3 +1,5 @@
+import { parse } from 'pathington';
+
 import {
   add,
   addWith,
@@ -21,6 +23,18 @@ import {
   setWith,
 } from '../src';
 
+describe('add', () => {});
+
+describe('addWith', () => {});
+
+describe('assign', () => {});
+
+describe('assignWith', () => {});
+
+describe('call', () => {});
+
+describe('callWith', () => {});
+
 describe('get', () => {
   it('should get the value at the simple array path', () => {
     const path: unchanged.Path = ['foo'];
@@ -41,11 +55,9 @@ describe('get', () => {
   });
 
   it('should get the value at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: unchanged.Unchangeable = get(path, object);
@@ -54,18 +66,16 @@ describe('get', () => {
   });
 
   it('should get the value at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: unchanged.Unchangeable = get(path, object);
 
-    const splitPath: string[] = path.split('.');
+    const parsedPath: unchanged.ParsedPath = parse(path);
 
-    expect(result).toEqual(object[splitPath[0]][splitPath[1]]);
+    expect(result).toEqual(object[parsedPath[0]][parsedPath[1]]);
   });
 
   it('should return the object itself if the path is empty', () => {
@@ -96,9 +106,9 @@ describe('get', () => {
   });
 
   it('should return undefined if no match at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: unchanged.Unchangeable = get(path, object);
@@ -107,9 +117,9 @@ describe('get', () => {
   });
 
   it('should return undefined if no match at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: unchanged.Unchangeable = get(path, object);
@@ -140,11 +150,9 @@ describe('getOr', () => {
   });
 
   it('should get the value at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const fallbackValue: string = 'fallback';
 
@@ -154,19 +162,17 @@ describe('getOr', () => {
   });
 
   it('should get the value at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const fallbackValue: string = 'fallback';
 
     const result: unchanged.Unchangeable = getOr(fallbackValue, path, object);
 
-    const splitPath: string[] = path.split('.');
+    const parsedPath: unchanged.ParsedPath = parse(path);
 
-    expect(result).toEqual(object[splitPath[0]][splitPath[1]]);
+    expect(result).toEqual(object[parsedPath[0]][parsedPath[1]]);
   });
 
   it('should return the object itself if the path is empty', () => {
@@ -200,9 +206,9 @@ describe('getOr', () => {
   });
 
   it('should return the fallback if no match at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const fallbackValue: string = 'fallback';
 
@@ -212,9 +218,9 @@ describe('getOr', () => {
   });
 
   it('should return the fallback if no match at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const fallbackValue: string = 'fallback';
 
@@ -247,30 +253,26 @@ describe('getWith', () => {
 
   it('should get the value at the nested array path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: unchanged.Unchangeable = getWith(fn, path, object);
 
-    expect(result).toEqual(false);
+    expect(result).toEqual(true);
   });
 
   it('should get the value at the nested string path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: unchanged.Unchangeable = getWith(fn, path, object);
 
-    expect(result).toEqual(false);
+    expect(result).toEqual(true);
   });
 
   it('should return the result of the callback with the object passed if the path is empty', () => {
@@ -305,9 +307,9 @@ describe('getWith', () => {
 
   it('should return undefined if no match at the nested array path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: unchanged.Unchangeable = getWith(fn, path, object);
@@ -317,9 +319,9 @@ describe('getWith', () => {
 
   it('should return undefined if no match at the nested string path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: unchanged.Unchangeable = getWith(fn, path, object);
@@ -371,11 +373,9 @@ describe('getWithOr', () => {
 
   it('should get the value at the nested array path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const fallbackValue: string = 'fallback';
 
@@ -386,16 +386,14 @@ describe('getWithOr', () => {
       object,
     );
 
-    expect(result).toEqual(false);
+    expect(result).toEqual(true);
   });
 
   it('should get the value at the nested string path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const fallbackValue: string = 'fallback';
 
@@ -406,7 +404,7 @@ describe('getWithOr', () => {
       object,
     );
 
-    expect(result).toEqual(false);
+    expect(result).toEqual(true);
   });
 
   it('should return the result of the callback with the object passed if the path is empty', () => {
@@ -459,9 +457,9 @@ describe('getWithOr', () => {
 
   it('should return the fallback if no match at the nested array path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const fallbackValue: string = 'fallback';
 
@@ -477,9 +475,9 @@ describe('getWithOr', () => {
 
   it('should return the fallback if no match at the nested string path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const fallbackValue: string = 'fallback';
 
@@ -523,11 +521,9 @@ describe('has', () => {
   });
 
   it('should return true with the value at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: boolean = has(path, object);
@@ -536,11 +532,9 @@ describe('has', () => {
   });
 
   it('should return true with the value at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: boolean = has(path, object);
@@ -585,9 +579,9 @@ describe('has', () => {
   });
 
   it('should return false if no match at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: boolean = has(path, object);
@@ -596,9 +590,9 @@ describe('has', () => {
   });
 
   it('should return false if no match at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: boolean = has(path, object);
@@ -630,11 +624,9 @@ describe('hasWith', () => {
 
   it('should return true with the value at the nested array path', () => {
     const fn: Function = (value: any): boolean => typeof value === 'string';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: boolean = hasWith(fn, path, object);
@@ -644,11 +636,9 @@ describe('hasWith', () => {
 
   it('should return true with the value at the nested string path', () => {
     const fn: Function = (value: any): boolean => typeof value === 'string';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const result: boolean = hasWith(fn, path, object);
@@ -700,9 +690,9 @@ describe('hasWith', () => {
 
   it('should return false if no match at the nested array path', () => {
     const fn: Function = (value: any): boolean => typeof value === 'string';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: boolean = hasWith(fn, path, object);
@@ -712,9 +702,9 @@ describe('hasWith', () => {
 
   it('should return false if no match at the nested string path', () => {
     const fn: Function = (value: any): boolean => typeof value === 'string';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
 
     const result: boolean = hasWith(fn, path, object);
@@ -773,11 +763,9 @@ describe('is', () => {
   });
 
   it('should return true with the value matching at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const value: any = object[path[0]][path[1]];
 
@@ -787,11 +775,9 @@ describe('is', () => {
   });
 
   it('should return false with the value not matching at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const value: any = 'quz';
 
@@ -801,16 +787,14 @@ describe('is', () => {
   });
 
   it('should return true with the value matching at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
-    const splitPath: string[] = path.split('.');
+    const parsedPath: unchanged.ParsedPath = parse(path);
 
-    const value: any = object[splitPath[0]][splitPath[1]];
+    const value: any = object[parsedPath[0]][parsedPath[1]];
 
     const result: boolean = is(path, value, object);
 
@@ -818,11 +802,9 @@ describe('is', () => {
   });
 
   it('should return false with the value not matching at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const value: any = 'quz';
@@ -873,9 +855,9 @@ describe('is', () => {
   });
 
   it('should return false if no match at the nested array path', () => {
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const value: any = 'baz';
 
@@ -885,9 +867,9 @@ describe('is', () => {
   });
 
   it('should return false if no match at the nested string path', () => {
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const value: any = 'baz';
 
@@ -948,12 +930,10 @@ describe('isWith', () => {
 
   it('should return true with the value matching at the nested array path', () => {
     const fn: Function = (value: any): boolean =>
-      value === 'baz' ? 'blah' : value;
-    const path: unchanged.Path = ['foo', 'bar'];
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const value: any = 'blah';
 
@@ -964,12 +944,10 @@ describe('isWith', () => {
 
   it('should return false with the value not matching at the nested array path', () => {
     const fn: Function = (value: any): boolean =>
-      value === 'baz' ? 'blah' : value;
-    const path: unchanged.Path = ['foo', 'bar'];
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
     const value: any = 'quz';
 
@@ -980,12 +958,10 @@ describe('isWith', () => {
 
   it('should return true with the value matching at the nested string path', () => {
     const fn: Function = (value: any): boolean =>
-      value === 'baz' ? 'blah' : value;
-    const path: unchanged.Path = 'foo.bar';
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const value: any = 'blah';
@@ -997,12 +973,10 @@ describe('isWith', () => {
 
   it('should return false with the value not matching at the nested string path', () => {
     const fn: Function = (value: any): boolean =>
-      value === 'baz' ? 'blah' : value;
-    const path: unchanged.Path = 'foo.bar';
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {
-        bar: 'baz',
-      },
+      foo: ['bar'],
     };
 
     const value: any = 'quz';
@@ -1060,9 +1034,9 @@ describe('isWith', () => {
 
   it('should return false if no match at the nested array path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = ['foo', 'bar'];
+    const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const value: any = 'baz';
 
@@ -1073,9 +1047,9 @@ describe('isWith', () => {
 
   it('should return false if no match at the nested string path', () => {
     const fn: Function = (value: any) => value === 'bar';
-    const path: unchanged.Path = 'foo.bar';
+    const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
-      foo: {},
+      foo: [],
     };
     const value: any = 'baz';
 
@@ -1091,5 +1065,674 @@ describe('isWith', () => {
     const value: any = 'bar';
 
     expect(() => isWith(fn, path, value, object)).toThrowError();
+  });
+});
+
+describe('merge', () => {
+  it('should create a new object with the value set at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: value,
+    });
+  });
+
+  it('should create a new object with the value merged at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = {
+      foo: { bar: 'nope', baz: 'quz' },
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: {
+        ...object[path[0]],
+        ...value,
+      },
+    });
+  });
+
+  it('should create a new object with the value set at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: value,
+    });
+  });
+
+  it('should create a new object with the value merged at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = {
+      foo: { bar: 'nope', baz: 'quz' },
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: {
+        ...object[path],
+        ...value,
+      },
+    });
+  });
+
+  it('should create a new object with the value set at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value merged at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = { baz: 'quz' };
+    const object: unchanged.Unchangeable = {
+      foo: [{ bar: 'baz' }],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [
+        {
+          ...object[path[0]][path[1]],
+          ...value,
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value set at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const value: any = { bar: 'baz' };
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value merged at the nested array path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const value: any = { baz: 'quz' };
+    const object: unchanged.Unchangeable = {
+      foo: [{ bar: 'baz' }],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [
+        {
+          ...object[parsedPath[0]][parsedPath[1]],
+          ...value,
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value created at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value created at the nested string path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = merge(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [value],
+    });
+  });
+
+  it('should return the merged objects if the path is empty', () => {
+    const path: unchanged.Path = [];
+    const value: any = { foo: 'bar' };
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: any = merge(path, value, object);
+
+    expect(result).toEqual({
+      ...object,
+      ...value,
+    });
+  });
+});
+
+describe('mergeWith', () => {
+  it('should create a new object with the value set at the simple array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: {
+        value: object[path[0]],
+      },
+    });
+  });
+
+  it('should create a new object with the value merged at the simple array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {
+      foo: { bar: 'nope', baz: 'quz' },
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: {
+        ...object[path[0]],
+        value: object[path[0]],
+      },
+    });
+  });
+
+  it('should create a new object with the value set at the simple string path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: {
+        value: object[path],
+      },
+    });
+  });
+
+  it('should create a new object with the value merged at the simple string path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = {
+      foo: { bar: 'nope', baz: 'quz' },
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: {
+        ...object[path],
+        value: object[path],
+      },
+    });
+  });
+
+  it('should create a new object with the value set at the nested array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [
+        {
+          value: object[path[0]][path[1]],
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value merged at the nested array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [{ bar: 'baz' }],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [
+        {
+          ...object[path[0]][path[1]],
+          value: object[path[0]][path[1]],
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value set at the nested string path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [
+        {
+          value: object[parsedPath[0]][parsedPath[1]],
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value merged at the nested array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [{ bar: 'baz' }],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [
+        {
+          ...object[parsedPath[0]][parsedPath[1]],
+          value: object[parsedPath[0]][parsedPath[1]],
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value created at the nested array path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [
+        {
+          value: undefined,
+        },
+      ],
+    });
+  });
+
+  it('should create a new object with the value created at the nested string path', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [
+        {
+          value: undefined,
+        },
+      ],
+    });
+  });
+
+  it('should return the merged objects if the path is empty', () => {
+    const fn: Function = (value: any): object => ({
+      value,
+    });
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: any = mergeWith(fn, path, object);
+
+    expect(result).toEqual({
+      ...object,
+      value: object,
+    });
+  });
+
+  it('should return the original objects if the path is empty and the fn returns falsy', () => {
+    const fn: Function = (value: any): object => null;
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: any = mergeWith(fn, path, object);
+
+    expect(result).toBe(object);
+  });
+});
+
+describe('remove', () => {});
+
+describe('set', () => {
+  it('should create a new object with the value set at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: value,
+    });
+  });
+
+  it('should create a new object with the value set at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: value,
+    });
+  });
+
+  it('should create a new object with the value set at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value set at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value created at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [value],
+    });
+  });
+
+  it('should create a new object with the value created at the nested string path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'new value';
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = set(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [value],
+    });
+  });
+
+  it('should return the value passed if the path is empty', () => {
+    const path: unchanged.Path = [];
+    const value: any = { foo: 'bar' };
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: any = set(path, value, object);
+
+    expect(result).toBe(value);
+  });
+});
+
+describe('setWith', () => {
+  it('should create a new object with the value set at the simple array path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: `--${object[path[0]]}--`,
+    });
+  });
+
+  it('should create a new object with the value set at the simple string path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: `--${object[path]}--`,
+    });
+  });
+
+  it('should create a new object with the value set at the nested array path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [`--${object[path[0]][path[1]]}--`],
+    });
+  });
+
+  it('should create a new object with the value set at the nested string path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [`--${object[parsedPath[0]][parsedPath[1]]}--`],
+    });
+  });
+
+  it('should create a new object with the value created at the nested array path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: ['--undefined--'],
+    });
+  });
+
+  it('should create a new object with the value created at the nested string path', () => {
+    const fn: Function = (value: string): string => `--${value}--`;
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: unchanged.Unchangeable = setWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: ['--undefined--'],
+    });
+  });
+
+  it('should return the value passed if the path is empty', () => {
+    const fn: Function = (value: { untouched: boolean }): string =>
+      `--${value.untouched}--`;
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { untouched: true };
+
+    const result: any = setWith(fn, path, object);
+
+    expect(result).toBe('--true--');
   });
 });

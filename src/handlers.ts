@@ -276,19 +276,25 @@ export const createMerge: Function = (isWith: boolean): Function => {
         return fn(object, ...extraArgs);
       }
 
-      return isEmptyPath(path)
-        ? fn(object, ...extraArgs)
-        : getDeepClone(
-            path,
-            object,
-            (ref: unchanged.Unchangeable, key: string): void => {
-              const objectToMerge: any = fn(ref[key], ...extraArgs);
+      if (isEmptyPath(path)) {
+        const objectToMerge: any = fn(object, ...extraArgs);
 
-              if (objectToMerge) {
-                ref[key] = getMergedObject(ref[key], objectToMerge, true);
-              }
-            },
-          );
+        return objectToMerge
+          ? getMergedObject(object, objectToMerge, true)
+          : object;
+      }
+
+      return getDeepClone(
+        path,
+        object,
+        (ref: unchanged.Unchangeable, key: string): void => {
+          const objectToMerge: any = fn(ref[key], ...extraArgs);
+
+          if (objectToMerge) {
+            ref[key] = getMergedObject(ref[key], objectToMerge, true);
+          }
+        },
+      );
     };
   }
 
@@ -327,7 +333,9 @@ export const createRemove: Function = (isWith: boolean): Function => {
       const extraArgs: any[] = slice.call(arguments, 3);
 
       if (isEmptyPath(path)) {
-        return fn(getNewEmptyObject(object), ...extraArgs);
+        const emptyObject: unchanged.Unchangeable = getNewEmptyObject(object);
+
+        return fn(emptyObject, ...extraArgs) ? emptyObject : object;
       }
 
       return fn(getNestedProperty(path, object), ...extraArgs)
