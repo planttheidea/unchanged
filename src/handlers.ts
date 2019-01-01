@@ -264,29 +264,29 @@ export const createMerge: Function = (isWith: boolean): Function => {
     return function (
       fn: Function,
       path: unchanged.Path,
-      objectToMerge: unchanged.Unchangeable,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
-      if (!isCloneable(object)) {
-        return objectToMerge;
-      }
-
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 4);
+      const extraArgs: any[] = slice.call(arguments, 3);
+
+      if (!isCloneable(object)) {
+        return fn(object, ...extraArgs);
+      }
 
       return isEmptyPath(path)
-        ? fn(getMergedObject(object, objectToMerge, true), ...extraArgs)
+        ? fn(object, ...extraArgs)
         : getDeepClone(
             path,
             object,
             (ref: unchanged.Unchangeable, key: string): void => {
-              ref[key] = fn(
-                getMergedObject(ref[key], objectToMerge, true),
-                ...extraArgs,
-              );
+              const objectToMerge: any = fn(ref[key], ...extraArgs);
+
+              if (objectToMerge) {
+                ref[key] = getMergedObject(ref[key], objectToMerge, true);
+              }
             },
           );
     };

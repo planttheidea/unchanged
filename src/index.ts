@@ -47,7 +47,7 @@ export const isWith: Function = curry(createIs(true), 4);
 
 export const merge: Function = curry(createMerge(false), 3);
 
-export const mergeWith: Function = curry(createMerge(true), 4);
+export const mergeWith: Function = curry(createMerge(true), 3);
 
 export const remove: Function = curry(createRemove(false), 2);
 
