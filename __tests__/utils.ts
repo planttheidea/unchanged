@@ -11,7 +11,7 @@ import {
   getFullPath,
   getOwnProperties,
   getMergedObject,
-  getNestedProperty,
+  getValueAtPath,
   getCloneOrEmptyObject,
   getNewEmptyChild,
   getNewEmptyObject,
@@ -629,7 +629,7 @@ describe('getMergedObject', () => {
   });
 });
 
-describe('getNestedProperty', () => {
+describe('getValueAtPath', () => {
   it('should return the matching value when there is a simple path', () => {
     const path: unchanged.Path = 'path';
     const object: unchanged.Unchangeable = {
@@ -637,7 +637,7 @@ describe('getNestedProperty', () => {
     };
     const fallbackValue: undefined = undefined;
 
-    const result: string = getNestedProperty(path, object, fallbackValue);
+    const result: string = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toEqual(object[path]);
   });
@@ -651,7 +651,7 @@ describe('getNestedProperty', () => {
     };
     const fallbackValue: undefined = undefined;
 
-    const result: string = getNestedProperty(path, object, fallbackValue);
+    const result: string = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toEqual(object.deeply.nested);
   });
@@ -661,7 +661,7 @@ describe('getNestedProperty', () => {
     const object: null = null;
     const fallbackValue: undefined = undefined;
 
-    const result: void = getNestedProperty(path, object, fallbackValue);
+    const result: void = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toBe(undefined);
   });
@@ -671,7 +671,7 @@ describe('getNestedProperty', () => {
     const object: null = null;
     const fallbackValue: string = 'fallback';
 
-    const result: void = getNestedProperty(path, object, fallbackValue);
+    const result: void = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toBe(fallbackValue);
   });
@@ -685,7 +685,7 @@ describe('getNestedProperty', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result: void = getNestedProperty(path, object, fallbackValue);
+    const result: void = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toBe(fallbackValue);
   });
@@ -699,7 +699,7 @@ describe('getNestedProperty', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result: void = getNestedProperty(path, object, fallbackValue);
+    const result: void = getValueAtPath(path, object, fallbackValue);
 
     expect(result).toBe(fallbackValue);
   });

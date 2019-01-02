@@ -4,7 +4,7 @@ import {
   getDeepClone,
   getFullPath,
   getMergedObject,
-  getNestedProperty,
+  getValueAtPath,
   getNewEmptyObject,
   isCloneable,
   isEmptyPath,
@@ -16,8 +16,17 @@ import {
 const { isArray } = Array;
 const { slice } = Array.prototype;
 
-export const createCall: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createCall
+ *
+ * @description
+ * create handlers for call / callWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns call / callWith
+ */
+export const createCall: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -35,7 +44,7 @@ export const createCall: Function = (isWith: boolean): Function => {
         return callIfFunction(fn(object, ...extraArgs), context, parameters);
       }
 
-      const value: any = getNestedProperty(path, object);
+      const value: any = getValueAtPath(path, object);
 
       if (value === void 0) {
         return;
@@ -55,14 +64,23 @@ export const createCall: Function = (isWith: boolean): Function => {
   ): any => {
     const callable: any = isEmptyPath(path)
       ? object
-      : getNestedProperty(path, object);
+      : getValueAtPath(path, object);
 
     return callIfFunction(callable, context, parameters);
   };
 };
 
-export const createGet: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createGet
+ *
+ * @description
+ * create handlers for get / getWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns get / getWith
+ */
+export const createGet: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -78,18 +96,27 @@ export const createGet: Function = (isWith: boolean): Function => {
         return fn(object, ...extraArgs);
       }
 
-      const value: any = getNestedProperty(path, object);
+      const value: any = getValueAtPath(path, object);
 
       return value === void 0 ? value : fn(value, ...extraArgs);
     };
   }
 
   return (path: unchanged.Path, object: unchanged.Unchangeable): any =>
-    isEmptyPath(path) ? object : getNestedProperty(path, object);
+    isEmptyPath(path) ? object : getValueAtPath(path, object);
 };
 
-export const createGetOr: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createGetOr
+ *
+ * @description
+ * create handlers for getOr / getWithOr
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns getOr / getWithOr
+ */
+export const createGetOr: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       noMatchValue: any,
@@ -106,7 +133,7 @@ export const createGetOr: Function = (isWith: boolean): Function => {
         return fn(object, ...extraArgs);
       }
 
-      const value: any = getNestedProperty(path, object);
+      const value: any = getValueAtPath(path, object);
 
       return value === void 0 ? noMatchValue : fn(value, ...extraArgs);
     };
@@ -117,11 +144,20 @@ export const createGetOr: Function = (isWith: boolean): Function => {
     path: unchanged.Path,
     object: unchanged.Unchangeable,
   ): any =>
-    isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue);
+    isEmptyPath(path) ? object : getValueAtPath(path, object, noMatchValue);
 };
 
-export const createHas: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createHas
+ *
+ * @description
+ * create handlers for has / hasWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns has / hasWith
+ */
+export const createHas: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -137,7 +173,7 @@ export const createHas: Function = (isWith: boolean): Function => {
         return !!fn(object, ...extraArgs);
       }
 
-      const value: any = getNestedProperty(path, object);
+      const value: any = getValueAtPath(path, object);
 
       return value !== void 0 && !!fn(value, ...extraArgs);
     };
@@ -146,11 +182,20 @@ export const createHas: Function = (isWith: boolean): Function => {
   return (path: unchanged.Path, object: unchanged.Unchangeable): boolean =>
     isEmptyPath(path)
       ? object != null
-      : getNestedProperty(path, object) !== void 0;
+      : getValueAtPath(path, object) !== void 0;
 };
 
-export const createIs: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createIs
+ *
+ * @description
+ * create handlers for is / isWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns is / isWith
+ */
+export const createIs: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -168,7 +213,7 @@ export const createIs: Function = (isWith: boolean): Function => {
       }
 
       return isSameValueZero(
-        fn(getNestedProperty(path, object), ...extraArgs),
+        fn(getValueAtPath(path, object), ...extraArgs),
         value,
       );
     };
@@ -181,14 +226,24 @@ export const createIs: Function = (isWith: boolean): Function => {
   ): boolean =>
     isEmptyPath(path)
       ? isSameValueZero(object, value)
-      : isSameValueZero(getNestedProperty(path, object), value);
+      : isSameValueZero(getValueAtPath(path, object), value);
 };
 
+/**
+ * @function createMerge
+ *
+ * @description
+ * create handlers for merge / mergeWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @param isDeep is the handler for a deep merge or shallow
+ * @returns merge / mergeWith
+ */
 export const createMerge: Function = (
-  isWith: boolean,
+  isWithHandler: boolean,
   isDeep: boolean,
 ): Function => {
-  if (isWith) {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -253,8 +308,17 @@ export const createMerge: Function = (
   };
 };
 
-export const createRemove: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createRemove
+ *
+ * @description
+ * create handlers for remove / removeWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns remove / removeWith
+ */
+export const createRemove: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -272,7 +336,7 @@ export const createRemove: Function = (isWith: boolean): Function => {
         return fn(emptyObject, ...extraArgs) ? emptyObject : object;
       }
 
-      const value: any = getNestedProperty(path, object);
+      const value: any = getValueAtPath(path, object);
 
       return value !== void 0 && fn(value, ...extraArgs)
         ? getDeepClone(
@@ -298,7 +362,7 @@ export const createRemove: Function = (isWith: boolean): Function => {
       return getNewEmptyObject(object);
     }
 
-    return getNestedProperty(path, object) !== void 0
+    return getValueAtPath(path, object) !== void 0
       ? getDeepClone(
           path,
           object,
@@ -314,8 +378,17 @@ export const createRemove: Function = (isWith: boolean): Function => {
   };
 };
 
-export const createSet: Function = (isWith: boolean): Function => {
-  if (isWith) {
+/**
+ * @function createSet
+ *
+ * @description
+ * create handlers for set / setWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns set / setWith
+ */
+export const createSet: Function = (isWithHandler: boolean): Function => {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,
@@ -355,10 +428,19 @@ export const createSet: Function = (isWith: boolean): Function => {
         );
 };
 
-export const createAdd: Function = (isWith: boolean): Function => {
-  const add: Function = createSet(isWith);
+/**
+ * @function createAdd
+ *
+ * @description
+ * create handlers for add / addWith
+ *
+ * @param isWithHandler is the method using a with handler
+ * @returns add / addWith
+ */
+export const createAdd: Function = (isWithHandler: boolean): Function => {
+  const add: Function = createSet(isWithHandler);
 
-  if (isWith) {
+  if (isWithHandler) {
     return function (
       fn: Function,
       path: unchanged.Path,

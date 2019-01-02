@@ -449,7 +449,7 @@ test('if callNestedProperty will return undefined when the object does not have 
   t.is(result, undefined);
 });
 
-test('if getNestedProperty will get the nested value in the object', (t) => {
+test('if getValueAtPath will get the nested value in the object', (t) => {
   const object = {
     deeply: {
       nested: 'value',
@@ -457,42 +457,42 @@ test('if getNestedProperty will get the nested value in the object', (t) => {
   };
   const path = 'deeply.nested';
 
-  const result = utils.getNestedProperty(path, object);
+  const result = utils.getValueAtPath(path, object);
 
   t.is(result, object.deeply.nested);
 });
 
-test('if getNestedProperty will return the top-level value when the length of the path is 1', (t) => {
+test('if getValueAtPath will return the top-level value when the length of the path is 1', (t) => {
   const path = 'path';
   const object = {
     [path]: 'value',
   };
 
-  const result = utils.getNestedProperty(path, object);
+  const result = utils.getValueAtPath(path, object);
 
   t.is(result, object[path]);
 });
 
-test('if getNestedProperty will return undefined when the object does not exist and the length ofthe path is 1', (t) => {
+test('if getValueAtPath will return undefined when the object does not exist and the length ofthe path is 1', (t) => {
   const path = 'path';
   const object = null;
 
-  const result = utils.getNestedProperty(path, object);
+  const result = utils.getValueAtPath(path, object);
 
   t.is(result, undefined);
 });
 
-test('if getNestedProperty with a fallback will return the fallback when the object does not exist and the length of the path is 1', (t) => {
+test('if getValueAtPath with a fallback will return the fallback when the object does not exist and the length of the path is 1', (t) => {
   const path = 'path';
   const object = null;
   const fallback = 'fallback';
 
-  const result = utils.getNestedProperty(path, object, fallback);
+  const result = utils.getValueAtPath(path, object, fallback);
 
   t.is(result, fallback);
 });
 
-test('if getNestedProperty with a fallback will return the fallback when the deeply nested value does not exist', (t) => {
+test('if getValueAtPath with a fallback will return the fallback when the deeply nested value does not exist', (t) => {
   const object = {
     deeply: {
       nested: 'value',
@@ -501,7 +501,7 @@ test('if getNestedProperty with a fallback will return the fallback when the dee
   const path = 'deeply.nonexistent';
   const fallback = 'fallback';
 
-  const result = utils.getNestedProperty(path, object, fallback);
+  const result = utils.getValueAtPath(path, object, fallback);
 
   t.is(result, fallback);
 });
