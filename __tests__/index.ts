@@ -23,9 +23,200 @@ import {
   setWith,
 } from '../src';
 
-describe('add', () => {});
+describe('add', () => {
+  it('should add the value to the object at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {};
 
-describe('addWith', () => {});
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: value,
+    });
+  });
+
+  it('should add the value to the object at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {};
+
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: value,
+    });
+  });
+
+  it('should add the value to the object at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [value],
+    });
+  });
+
+  it('should add the value to the object at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [value],
+    });
+  });
+
+  it('should add to the array object directly if an empty path', () => {
+    const path: null = null;
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = [];
+
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual([value]);
+  });
+
+  it('should return the value directly if the object is not an array and path is empty', () => {
+    const path: null = null;
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {};
+
+    const result: unchanged.Unchangeable = add(path, value, object);
+
+    expect(result).toBe(value);
+  });
+});
+
+describe('addWith', () => {
+  it('should add the value to the object at the simple array path', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {
+      foo: 'bar',
+    };
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: {
+        value: object[path[0]],
+      },
+    });
+  });
+
+  it('should add the value to the object at the simple string path', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = {
+      foo: 'bar',
+    };
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: {
+        value: object[path],
+      },
+    });
+  });
+
+  it('should add the value to the object at the nested array path', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path[0]]: [
+        {
+          value: object[path[0]][path[1]],
+        },
+      ],
+    });
+  });
+
+  it('should add the value to the object at the nested string path', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    expect(result).toEqual({
+      ...object,
+      [parsedPath[0]]: [
+        {
+          value: object[parsedPath[0]][parsedPath[1]],
+        },
+      ],
+    });
+  });
+
+  it('should add to the array object directly if an empty path', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: null = null;
+    const object: unchanged.Unchangeable = [];
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual([
+      {
+        value: undefined,
+      },
+    ]);
+  });
+
+  it('should return the value directly if the object is not an array and path is empty', () => {
+    const fn: Function = (value: any) => ({ value });
+    const path: null = null;
+    const value: any = 'value';
+    const object: unchanged.Unchangeable = {};
+
+    const result: unchanged.Unchangeable = addWith(fn, path, object);
+
+    expect(result).toEqual({
+      value: object,
+    });
+  });
+});
 
 describe('assign', () => {
   it('should create a new object with the value set at the simple array path', () => {
@@ -522,6 +713,27 @@ describe('call', () => {
     expect(result).toEqual('called');
   });
 
+  it('should call the function at the simple array path with the custom context value', () => {
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const context: object = { iam: 'context' };
+
+    const fn: Function = jest.fn().mockImplementation(function () {
+      expect(this).toBe(context);
+
+      return 'called';
+    });
+
+    const object: unchanged.Unchangeable = { [path[0]]: fn };
+
+    const result: string = call(path, parameters, object, context);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
   it('should call the function at the simple string path', () => {
     const fn: Function = jest.fn().mockReturnValue('called');
 
@@ -641,6 +853,28 @@ describe('callWith', () => {
     const object: unchanged.Unchangeable = { [path[0]]: fn };
 
     const result: string = callWith(fnWith, path, parameters, object);
+
+    expect(fn).toBeCalledTimes(1);
+    expect(fn).toBeCalledWith(...parameters);
+
+    expect(result).toEqual('called');
+  });
+
+  it('should call the function returned by fn at the simple array path with custom context', () => {
+    const fnWith: Function = (value: any): Function => value;
+    const path: unchanged.Path = ['foo'];
+    const parameters: any[] = [123, null];
+    const context: object = { iam: 'context' };
+
+    const fn: Function = jest.fn().mockImplementation(function () {
+      expect(this).toBe(context);
+
+      return 'called';
+    });
+
+    const object: unchanged.Unchangeable = { [path[0]]: fn };
+
+    const result: string = callWith(fnWith, path, parameters, object, context);
 
     expect(fn).toBeCalledTimes(1);
     expect(fn).toBeCalledWith(...parameters);
@@ -1885,26 +2119,6 @@ describe('merge', () => {
     });
   });
 
-  it('should create a new object with the value merged at the simple array path', () => {
-    const path: unchanged.Path = ['foo'];
-    const value: any = { bar: 'baz' };
-    const object: unchanged.Unchangeable = {
-      foo: { bar: 'nope', baz: 'quz' },
-      untouched: true,
-    };
-
-    const result: unchanged.Unchangeable = merge(path, value, object);
-
-    expect(result).not.toBe(object);
-    expect(result).toEqual({
-      ...object,
-      [path[0]]: {
-        ...object[path[0]],
-        ...value,
-      },
-    });
-  });
-
   it('should create a new object with the value set at the simple string path', () => {
     const path: unchanged.Path = 'foo';
     const value: any = { bar: 'baz', deeply: { nested: 'value' } };
@@ -2125,6 +2339,19 @@ describe('mergeWith', () => {
         value: object[path[0]],
       },
     });
+  });
+
+  it('should do nothing if the return from fun is falsy at the simple array path', () => {
+    const fn: Function = (value: any): boolean => !value;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {
+      foo: { bar: 'nope', baz: 'quz' },
+      untouched: true,
+    };
+
+    const result: unchanged.Unchangeable = mergeWith(fn, path, object);
+
+    expect(result).toBe(object);
   });
 
   it('should create a new object with the value set at the simple string path', () => {

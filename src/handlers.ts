@@ -212,7 +212,9 @@ export const createMerge: Function = (
           : object;
       }
 
-      return getDeepClone(
+      let hasChanged: boolean = false;
+
+      const result: unchanged.Unchangeable = getDeepClone(
         path,
         object,
         (ref: unchanged.Unchangeable, key: string): void => {
@@ -220,9 +222,13 @@ export const createMerge: Function = (
 
           if (objectToMerge) {
             ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
+
+            hasChanged = true;
           }
         },
       );
+
+      return hasChanged ? result : object;
     };
   }
 
@@ -358,11 +364,11 @@ export const createAdd: Function = (isWith: boolean): Function => {
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
-      return add(
-        fn,
-        getFullPath(path, object, fn),
-        object,
-        ...slice.call(arguments, 3),
+      return add.apply(
+        this,
+        [fn, getFullPath(path, object, fn), object].concat(
+          slice.call(arguments, 3),
+        ),
       );
     };
   }
