@@ -2,6 +2,7 @@
 import {
   callIfFunction,
   getDeepClone,
+  getFullPath,
   getMergedObject,
   getNestedProperty,
   getNewEmptyObject,
@@ -14,51 +15,6 @@ import {
 
 const { isArray } = Array;
 const { slice } = Array.prototype;
-
-export const createAssign: Function = (isWith: boolean): Function => {
-  if (isWith) {
-    return function (
-      fn: Function,
-      path: unchanged.Path,
-      objectToAssign: unchanged.Unchangeable,
-      object: unchanged.Unchangeable,
-    ): unchanged.Unchangeable {
-      if (typeof fn !== 'function') {
-        throwInvalidFnError();
-      }
-
-      const extraArgs: any[] = slice.call(arguments, 4);
-
-      return isEmptyPath(path)
-        ? fn(getMergedObject(object, objectToAssign, false), ...extraArgs)
-        : getDeepClone(
-            path,
-            object,
-            (ref: unchanged.Unchangeable, key: string): void => {
-              ref[key] = fn(
-                getMergedObject(ref[key], objectToAssign, false),
-                ...extraArgs,
-              );
-            },
-          );
-    };
-  }
-
-  return (
-    path: unchanged.Path,
-    objectToAssign: unchanged.Unchangeable,
-    object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable =>
-    isEmptyPath(path)
-      ? getMergedObject(object, objectToAssign, false)
-      : getDeepClone(
-          path,
-          object,
-          (ref: unchanged.Unchangeable, key: string): void => {
-            ref[key] = getMergedObject(ref[key], objectToAssign, false);
-          },
-        );
-};
 
 export const createCall: Function = (isWith: boolean): Function => {
   if (isWith) {
@@ -164,43 +120,6 @@ export const createGetOr: Function = (isWith: boolean): Function => {
     isEmptyPath(path) ? object : getNestedProperty(path, object, noMatchValue);
 };
 
-export const createGetFullPath: Function = (isWith: boolean): Function => {
-  if (isWith) {
-    return (
-      fn: Function,
-      path: unchanged.Path,
-      object: unchanged.Unchangeable,
-    ): unchanged.Path => {
-      const isPathEmpty: boolean = isEmptyPath(path);
-      const valueAtPath: any = isPathEmpty
-        ? object
-        : fn(getNestedProperty(path, object));
-
-      return isArray(valueAtPath)
-        ? isArray(path)
-          ? path.concat([valueAtPath.length])
-          : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
-        : path;
-    };
-  }
-
-  return (
-    path: unchanged.Path,
-    object: unchanged.Unchangeable,
-  ): unchanged.Path => {
-    const isPathEmpty: boolean = isEmptyPath(path);
-    const valueAtPath: any = isPathEmpty
-      ? object
-      : getNestedProperty(path, object);
-
-    return isArray(valueAtPath)
-      ? isArray(path)
-        ? path.concat([valueAtPath.length])
-        : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
-      : path;
-  };
-};
-
 export const createHas: Function = (isWith: boolean): Function => {
   if (isWith) {
     return function (
@@ -265,7 +184,10 @@ export const createIs: Function = (isWith: boolean): Function => {
       : isSameValueZero(getNestedProperty(path, object), value);
 };
 
-export const createMerge: Function = (isWith: boolean): Function => {
+export const createMerge: Function = (
+  isWith: boolean,
+  isDeep: boolean,
+): Function => {
   if (isWith) {
     return function (
       fn: Function,
@@ -286,7 +208,7 @@ export const createMerge: Function = (isWith: boolean): Function => {
         const objectToMerge: any = fn(object, ...extraArgs);
 
         return objectToMerge
-          ? getMergedObject(object, objectToMerge, true)
+          ? getMergedObject(object, objectToMerge, isDeep)
           : object;
       }
 
@@ -297,7 +219,7 @@ export const createMerge: Function = (isWith: boolean): Function => {
           const objectToMerge: any = fn(ref[key], ...extraArgs);
 
           if (objectToMerge) {
-            ref[key] = getMergedObject(ref[key], objectToMerge, true);
+            ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
           }
         },
       );
@@ -319,7 +241,7 @@ export const createMerge: Function = (isWith: boolean): Function => {
           path,
           object,
           (ref: unchanged.Unchangeable, key: string): void => {
-            ref[key] = getMergedObject(ref[key], objectToMerge, true);
+            ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
           },
         );
   };
@@ -429,7 +351,6 @@ export const createSet: Function = (isWith: boolean): Function => {
 
 export const createAdd: Function = (isWith: boolean): Function => {
   const add: Function = createSet(isWith);
-  const getFullPath: Function = createGetFullPath(isWith);
 
   if (isWith) {
     return function (
@@ -439,7 +360,7 @@ export const createAdd: Function = (isWith: boolean): Function => {
     ): unchanged.Unchangeable {
       return add(
         fn,
-        getFullPath(fn, path, object),
+        getFullPath(path, object, fn),
         object,
         ...slice.call(arguments, 3),
       );

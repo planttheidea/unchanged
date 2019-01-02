@@ -8,6 +8,7 @@ import {
   cloneIfPossible,
   getCoalescedValue,
   getDeepClone,
+  getFullPath,
   getOwnProperties,
   getMergedObject,
   getNestedProperty,
@@ -215,6 +216,100 @@ describe('getDeepClone', () => {
         },
       ],
     });
+  });
+});
+
+describe('getFullPath', () => {
+  it('should return the added index if both path and value are arrays', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [[]],
+    };
+    const fn: void = undefined;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual(['foo', 0, 0]);
+  });
+
+  it('should return the added index if path is a string and value is an array', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [[]],
+    };
+    const fn: void = undefined;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual('foo[0][0]');
+  });
+
+  it('should return the added index if path is an array and value is not', () => {
+    const path: unchanged.Path = ['foo', 'bar'];
+    const object: unchanged.Unchangeable = {
+      foo: {},
+    };
+    const fn: void = undefined;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual(path);
+  });
+
+  it('should return the added index if path is an empty string and value is an array', () => {
+    const path: unchanged.Path = null;
+    const object: unchanged.Unchangeable = [];
+    const fn: void = undefined;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual('[0]');
+  });
+
+  it('should return the added index if both path and value returned from fn are arrays', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [[]],
+    };
+    const fn: any = (value: any): any => value;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual(['foo', 0, 0]);
+  });
+
+  it('should return the added index if path is a string and value returned from fn is an array', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [[]],
+    };
+    const fn: any = (value: any): any => value;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual('foo[0][0]');
+  });
+
+  it('should return the added index if path is an array and value returned from fn is not', () => {
+    const path: unchanged.Path = ['foo', 'bar'];
+    const object: unchanged.Unchangeable = {
+      foo: {},
+    };
+    const fn: any = (value: any): any => value;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual(path);
+  });
+
+  it('should return the added index if path is an empty string and value returned from fn is an array', () => {
+    const path: unchanged.Path = null;
+    const object: unchanged.Unchangeable = [];
+    const fn: any = (value: any): any => value;
+
+    const result = getFullPath(path, object, fn);
+
+    expect(result).toEqual('[0]');
   });
 });
 

@@ -4,7 +4,6 @@ import { __, curry } from 'curriable';
 // handlers
 import {
   createAdd,
-  createAssign,
   createCall,
   createGet,
   createGetOr,
@@ -21,9 +20,9 @@ export const add: Function = curry(createAdd(false), 3);
 
 export const addWith: Function = curry(createAdd(true), 3);
 
-export const assign: Function = curry(createAssign(false), 3);
+export const assign: Function = curry(createMerge(false, false), 3);
 
-export const assignWith: Function = curry(createAssign(true), 4);
+export const assignWith: Function = curry(createMerge(true, false), 3);
 
 export const call: Function = curry(createCall(false), 3);
 
@@ -45,9 +44,9 @@ export const is: Function = curry(createIs(false), 3);
 
 export const isWith: Function = curry(createIs(true), 4);
 
-export const merge: Function = curry(createMerge(false), 3);
+export const merge: Function = curry(createMerge(false, true), 3);
 
-export const mergeWith: Function = curry(createMerge(true), 3);
+export const mergeWith: Function = curry(createMerge(true, true), 3);
 
 export const remove: Function = curry(createRemove(false), 2);
 

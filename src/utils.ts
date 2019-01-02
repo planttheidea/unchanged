@@ -16,9 +16,6 @@ const REACT_ELEMENT: symbol | number =
 
 const { isArray } = Array;
 
-export const isSameValueZero: Function = (value1: any, value2: any): boolean =>
-  value1 === value2 || (value1 !== value1 && value2 !== value2);
-
 export const cloneArray: Function = (array: any[]): any[] => {
   // @ts-ignore
   const cloned = new array.constructor();
@@ -141,6 +138,9 @@ export const getShallowClone = (
     : assign(create(object.__proto__), object);
 };
 
+export const isSameValueZero: Function = (value1: any, value2: any): boolean =>
+  value1 === value2 || (value1 !== value1 && value2 !== value2);
+
 export const cloneIfPossible: Function = (object: any): any =>
   isCloneable(object) ? getShallowClone(object) : object;
 
@@ -262,6 +262,25 @@ export const getNestedProperty: Function = (
   }
 
   return ref ? getCoalescedValue(ref[key], noMatchValue) : noMatchValue;
+};
+
+export const getFullPath: Function = (
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  fn?: Function,
+): unchanged.Path => {
+  const isPathEmpty: boolean = isEmptyPath(path);
+  const valueAtPath: any = isPathEmpty
+    ? object
+    : fn
+    ? fn(getNestedProperty(path, object))
+    : getNestedProperty(path, object);
+
+  return isArray(valueAtPath)
+    ? isArray(path)
+      ? path.concat([valueAtPath.length])
+      : `${isPathEmpty ? '' : path}[${valueAtPath.length}]`
+    : path;
 };
 
 export const splice: Function = (array: any[], splicedIndex: number): void => {
