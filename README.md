@@ -7,17 +7,29 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 ## Table of contents
 
 - [Usage](#usage)
-- [Methods](#methods)
+- [Types](#types)
+- [Standard methods](#methods)
   - [get](#get)
   - [getOr](#getor)
   - [set](#set)
   - [remove](#remove)
   - [has](#has)
+  - [is](#is)
   - [add](#add)
   - [merge](#merge)
   - [assign](#assign)
   - [call](#call)
-  - [transform](#transform)
+- [Transform methods]
+  - [getWith](#getwith)
+  - [getWithOr](#getwithor)
+  - [setWith](#setwith)
+  - [removeWith](#removewith)
+  - [hasWith](#haswith)
+  - [isWith](#iswith)
+  - [addWith](#addwith)
+  - [mergeWith](#mergewith)
+  - [assignWith](#assignwith)
+  - [callWith](#callwith)
 - [Additional objects](#additional-objects)
   - [\_\_](#__)
 - [Differences from other libraries](#differences-from-other-libraries)
@@ -69,11 +81,39 @@ NOTE: There is no `default` export, so if you want to import all methods to a si
 import * as uc from "unchanged";
 ```
 
-## Methods
+## Types
 
-#### get
+This library is both written in, and provided with, types by TypeScript. The internal types used for specific parameters are scoped to the `unchanged` namespace.
 
-`get(path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
+```typescript
+// the path used to compute nested locations
+type Path = (number | string)[] | number | string;
+// the callback used in transform methods
+type withHandler = (value: any, ...extraArgs: any[]) => any;
+// the generic object that is computed upon, either an array or object
+interface Unchangeable {
+  [key: string]: any;
+  [index: number]: any;
+}
+```
+
+Notice in the `Unchangeable` interface, there is no reference to symbols. That is because to date, TypeScript does not support Symbols as an index type. If you need to use symbols as object keys, the best workaround I've found is to typecast when it complains:
+
+```typescript
+const symbolKey: string = (Symbol("key") as unknown) as string;
+
+const object: { [symbolKey]: string } = {
+  [symbolKey]: "bar"
+};
+```
+
+If there is a better alternative for having dynamic Symbol indices, let me know! Happy to accept any PRs from those more experienced in TypeScript than myself.
+
+## Standard methods
+
+### get
+
+`get(path: ((number|string)[] | number | string), object: (any[]|object)): any`
 
 Get the value at the `path` requested on the `object` passed.
 
@@ -90,9 +130,9 @@ console.log(get("foo[0].bar", object)); // baz
 console.log(get(["foo", 0, "bar"], object)); // baz
 ```
 
-#### getOr
+### getOr
 
-`getOr(fallbackValue: any, path: (Array<number|string>|number|string), object: (Array<any>|Object)): any`
+`getOr(fallbackValue: any, path: ((number|string)[] | number | string), object: (any[]|object)): any`
 
 Get the value at the `path` requested on the `object` passed, with a fallback value if that path does not exist.
 
@@ -110,9 +150,9 @@ console.log(getOr("blah", ["foo", 0, "bar"], object)); // baz
 console.log(getOr("blah", "foo[0].nonexistent", object)); // blah
 ```
 
-#### set
+### set
 
-`set(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`set(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
 
 Returns a new clone of the `object` passed, with the `value` assigned to the final key on the `path` specified.
 
@@ -129,9 +169,9 @@ console.log(set("foo[0].bar", "quz", object)); // {foo: [{bar: 'quz'}]}
 console.log(set(["foo", 0, "bar"], "quz", object)); // {foo: [{bar: 'quz'}]}
 ```
 
-#### remove
+### remove
 
-`remove(path: (Array<number|string>|number|string), object: (Array<any>|object)): (Array<any>|Object)`
+`remove(path: ((number|string)[] | number | string), object: (any[]|object)): (any[]|object)`
 
 Returns a new clone of the `object` passed, with the final key on the `path` removed if it exists.
 
@@ -148,9 +188,9 @@ console.log(remove("foo[0].bar", object)); // {foo: [{}]}
 console.log(remove(["foo", 0, "bar"], object)); // {foo: [{}]}
 ```
 
-#### has
+### has
 
-`has(path: (Array<number|string>|number|string), object: (Array<any>|object)): boolean`
+`has(path: ((number|string)[] | number | string), object: (any[]|object)): boolean`
 
 Returns `true` if the object has the path provided, `false` otherwise.
 
@@ -168,9 +208,29 @@ console.log(has(["foo", 0, "bar"], object)); // true
 console.log(has("bar", object)); // false
 ```
 
-#### add
+### is
 
-`add(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`is(path: ((number|string)[] | number | string), value: any, object: any[], object)): boolean`
+
+Returns `true` if the value at the `path` in `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality.
+
+```javascript
+const object = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+
+console.log(is("foo[0].bar", "baz", object)); // true
+console.log(is(["foo", 0, "bar"], "baz", object)); // true
+console.log(is("foo[0].bar", "quz', object)); // false
+```
+
+### add
+
+`add(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
 
 Returns a new clone of the `object` passed, with the `value` added at the `path` specified. This can have different behavior depending on whether the item is an `Object` or an `Array`.
 
@@ -202,9 +262,9 @@ const object = ["foo"];
 console.log(add(null, "bar", object)); // ['foo', 'bar']
 ```
 
-#### merge
+### merge
 
-`merge(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`merge(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
 
 Returns a new object that is a deep merge of `value` into `object` at the `path` specified. If you want to perform a shallow merge, see [`assign`](#assign).
 
@@ -281,9 +341,9 @@ console.log(merge(null, object2, object1));
 */
 ```
 
-#### assign
+### assign
 
-`assign(path: (Array<number|string>|number|string), value: any, object: (Array<any>|object)): (Array<any>|Object)`
+`assign(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
 
 Returns a new object that is a shallow merge of `value` into `object` at the `path` specified. If you want to perform a deep merge, see [`merge`](#merge).
 
@@ -366,9 +426,9 @@ console.log(assign(null, object2, object1));
 */
 ```
 
-#### call
+### call
 
-`call(path: (Array<number|string>|number|string), parameters: Array<any>, object: (Array<any>|Object)[, context: any])`
+`call(path: ((number|string)[] | number | string), parameters: any[], object: (any[]|object)[, context: any])`
 
 Call the method at the `path` requested on the `object` passed, and return what it's call returns.
 
@@ -407,9 +467,15 @@ console.log(call("foo[0].bar", [1, 2], object, {})); // 0
 
 **NOTE**: Because `context` is an optional parameter, it cannot be independently curried; you must apply it in the call when the `object` is passed.
 
-#### transform
+## Transform methods
 
-`transform(path: (Array<number|string>|number|string), fn: function, object: (Array<any>|object)[, ...extraParams: Array<any>]): (Array<any>|Object)`
+### getWith
+
+### getWithOr
+
+### setWith
+
+`transform(path: ((number|string)[] | number | string), fn: function, object: (any[]|object)[, ...extraParams: any[]]): (any[]|object)`
 
 Returns a new clone of the `object` passed, with the return value of `fn` assigned to the final key on the `path` specified. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
 
@@ -432,9 +498,23 @@ console.log(transform(["foo", 0, "bar"], fn, object, true)); // {foo: [{bar: 'ba
 
 **NOTE**: Because `extraParams` are optional parameters, they cannot be independently curried; you must apply them in the call when the `object` is passed.
 
+### removeWith
+
+### hasWith
+
+### isWith
+
+### addWith
+
+### mergeWith
+
+### assignWith
+
+### callWith
+
 ## Additional objects
 
-#### \_\_
+### \_\_
 
 A placeholder value used to identify "gaps" in a curried function, allowing for earlier application of arguments later in the argument order.
 
@@ -452,7 +532,7 @@ setFooOnThing('bar');
 
 ## Differences from other libraries
 
-#### lodash
+### lodash
 
 [`lodash/fp`](https://lodash.com/) (the functional programming implementation of `lodash`) is identical in implementation to `unchanged`'s methods, just with a _10.5x_ larger footprint. These methods should map directly:
 
@@ -465,7 +545,7 @@ setFooOnThing('bar');
 
 NOTE: There is no direct parallel for the `add` method in `lodash/fp`; the closest is `concat` but that is array-specific and does not support nested keys.
 
-#### ramda
+### ramda
 
 [`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dot-bracket syntax is not supported by `ramda`, only path arrays. Another difference is that the `ramda` methods that clone objects (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging.
 
@@ -497,7 +577,7 @@ console.log(unchangedResult instanceof Foo); // true
 
 This can make `ramda` more performant in certain scenarios, but at the cost of having potentially unexpected behavior.
 
-#### Other immutability libraries
+### Other immutability libraries
 
 This includes popular solutions like [Immutable.js](https://facebook.github.io/immutable-js/), [seamless-immutable](https://github.com/rtfeldman/seamless-immutable), [mori](http://swannodette.github.io/mori/), etc. These solutions all work well, but with one caveat: _you need to buy completely into their system_. Each of these libraries redefines how the objects are stored internally, and require that you learn a new, highly specific API to use these custom objects. `unchanged` is unopinionated, accepting standard JS objects and returning standard JS objects, no transformation or learning curve required.
 
