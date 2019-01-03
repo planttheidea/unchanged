@@ -111,7 +111,7 @@ describe('add', () => {
 
 describe('addWith', () => {
   it('should add the value to the object at the simple array path', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {
       foo: 'bar',
@@ -129,7 +129,7 @@ describe('addWith', () => {
   });
 
   it('should add the value to the object at the simple string path', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = {
       foo: 'bar',
@@ -147,7 +147,7 @@ describe('addWith', () => {
   });
 
   it('should add the value to the object at the nested array path', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -167,7 +167,7 @@ describe('addWith', () => {
   });
 
   it('should add the value to the object at the nested string path', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -190,7 +190,7 @@ describe('addWith', () => {
   });
 
   it('should add to the array object directly if an empty path', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: null = null;
     const object: unchanged.Unchangeable = [];
 
@@ -205,7 +205,7 @@ describe('addWith', () => {
   });
 
   it('should return the value directly if the object is not an array and path is empty', () => {
-    const fn: Function = (value: any) => ({ value });
+    const fn: unchanged.withHandler = (value: any) => ({ value });
     const path: null = null;
     const value: any = 'value';
     const object: unchanged.Unchangeable = {};
@@ -428,7 +428,7 @@ describe('assign', () => {
 
 describe('assignWith', () => {
   it('should create a new object with the value set at the simple array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo'];
@@ -446,7 +446,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value assigned at the simple array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo'];
@@ -468,7 +468,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value set at the simple string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo';
@@ -486,7 +486,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value assigned at the simple string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo';
@@ -508,7 +508,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value set at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -531,7 +531,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value assigned at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -555,7 +555,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value set at the nested string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo[0]';
@@ -581,7 +581,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value assigned at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo[0]';
@@ -608,7 +608,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value created at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -629,7 +629,7 @@ describe('assignWith', () => {
   });
 
   it('should create a new object with the value created at the nested string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -653,7 +653,7 @@ describe('assignWith', () => {
   });
 
   it('should return the merged objects if the path is empty', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = [];
@@ -668,7 +668,7 @@ describe('assignWith', () => {
   });
 
   it('should return the original objects if the path is empty and the fn returns falsy', () => {
-    const fn: Function = (value: any): object => null;
+    const fn: unchanged.withHandler = (value: any): object => null;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -686,7 +686,7 @@ describe('assignWith', () => {
   });
 
   it('should return the value returned by fn if the object is not cloneable', () => {
-    const fn: Function = (value: any): object => null;
+    const fn: unchanged.withHandler = (value: any): object => null;
     const path: unchanged.Path = [];
     const value: any = { foo: 'bar' };
     const object: any = 123;
@@ -699,7 +699,7 @@ describe('assignWith', () => {
 
 describe('call', () => {
   it('should call the function at the simple array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
     const path: unchanged.Path = ['foo'];
     const parameters: any[] = [123, null];
@@ -718,7 +718,7 @@ describe('call', () => {
     const parameters: any[] = [123, null];
     const context: object = { iam: 'context' };
 
-    const fn: Function = jest.fn().mockImplementation(function () {
+    const fn: unchanged.withHandler = jest.fn().mockImplementation(function () {
       expect(this).toBe(context);
 
       return 'called';
@@ -735,7 +735,7 @@ describe('call', () => {
   });
 
   it('should call the function at the simple string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
     const path: unchanged.Path = 'foo';
     const parameters: any[] = [123, null];
@@ -750,7 +750,7 @@ describe('call', () => {
   });
 
   it('should call the function at the nested array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
     const path: unchanged.Path = ['foo', 0];
     const parameters: any[] = [123, null];
@@ -765,7 +765,7 @@ describe('call', () => {
   });
 
   it('should call the function at the nested string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
     const path: unchanged.Path = 'foo[0]';
     const parameters: any[] = [123, null];
@@ -845,9 +845,9 @@ describe('call', () => {
 
 describe('callWith', () => {
   it('should call the function returned by fn at the simple array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): Function => value;
+    const fnWith: unchanged.withHandler = (value: any): Function => value;
     const path: unchanged.Path = ['foo'];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path[0]]: fn };
@@ -861,12 +861,12 @@ describe('callWith', () => {
   });
 
   it('should call the function returned by fn at the simple array path with custom context', () => {
-    const fnWith: Function = (value: any): Function => value;
+    const fnWith: unchanged.withHandler = (value: any): Function => value;
     const path: unchanged.Path = ['foo'];
     const parameters: any[] = [123, null];
     const context: object = { iam: 'context' };
 
-    const fn: Function = jest.fn().mockImplementation(function () {
+    const fn: unchanged.withHandler = jest.fn().mockImplementation(function () {
       expect(this).toBe(context);
 
       return 'called';
@@ -883,9 +883,9 @@ describe('callWith', () => {
   });
 
   it('should return undefined if fn returns a non-function at the simple array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): boolean => value === fn;
+    const fnWith: unchanged.withHandler = (value: any): boolean => value === fn;
     const path: unchanged.Path = ['foo'];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path[0]]: fn };
@@ -898,9 +898,9 @@ describe('callWith', () => {
   });
 
   it('should call the function returned by fn at the simple string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value;
+    const fnWith: unchanged.withHandler = (value: any): any => value;
     const path: unchanged.Path = 'foo';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path]: fn };
@@ -914,9 +914,9 @@ describe('callWith', () => {
   });
 
   it('should return undefined if fn returns a non-function at the simple string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value === fn;
+    const fnWith: unchanged.withHandler = (value: any): any => value === fn;
     const path: unchanged.Path = 'foo';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path]: fn };
@@ -929,9 +929,9 @@ describe('callWith', () => {
   });
 
   it('should call the function returned by fn at the nested array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value;
+    const fnWith: unchanged.withHandler = (value: any): any => value;
     const path: unchanged.Path = ['foo', 0];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path[0]]: [fn] };
@@ -945,9 +945,9 @@ describe('callWith', () => {
   });
 
   it('should return undefined if fn returns a non-function at the nested array path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value === fn;
+    const fnWith: unchanged.withHandler = (value: any): any => value === fn;
     const path: unchanged.Path = ['foo', 0];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path[0]]: [fn] };
@@ -960,9 +960,9 @@ describe('callWith', () => {
   });
 
   it('should call the function returned by fn at the nested string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value;
+    const fnWith: unchanged.withHandler = (value: any): any => value;
     const path: unchanged.Path = 'foo[0]';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path.split('[')[0]]: [fn] };
@@ -976,9 +976,9 @@ describe('callWith', () => {
   });
 
   it('should return undefined if fn returns a non-function at the nested string path', () => {
-    const fn: Function = jest.fn().mockReturnValue('called');
+    const fn: unchanged.withHandler = jest.fn().mockReturnValue('called');
 
-    const fnWith: Function = (value: any): any => value === fn;
+    const fnWith: unchanged.withHandler = (value: any): any => value === fn;
     const path: unchanged.Path = 'foo[0]';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { [path.split('[')[0]]: [fn] };
@@ -991,7 +991,7 @@ describe('callWith', () => {
   });
 
   it('should return undefined if no match found at the simple array path', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = ['foo'];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = {};
@@ -1002,7 +1002,7 @@ describe('callWith', () => {
   });
 
   it('should return undefined if no match found at the simple string path', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = 'foo';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = {};
@@ -1013,7 +1013,7 @@ describe('callWith', () => {
   });
 
   it('should return undefined if no match found at the nested array path', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = ['foo', 0];
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { foo: [] };
@@ -1024,7 +1024,7 @@ describe('callWith', () => {
   });
 
   it('should return undefined if no match found at the nested string path', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = 'foo[0]';
     const parameters: any[] = [123, null];
     const object: unchanged.Unchangeable = { foo: [] };
@@ -1035,7 +1035,7 @@ describe('callWith', () => {
   });
 
   it('should call the object if the path is empty and the object returned from fn is a function', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = [];
     const parameters: any[] = [123, null];
     const object: Function = jest.fn().mockReturnValue('called');
@@ -1049,7 +1049,7 @@ describe('callWith', () => {
   });
 
   it('should return undefined if the path is empty and the object returned from fn is a not function', () => {
-    const fn: Function = (value: any) => !value;
+    const fn: unchanged.withHandler = (value: any) => !value;
     const path: unchanged.Path = [];
     const parameters: any[] = [123, null];
     const object: Function = jest.fn().mockReturnValue('called');
@@ -1268,7 +1268,7 @@ describe('getOr', () => {
 
 describe('getWith', () => {
   it('should get the value at the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1278,7 +1278,7 @@ describe('getWith', () => {
   });
 
   it('should get the value at the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1288,7 +1288,7 @@ describe('getWith', () => {
   });
 
   it('should get the value at the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1300,7 +1300,7 @@ describe('getWith', () => {
   });
 
   it('should get the value at the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1312,7 +1312,7 @@ describe('getWith', () => {
   });
 
   it('should return the result of the callback with the object passed if the path is empty', () => {
-    const fn: Function = (value: any) => value && value.foo;
+    const fn: unchanged.withHandler = (value: any) => value && value.foo;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1322,7 +1322,7 @@ describe('getWith', () => {
   });
 
   it('should return undefined if no match at the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -1332,7 +1332,7 @@ describe('getWith', () => {
   });
 
   it('should return undefined if no match at the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = {};
 
@@ -1342,7 +1342,7 @@ describe('getWith', () => {
   });
 
   it('should return undefined if no match at the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1354,7 +1354,7 @@ describe('getWith', () => {
   });
 
   it('should return undefined if no match at the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1376,7 +1376,7 @@ describe('getWith', () => {
 
 describe('getWithOr', () => {
   it('should get the value at the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
@@ -1392,7 +1392,7 @@ describe('getWithOr', () => {
   });
 
   it('should get the value at the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
@@ -1408,7 +1408,7 @@ describe('getWithOr', () => {
   });
 
   it('should get the value at the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1426,7 +1426,7 @@ describe('getWithOr', () => {
   });
 
   it('should get the value at the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1444,7 +1444,7 @@ describe('getWithOr', () => {
   });
 
   it('should return the result of the callback with the object passed if the path is empty', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
@@ -1460,7 +1460,7 @@ describe('getWithOr', () => {
   });
 
   it('should return the fallback if no match at the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {};
     const fallbackValue: string = 'fallback';
@@ -1476,7 +1476,7 @@ describe('getWithOr', () => {
   });
 
   it('should return the fallback if no match at the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = {};
     const fallbackValue: string = 'fallback';
@@ -1492,7 +1492,7 @@ describe('getWithOr', () => {
   });
 
   it('should return the fallback if no match at the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1510,7 +1510,7 @@ describe('getWithOr', () => {
   });
 
   it('should return the fallback if no match at the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1639,7 +1639,7 @@ describe('has', () => {
 
 describe('hasWith', () => {
   it('should return true with the value at the simple array path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1649,7 +1649,7 @@ describe('hasWith', () => {
   });
 
   it('should return true with the value at the simple string path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1659,7 +1659,7 @@ describe('hasWith', () => {
   });
 
   it('should return true with the value at the nested array path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1671,7 +1671,7 @@ describe('hasWith', () => {
   });
 
   it('should return true with the value at the nested string path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1683,7 +1683,7 @@ describe('hasWith', () => {
   });
 
   it('should return true if the path is empty and the object is existy', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value && typeof value === 'object';
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -1694,7 +1694,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if the path is empty and the object is not existy', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value && typeof value === 'object';
     const path: unchanged.Path = [];
     const object: null = null;
@@ -1705,7 +1705,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if no match at the simple array path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -1715,7 +1715,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if no match at the simple string path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = {};
 
@@ -1725,7 +1725,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if no match at the nested array path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1737,7 +1737,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if no match at the nested string path', () => {
-    const fn: Function = (value: any): boolean => typeof value === 'string';
+    const fn: unchanged.withHandler = (value: any): boolean => typeof value === 'string';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -1917,7 +1917,7 @@ describe('is', () => {
 
 describe('isWith', () => {
   it('should return true with the value matching at the simple array path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -1929,7 +1929,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the simple array path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -1941,7 +1941,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the simple string path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -1953,7 +1953,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the simple string path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -1965,7 +1965,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the nested array path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
@@ -1979,7 +1979,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the nested array path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
@@ -1993,7 +1993,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the nested string path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
@@ -2008,7 +2008,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the nested string path', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value === 'bar' ? 'blah' : value;
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
@@ -2023,7 +2023,7 @@ describe('isWith', () => {
   });
 
   it('should return true if the path is empty and the value matches', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value && value.foo === 'bar' ? 'blah' : value;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
@@ -2035,7 +2035,7 @@ describe('isWith', () => {
   });
 
   it('should return false if the path is empty and the value does not match', () => {
-    const fn: Function = (value: any): boolean =>
+    const fn: unchanged.withHandler = (value: any): boolean =>
       value && value.foo === 'bar' ? 'blah' : value;
     const path: unchanged.Path = [];
     const object: null = null;
@@ -2047,7 +2047,7 @@ describe('isWith', () => {
   });
 
   it('should return false if no match at the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {};
     const value: any = 'bar';
@@ -2058,7 +2058,7 @@ describe('isWith', () => {
   });
 
   it('should return false if no match at the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = {};
     const value: any = 'bar';
@@ -2069,7 +2069,7 @@ describe('isWith', () => {
   });
 
   it('should return false if no match at the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -2082,7 +2082,7 @@ describe('isWith', () => {
   });
 
   it('should return false if no match at the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: [],
@@ -2302,7 +2302,7 @@ describe('merge', () => {
 
 describe('mergeWith', () => {
   it('should create a new object with the value set at the simple array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo'];
@@ -2320,7 +2320,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value merged at the simple array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo'];
@@ -2342,7 +2342,7 @@ describe('mergeWith', () => {
   });
 
   it('should do nothing if the return from fun is falsy at the simple array path', () => {
-    const fn: Function = (value: any): boolean => !value;
+    const fn: unchanged.withHandler = (value: any): boolean => !value;
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = {
       foo: { bar: 'nope', baz: 'quz' },
@@ -2355,7 +2355,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value set at the simple string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo';
@@ -2373,7 +2373,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value merged at the simple string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo';
@@ -2395,7 +2395,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value set at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -2418,7 +2418,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value merged at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -2442,7 +2442,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value set at the nested string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo[0]';
@@ -2468,7 +2468,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value merged at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = 'foo[0]';
@@ -2495,7 +2495,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value created at the nested array path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -2516,7 +2516,7 @@ describe('mergeWith', () => {
   });
 
   it('should create a new object with the value created at the nested string path', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = ['foo', 0];
@@ -2540,7 +2540,7 @@ describe('mergeWith', () => {
   });
 
   it('should return the merged objects if the path is empty', () => {
-    const fn: Function = (value: any): object => ({
+    const fn: unchanged.withHandler = (value: any): object => ({
       value,
     });
     const path: unchanged.Path = [];
@@ -2555,7 +2555,7 @@ describe('mergeWith', () => {
   });
 
   it('should return the original objects if the path is empty and the fn returns falsy', () => {
-    const fn: Function = (value: any): object => null;
+    const fn: unchanged.withHandler = (value: any): object => null;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -2573,7 +2573,7 @@ describe('mergeWith', () => {
   });
 
   it('should return the value returned by fn if the object is not cloneable', () => {
-    const fn: Function = (value: any): object => null;
+    const fn: unchanged.withHandler = (value: any): object => null;
     const path: unchanged.Path = [];
     const value: any = { foo: 'bar' };
     const object: any = 123;
@@ -2684,7 +2684,7 @@ describe('remove', () => {
 
 describe('removeWith', () => {
   it('should remove the key from the object if fn returns truthy in the simple array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2697,7 +2697,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if fn returns falsy in the simple array path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2707,7 +2707,7 @@ describe('removeWith', () => {
   });
 
   it('should remove the key from the object if fn returns truthy in the simple string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2720,7 +2720,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if fn returns falsy in the simple string path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2730,7 +2730,7 @@ describe('removeWith', () => {
   });
 
   it('should remove the key from the object if fn returns truthy in the nested array path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
 
@@ -2744,7 +2744,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if fn returns falsy in the nested array path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
 
@@ -2754,7 +2754,7 @@ describe('removeWith', () => {
   });
 
   it('should remove the key from the object if fn returns truthy in the nested string path', () => {
-    const fn: Function = (value: any) => value === 'bar';
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
 
@@ -2768,7 +2768,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if fn returns falsy in the nested string path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = { foo: ['bar', 'quz'], bar: 'baz' };
 
@@ -2778,7 +2778,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if no match found in the simple array path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { bar: 'baz' };
 
@@ -2788,7 +2788,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if no match found in the simple string path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { bar: 'baz' };
 
@@ -2798,7 +2798,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if no match found in the nested array path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
 
@@ -2808,7 +2808,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if no match found in the nested string path', () => {
-    const fn: Function = (value: any) => value === 'baz';
+    const fn: unchanged.withHandler = (value: any) => value === 'baz';
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = { foo: [], bar: 'baz' };
 
@@ -2818,7 +2818,7 @@ describe('removeWith', () => {
   });
 
   it('should return a new empty object if fn returns truthy and the path is empty', () => {
-    const fn: Function = (value: any) => value;
+    const fn: unchanged.withHandler = (value: any) => value;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2829,7 +2829,7 @@ describe('removeWith', () => {
   });
 
   it('should return the object if fn returns falsy and the path is empty', () => {
-    const fn: Function = (value: any) => Array.isArray(value);
+    const fn: unchanged.withHandler = (value: any) => Array.isArray(value);
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { foo: 'bar', bar: 'baz' };
 
@@ -2957,7 +2957,7 @@ describe('set', () => {
 
 describe('setWith', () => {
   it('should create a new object with the value set at the simple array path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
 
@@ -2971,7 +2971,7 @@ describe('setWith', () => {
   });
 
   it('should create a new object with the value set at the simple string path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
 
@@ -2985,7 +2985,7 @@ describe('setWith', () => {
   });
 
   it('should create a new object with the value set at the nested array path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -3002,7 +3002,7 @@ describe('setWith', () => {
   });
 
   it('should create a new object with the value set at the nested string path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -3022,7 +3022,7 @@ describe('setWith', () => {
   });
 
   it('should create a new object with the value created at the nested array path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -3036,7 +3036,7 @@ describe('setWith', () => {
   });
 
   it('should create a new object with the value created at the nested string path', () => {
-    const fn: Function = (value: string): string => `--${value}--`;
+    const fn: unchanged.withHandler = (value: string): string => `--${value}--`;
     const path: unchanged.Path = ['foo', 0];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -3053,7 +3053,7 @@ describe('setWith', () => {
   });
 
   it('should return the value passed if the path is empty', () => {
-    const fn: Function = (value: { untouched: boolean }): string =>
+    const fn: unchanged.withHandler = (value: { untouched: boolean }): string =>
       `--${value.untouched}--`;
     const path: unchanged.Path = [];
     const object: unchanged.Unchangeable = { untouched: true };

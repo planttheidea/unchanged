@@ -28,7 +28,7 @@ const { slice } = Array.prototype;
 export const createCall: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       parameters: any[],
       object: unchanged.Unchangeable | Function,
@@ -82,7 +82,7 @@ export const createCall: Function = (isWithHandler: boolean): Function => {
 export const createGet: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): any {
@@ -118,7 +118,7 @@ export const createGet: Function = (isWithHandler: boolean): Function => {
 export const createGetOr: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       noMatchValue: any,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
@@ -159,7 +159,7 @@ export const createGetOr: Function = (isWithHandler: boolean): Function => {
 export const createHas: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): boolean {
@@ -197,7 +197,7 @@ export const createHas: Function = (isWithHandler: boolean): Function => {
 export const createIs: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       value: any,
       object: unchanged.Unchangeable,
@@ -245,7 +245,7 @@ export const createMerge: Function = (
 ): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -320,7 +320,7 @@ export const createMerge: Function = (
 export const createRemove: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -390,7 +390,7 @@ export const createRemove: Function = (isWithHandler: boolean): Function => {
 export const createSet: Function = (isWithHandler: boolean): Function => {
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -442,7 +442,7 @@ export const createAdd: Function = (isWithHandler: boolean): Function => {
 
   if (isWithHandler) {
     return function (
-      fn: Function,
+      fn: unchanged.withHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {

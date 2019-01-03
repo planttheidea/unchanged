@@ -285,7 +285,7 @@ console.log(
 console.log(
   'deep method matches validator',
   src.callWith(
-    (value: any) => value,
+    (value: any): any => value as unchanged.withHandler,
     'deeply.nested[0]',
     [{ quz: 'quz' }],
     deepCallObject,
@@ -294,7 +294,7 @@ console.log(
 console.log(
   'deep method does not match validator',
   src.callWith(
-    (value: any) => value.toString(),
+    (value: any) => value.toString() as unchanged.withHandler,
     'deeply.nested[0]',
     [{ quz: 'quz' }],
     deepCallObject,
