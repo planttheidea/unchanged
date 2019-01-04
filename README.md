@@ -41,7 +41,7 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 
 ## Usage
 
-```javascript
+```typescript
 import {
   __,
   add,
@@ -55,7 +55,7 @@ import {
   transform
 } from "unchanged";
 
-const object = {
+const object: unchanged.Unchangeable = {
   foo: "foo",
   bar: [
     {
@@ -77,7 +77,7 @@ const sansBaz = removeBaz(object);
 
 NOTE: There is no `default` export, so if you want to import all methods to a single namespace you should use the `import *` syntax:
 
-```javascript
+```typescript
 import * as uc from "unchanged";
 ```
 
@@ -89,7 +89,7 @@ This library is both written in, and provided with, types by TypeScript. The int
 // the path used to compute nested locations
 type Path = (number | string)[] | number | string;
 // the callback used in transform methods
-type withHandler = (value: any, ...extraArgs: any[]) => any;
+type withHandler = (value: any, ...extraParams: any[]) => any;
 // the generic object that is computed upon, either an array or object
 interface Unchangeable {
   [key: string]: any;
@@ -113,12 +113,14 @@ If there is a better alternative for having dynamic Symbol indices, let me know!
 
 ### get
 
-`get(path: ((number|string)[] | number | string), object: (any[]|object)): any`
+```typescript
+function get(path: unchanged.Path, object: unchanged.Unchangeable): any;
+```
 
 Get the value at the `path` requested on the `object` passed.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -132,12 +134,18 @@ console.log(get(["foo", 0, "bar"], object)); // baz
 
 ### getOr
 
-`getOr(fallbackValue: any, path: ((number|string)[] | number | string), object: (any[]|object)): any`
+```typescript
+function getOr(
+  fallbackValue: any,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): any;
+```
 
 Get the value at the `path` requested on the `object` passed, with a fallback value if that path does not exist.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -152,12 +160,18 @@ console.log(getOr("blah", "foo[0].nonexistent", object)); // blah
 
 ### set
 
-`set(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
+```typescript
+function set(
+  path: unchanged.Path,
+  value: any,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
 
 Returns a new clone of the `object` passed, with the `value` assigned to the final key on the `path` specified.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -171,12 +185,17 @@ console.log(set(["foo", 0, "bar"], "quz", object)); // {foo: [{bar: 'quz'}]}
 
 ### remove
 
-`remove(path: ((number|string)[] | number | string), object: (any[]|object)): (any[]|object)`
+```typescript
+function remove(
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
 
 Returns a new clone of the `object` passed, with the final key on the `path` removed if it exists.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -190,12 +209,14 @@ console.log(remove(["foo", 0, "bar"], object)); // {foo: [{}]}
 
 ### has
 
-`has(path: ((number|string)[] | number | string), object: (any[]|object)): boolean`
+```typescript
+function has(path: unchanged.Path, object: unchanged.Unchangeable): boolean;
+```
 
 Returns `true` if the object has the path provided, `false` otherwise.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -210,12 +231,18 @@ console.log(has("bar", object)); // false
 
 ### is
 
-`is(path: ((number|string)[] | number | string), value: any, object: any[], object)): boolean`
+```typescript
+function is(
+  path: unchanged.Path,
+  value: any,
+  object: unchanged.Unchangeable
+): boolean;
+```
 
 Returns `true` if the value at the `path` in `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
@@ -230,12 +257,18 @@ console.log(is("foo[0].bar", "quz', object)); // false
 
 ### add
 
-`add(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
+```typescript
+function add(
+  path: unchanged.Path,
+  value: any,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
 
 Returns a new clone of the `object` passed, with the `value` added at the `path` specified. This can have different behavior depending on whether the item is an `Object` or an `Array`.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: 'baz'
@@ -256,7 +289,7 @@ Notice that the `Object` usage is idential to the `set` method, where a key need
 
 NOTE: If you want to add an item to a top-level array, pass `null` as the key:
 
-```javascript
+```typescript
 const object = ["foo"];
 
 console.log(add(null, "bar", object)); // ['foo', 'bar']
@@ -264,19 +297,25 @@ console.log(add(null, "bar", object)); // ['foo', 'bar']
 
 ### merge
 
-`merge(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
+```typescript
+function merge(
+  path: unchanged.Path,
+  value: unchanged.Unchangeable,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
 
 Returns a new object that is a deep merge of `value` into `object` at the `path` specified. If you want to perform a shallow merge, see [`assign`](#assign).
 
-```javascript
-const object1 = {
+```typescript
+const object1: unchanged.Unchangeable = {
   oneSpecific: "value",
   object: {
     one: "value1",
     two: "value2"
   }
 };
-const object2 = {
+const object2: unchanged.Unchangeable = {
   one: "new value",
   three: "value3"
 };
@@ -300,8 +339,8 @@ console.log(merge("object", object2, object1));
 
 NOTE: If you want to `merge` the entirety of both objects, pass `null` as the key:
 
-```javascript
-const object1 = {
+```typescript
+const object1: unchanged.Unchangeable = {
   oneSpecific: "value",
   object: {
     one: "value1",
@@ -312,7 +351,7 @@ const object1 = {
     two: "value2"
   }
 };
-const object2 = {
+const object2: unchanged.Unchangeable = {
   one: "new value",
   deeply: {
     nested: "other value"
@@ -343,12 +382,18 @@ console.log(merge(null, object2, object1));
 
 ### assign
 
-`assign(path: ((number|string)[] | number | string), value: any, object: (any[]|object)): (any[]|object)`
+```typescript
+function assign(
+  path: unchanged.Path,
+  value: unchanged.Unchangeable,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
 
 Returns a new object that is a shallow merge of `value` into `object` at the `path` specified. If you want to perform a deep merge, see [`merge`](#merge).
 
-```javascript
-const object1 = {
+```typescript
+const object1: unchanged.Unchangeable = {
   oneSpecific: "value",
   object: {
     one: "value1",
@@ -359,7 +404,7 @@ const object1 = {
     two: "value2"
   }
 };
-const object2 = {
+const object2: unchanged.Unchangeable = {
   one: "new value",
   deeply: {
     nested: "other value"
@@ -385,8 +430,8 @@ console.log(assign("object", object2, object1));
 
 NOTE: If you want to `assign` the entirety of both objects, pass `null` as the key:
 
-```javascript
-const object1 = {
+```typescript
+const object1: unchanged.Unchangeable = {
   oneSpecific: "value",
   object: {
     one: "value1",
@@ -397,7 +442,7 @@ const object1 = {
     two: "value2"
   }
 };
-const object2 = {
+const object2: unchanged.Unchangeable = {
   one: "new value",
   deeply: {
     nested: "other value"
@@ -428,12 +473,19 @@ console.log(assign(null, object2, object1));
 
 ### call
 
-`call(path: ((number|string)[] | number | string), parameters: any[], object: (any[]|object)[, context: any])`
+```typescript
+function call(
+  path: unchanged.Path,
+  parameters: any[],
+  object: unchanged.Unchangeable,
+  context?: any = object
+): any;
+```
 
 Call the method at the `path` requested on the `object` passed, and return what it's call returns.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar(a, b) {
@@ -449,8 +501,8 @@ console.log(call(["foo", 0, "bar"], [1, 2], object)); // 3
 
 You can also provide an optional fourth parameter of `context`, which will be the `this` value in the method call. This will default to the `object` itself.
 
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   calculate: true,
   foo: [
     {
@@ -465,42 +517,171 @@ console.log(call("foo[0].bar", [1, 2], object)); // 3
 console.log(call("foo[0].bar", [1, 2], object, {})); // 0
 ```
 
-**NOTE**: Because `context` is an optional parameter, it cannot be independently curried; you must apply it in the call when the `object` is passed.
+**NOTE**: Because `context` is optional, it cannot be independently curried; you must apply it in the call when the `object` is passed.
 
 ## Transform methods
 
+Each standard method has it's own related `With` method, which accepts a callback `fn` as the first curried parameter. In most cases this callback serves as a transformer for the value retrieved, set, merged, etc.; the exception is `removeWith`, where the callback serves as a validator as to whether to remove or not.
+
+The signature of all callbacks is the `withHandler` specified in [`Types`](#types). Because `extraParams` are optional parameters, they cannot be independently curried; you must apply them in the call when the `object` is passed.
+
 ### getWith
 
-### getWithOr
+```typescript
+function getWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  ...extraParams?: any[]
+): any;
+```
 
-### setWith
+Get the return value of `fn` based on the value at the `path` requested on the `object` passed. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
 
-`transform(path: ((number|string)[] | number | string), fn: function, object: (any[]|object)[, ...extraParams: any[]]): (any[]|object)`
-
-Returns a new clone of the `object` passed, with the return value of `fn` assigned to the final key on the `path` specified. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
-
-```javascript
-const object = {
+```typescript
+const object: unchanged.Unchangeable = {
   foo: [
     {
       bar: "baz"
     }
   ]
 };
-const fn = (currentValue, preventUpdate) =>
-  preventUpdate ? currentValue : "quz";
+const fn: unchanged.withHandler = (value: any, nullValue: any): any =>
+  currentValue === nullValue ? null : currentValue;
 
-console.log(transform("foo[0].bar", fn, object)); // {foo: [{bar: 'quz'}]}
-console.log(transform("foo[0].bar", fn, object, true)); // {foo: [{bar: 'baz'}]}
-console.log(transform(["foo", 0, "bar"], fn, object)); // {foo: [{bar: 'quz'}]}
-console.log(transform(["foo", 0, "bar"], fn, object, true)); // {foo: [{bar: 'baz'}]}
+console.log(getWith(fn, "foo[0].bar", object)); // 'baz'
+console.log(getWith(fn, "foo[0].bar", object, "baz")); // null
+console.log(getWith(fn, ["foo", 0, "bar"], object)); // 'baz'
+console.log(getWith(fn, ["foo", 0, "bar"], object, "baz")); // null
 ```
 
-**NOTE**: Because `extraParams` are optional parameters, they cannot be independently curried; you must apply them in the call when the `object` is passed.
+### getWithOr
+
+```typescript
+function getWithOr(
+  fn: unchanged.withHandler,
+  fallbackValue: any,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  ...extraParams?: any[]
+): any;
+```
+
+Get the return value of `fn` based on the value at the `path` requested on the `object` passed, falling back to `fallbackValue` when no match is found at `path`. When a match is found, `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any, nullValue: any): any =>
+  currentValue === nullValue ? null : currentValue;
+
+console.log(getWithOr(fn, "quz", "foo[0].bar", object)); // 'baz'
+console.log(getWithOr(fn, "quz", "foo[0].bar", object, "baz")); // null
+console.log(getWithOr(fn, "quz", "foo[0].notFound", object, "baz")); // 'quz'
+console.log(getWithOr(fn, "quz", ["foo", 0, "bar"], object)); // 'baz'
+console.log(getWithOr(fn, "quz", ["foo", 0, "bar"], object, "baz")); // null
+console.log(getWithOr(fn, "quz", ["foo", 0, "notFound"], object, "baz")); // 'quz'
+```
+
+### setWith
+
+```typescript
+function setWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  ...extraParams?: any[]
+): unchanged.Unchangeable;
+```
+
+Returns a new clone of the `object` passed, with the return value of `fn` assigned to the final key on the `path` specified. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any, preventUpdate: boolean): any =>
+  preventUpdate ? currentValue : "quz";
+
+console.log(setWith(fn, "foo[0].bar", object)); // {foo: [{bar: 'quz'}]}
+console.log(setWith(fn, "foo[0].bar", object, true)); // {foo: [{bar: 'baz'}]}
+console.log(setWith(fn, ["foo", 0, "bar"], object)); // {foo: [{bar: 'quz'}]}
+console.log(setWith(fn, ["foo", 0, "bar"], object, true)); // {foo: [{bar: 'baz'}]}
+```
 
 ### removeWith
 
+```typescript
+function removeWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  ...extraParams?: any[]
+): unchanged.Unchangeable;
+```
+
+Returns a new clone of the `object` passed, with the final key on the `path` removed if it exists and the return from `fn` is truthy.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (
+  value: any,
+  shouldNotRemove: boolean
+): boolean => !shouldNotRemove && value === "baz";
+
+console.log(removeWith(fn, "foo[0].bar", object)); // {foo: [{}]}
+console.log(removeWith(fn, "foo[0].bar", object, true)); // {foo: [{bar: 'baz'}]}
+console.log(removeWith([fn, "foo", 0, "bar"], object)); // {foo: [{}]}
+console.log(removeWith([fn, "foo", 0, "bar"], object, true)); // {foo: [{bar: 'baz'}]}
+```
+
 ### hasWith
+
+```typescript
+function hasWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable,
+  ...extraParams?: any[]
+): boolean;
+```
+
+Returns `true` if the return value of `fn` based on the value returned from `path` in the `object` returns truthy, `false` otherwise.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (
+  value: any,
+  shouldBeNull: boolean
+): boolean => (shouldBeNull ? value === null : value === "baz");
+
+console.log(hasWith(fn, "foo[0].bar", object)); // true
+console.log(hasWith(fn, "foo[0].bar", object, true)); // false
+console.log(hasWith(fn, ["foo", 0, "bar"], object)); // true
+console.log(hasWith(fn, ["foo", 0, "bar"], object, true)); // false
+console.log(hasWith(fn, "bar", object)); // false
+```
 
 ### isWith
 
@@ -518,7 +699,7 @@ console.log(transform(["foo", 0, "bar"], fn, object, true)); // {foo: [{bar: 'ba
 
 A placeholder value used to identify "gaps" in a curried function, allowing for earlier application of arguments later in the argument order.
 
-```javascript
+```typescript
 import {__, set} from 'unchanged';
 
 const thing = {
@@ -551,7 +732,7 @@ NOTE: There is no direct parallel for the `add` method in `lodash/fp`; the close
 
 The last main difference is the way that objects are copied, example:
 
-```javascript
+```typescript
 function Foo(value) {
   this.value = value;
 }
