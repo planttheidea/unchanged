@@ -75,7 +75,7 @@ const removeBaz = remove("bar[0].baz");
 const sansBaz = removeBaz(object);
 ```
 
-NOTE: There is no `default` export, so if you want to import all methods to a single namespace you should use the `import *` syntax:
+**NOTE**: There is no `default` export, so if you want to import all methods to a single namespace you should use the `import *` syntax:
 
 ```typescript
 import * as uc from "unchanged";
@@ -287,7 +287,7 @@ console.log(add(['foo', 0, 'quz'], 'added value', object)); // {foo: [{bar: 'baz
 
 Notice that the `Object` usage is idential to the `set` method, where a key needs to be specified for assignment. In the case of an `Array`, however, the value is pushed to the array at that key.
 
-NOTE: If you want to add an item to a top-level array, pass `null` as the key:
+**NOTE**: If you want to add an item to a top-level array, pass `null` as the key:
 
 ```typescript
 const object = ["foo"];
@@ -337,7 +337,7 @@ console.log(merge("object", object2, object1));
 */
 ```
 
-NOTE: If you want to `merge` the entirety of both objects, pass `null` as the key:
+**NOTE**: If you want to `merge` the entirety of both objects, pass `null` as the key:
 
 ```typescript
 const object1: unchanged.Unchangeable = {
@@ -428,7 +428,7 @@ console.log(assign("object", object2, object1));
 */
 ```
 
-NOTE: If you want to `assign` the entirety of both objects, pass `null` as the key:
+**NOTE**: If you want to `assign` the entirety of both objects, pass `null` as the key:
 
 ```typescript
 const object1: unchanged.Unchangeable = {
@@ -717,18 +717,27 @@ setFooOnThing('bar');
 
 [`lodash/fp`](https://lodash.com/) (the functional programming implementation of `lodash`) is identical in implementation to `unchanged`'s methods, just with a _10.5x_ larger footprint. These methods should map directly:
 
+- _lodash_ => _unchanged_
 - `curry.placeholder` => `__`
 - `get` => `get`
 - `getOr` => `getOr`
 - `merge` => `merge`
 - `omit` => `remove`
-- `set` => `set` (also maps to `add` for objects only)
-
-NOTE: There is no direct parallel for the `add` method in `lodash/fp`; the closest is `concat` but that is array-specific and does not support nested keys.
+- `set` => `set`
 
 ### ramda
 
-[`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dot-bracket syntax is not supported by `ramda`, only path arrays. Another difference is that the `ramda` methods that clone objects (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging.
+[`ramda`](http://ramdajs.com/) is similar in its implementation, however the first big difference is that dot-bracket syntax is not supported by `ramda`, only path arrays. The related methods are:
+
+- _ramda_ => _unchanged_
+- `__` => `__`
+- `path` => `get`
+- `pathOr` => `getOr`
+- `merge` => `merge`
+- `omit` => `remove`
+- `assocPath` => `set`
+
+Another difference is that the `ramda` methods that clone objects (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging.
 
 The last main difference is the way that objects are copied, example:
 
