@@ -1,6 +1,6 @@
 # unchanged
 
-A tiny (~1.9kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
+A tiny (~2.0kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
 
 Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
 
@@ -168,7 +168,7 @@ function set(
 ): unchanged.Unchangeable;
 ```
 
-Returns a new clone of the `object` passed, with the `value` assigned to the final key on the `path` specified.
+Returns a new object based on the `object` passed, with the `value` assigned to the final key on the `path` specified.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -192,7 +192,7 @@ function remove(
 ): unchanged.Unchangeable;
 ```
 
-Returns a new clone of the `object` passed, with the final key on the `path` removed if it exists.
+Returns a new object based on the `object` passed, with the final key on the `path` removed if it exists.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -265,7 +265,7 @@ function add(
 ): unchanged.Unchangeable;
 ```
 
-Returns a new clone of the `object` passed, with the `value` added at the `path` specified. This can have different behavior depending on whether the item is an `Object` or an `Array`.
+Returns a new object based on the `object` passed, with the `value` added at the `path` specified. This can have different behavior depending on whether the item is an object or an array; objects will simply add / set the key provided, whereas arrays will add a new value to the end.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -309,40 +309,8 @@ Returns a new object that is a deep merge of `value` into `object` at the `path`
 
 ```typescript
 const object1: unchanged.Unchangeable = {
-  oneSpecific: "value",
-  object: {
-    one: "value1",
-    two: "value2"
-  }
-};
-const object2: unchanged.Unchangeable = {
-  one: "new value",
-  three: "value3"
-};
-
-console.log(merge("object", object2, object1));
-/*
-{
-  oneSpecific: 'value',
-  object: {
-    one: 'value1',
-    deeply: {
-      nested: 'other value',
-      untouched: true,
-    },
-    two: 'value2',
-    three: 'value3
-  }
-}
-*/
-```
-
-**NOTE**: If you want to `merge` the entirety of both objects, pass `null` as the key:
-
-```typescript
-const object1: unchanged.Unchangeable = {
-  oneSpecific: "value",
-  object: {
+  foo: "bar",
+  baz: {
     one: "value1",
     deeply: {
       nested: "value",
@@ -359,23 +327,42 @@ const object2: unchanged.Unchangeable = {
   three: "value3"
 };
 
-console.log(merge(null, object2, object1));
+console.log(merge("baz", object2, object1));
 /*
 {
-  one: 'new value',
-  oneSpecific: 'value',
-  object: {
-    one: 'value1',
+  foo: 'bar',
+  baz: {
+    one: 'new value',
     deeply: {
-      nested: 'value',
+      nested: 'other value',
       untouched: true,
     },
     two: 'value2',
+    three: 'value3
+  }
+}
+```
+
+**NOTE**: If you want to `merge` the entirety of both objects, pass `null` as the key:
+
+```typescript
+console.log(merge(null, object2, object1));
+/*
+{
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
+    two: "value2"
   },
+  one: "new value",
   deeply: {
-    nested: 'other value',
+    nested: "other value"
   },
-  three: 'value3
+  three: "value3"
 }
 */
 ```
@@ -394,46 +381,8 @@ Returns a new object that is a shallow merge of `value` into `object` at the `pa
 
 ```typescript
 const object1: unchanged.Unchangeable = {
-  oneSpecific: "value",
-  object: {
-    one: "value1",
-    deeply: {
-      nested: "value",
-      untouched: false
-    },
-    two: "value2"
-  }
-};
-const object2: unchanged.Unchangeable = {
-  one: "new value",
-  deeply: {
-    nested: "other value"
-  },
-  three: "value3"
-};
-
-console.log(assign("object", object2, object1));
-/*
-{
-  oneSpecific: 'value',
-  object: {
-    one: 'value1',
-    deeply: {
-      nested: 'other value',
-    },
-    two: 'value2',
-    three: 'value3
-  }
-}
-*/
-```
-
-**NOTE**: If you want to `assign` the entirety of both objects, pass `null` as the key:
-
-```typescript
-const object1: unchanged.Unchangeable = {
-  oneSpecific: "value",
-  object: {
+  foo: "bar",
+  baz: {
     one: "value1",
     deeply: {
       nested: "value",
@@ -450,23 +399,41 @@ const object2: unchanged.Unchangeable = {
   three: "value3"
 };
 
+console.log(assign("baz", object2, object1));
+/*
+{
+  foo: 'bar',
+  baz: {
+    one: 'new value',
+    deeply: {
+      nested: 'other value',
+    },
+    two: 'value2',
+    three: 'value3
+  }
+}
+```
+
+**NOTE**: If you want to `assign` the entirety of both objects, pass `null` as the key:
+
+```typescript
 console.log(assign(null, object2, object1));
 /*
 {
-  one: 'new value',
-  oneSpecific: 'value',
-  object: {
-    one: 'value1',
+  foo: "bar",
+  baz: {
+    one: "value1",
     deeply: {
-      nested: 'value',
-      untouched: true,
+      nested: "value",
+      untouched: true
     },
-    two: 'value2',
+    two: "value2"
   },
+  one: "new value",
   deeply: {
-    nested: 'other value',
+    nested: "other value"
   },
-  three: 'value3
+  three: "value3"
 }
 */
 ```
@@ -599,7 +566,7 @@ function setWith(
 ): unchanged.Unchangeable;
 ```
 
-Returns a new clone of the `object` passed, with the return value of `fn` assigned to the final key on the `path` specified. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
+Returns a new object based on the `object` passed, with the return value of `fn` assigned to the final key on the `path` specified. `fn` is called with the current value at the `path` as the first parameter, and any additional parameters passed as `extraParams` following that.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -629,7 +596,7 @@ function removeWith(
 ): unchanged.Unchangeable;
 ```
 
-Returns a new clone of the `object` passed, with the final key on the `path` removed if it exists and the return from `fn` is truthy.
+Returns a new object based on the `object` passed, with the final key on the `path` removed if it exists and the return from `fn` is truthy.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -685,13 +652,283 @@ console.log(hasWith(fn, "bar", object)); // false
 
 ### isWith
 
+```typescript
+function isWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): boolean;
+```
+
+Returns `true` if the return value of `fn` based on the value returned from `path` in the `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz",
+      quz: "not baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any): number =>
+  value && value.length === 3;
+
+console.log(isWith(fn, "foo[0].bar", object)); // true
+console.log(isWith(fn, ["foo", 0, "bar"], object)); // true
+console.log(isWith(fn, "foo[0].quz", object)); // false
+```
+
 ### addWith
+
+```typescript
+function addWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
+
+Returns a new object based on the `object` passed, with the return value of `fn` added at the `path` specified. This can have different behavior depending on whether the item is an object or an array; objects will simply add / set the key provided, whereas arrays will add a new value to the end.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any) =>
+  value
+    ? value
+        .split("")
+        .reverse()
+        .join("")
+    : "new value";
+
+// object
+console.log(addWith(fn, "foo", object)); // {foo: [{bar: 'baz'}, 'new value']}
+console.log(addWith(fn, ["foo"], object)); // {foo: [{bar: 'baz'}, 'new value']}
+
+// array
+console.log(addWith(fn, "foo[0].bar", object)); // {foo: [{bar: 'zab'}]}
+console.log(addWith(fn, ["foo", 0, "bar"], object)); // {foo: [{bar: 'zab''}]}
+```
 
 ### mergeWith
 
+```typescript
+function mergeWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
+
+Returns a new object that is a deep merge of the return value of `fn` into `object` at the `path` specified if a valid mergeable object, else returns the original object. If you want to perform a shallow merge, see [`assignWith`](#assignwith).
+
+```typescript
+const object1: unchanged.Unchangeable = {
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
+    two: "value2"
+  }
+};
+const object2: unchanged.Unchangeable = {
+  one: "new value",
+  deeply: {
+    nested: "other value"
+  },
+  three: "value3"
+};
+const fn: unchanged.withHandler = (value: any) =>
+  value && value.one === "value1" ? object2 : null;
+
+console.log(mergeWith(fn, "baz", object1));
+/*
+{
+  foo: 'bar',
+  baz: {
+    one: 'new value',
+    deeply: {
+      nested: 'other value',
+      untouched: true,
+    },
+    two: 'value2',
+    three: 'value3
+  }
+}
+*/
+console.log(mergeWith(fn, "baz.deeply", object1));
+/*
+// untouched object1
+{
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: 'value',
+      untouched: true,
+    },
+    two: "value2"
+  }
+}
+*/
+```
+
+**NOTE**: If you want to `merge` the entirety of both objects, pass `null` as the key:
+
+```typescript
+console.log(mergeWith(fn, null, object1));
+/*
+{
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
+    two: "value2"
+  },
+  one: "new value",
+  deeply: {
+    nested: "other value"
+  },
+  three: "value3"
+}
+*/
+```
+
 ### assignWith
 
+```typescript
+function assignWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): unchanged.Unchangeable;
+```
+
+Returns a new object that is a shallow merge of the return value of `fn` into `object` at the `path` specified if a valid mergeable object, else returns the original object. If you want to perform a deep merge, see [`mergeWith`](#mergeWith).
+
+```typescript
+const object1: unchanged.Unchangeable = {
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: "value",
+      untouched: true
+    },
+    two: "value2"
+  }
+};
+const object2: unchanged.Unchangeable = {
+  one: "new value",
+  deeply: {
+    nested: "other value"
+  },
+  three: "value3"
+};
+const fn: unchanged.withHandler = (value: any) =>
+  value && value.one === "value1" ? object2 : null;
+
+console.log(assignWith(fn, "baz", object1));
+/*
+{
+  foo: 'bar',
+  baz: {
+    one: 'new value',
+    deeply: {
+      nested: 'other value',
+    },
+    two: 'value2',
+    three: 'value3
+  }
+}
+*/
+console.log(assignWith(fn, "baz.deeply", object1));
+/*
+// untouched object1
+{
+  foo: "bar",
+  baz: {
+    one: "value1",
+    deeply: {
+      nested: 'value',
+      untouched: true,
+    },
+    two: "value2"
+  }
+}
+*/
+```
+
 ### callWith
+
+```typescript
+function callWith(
+  path: unchanged.Path,
+  parameters: any[],
+  object: unchanged.Unchangeable,
+  context?: any = object
+): any;
+```
+
+Call the method returned from `fn` based on the `path` specified on the `object`, and if a function return what it's call returns.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar(a, b) {
+        return a + b;
+      }
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any): any =>
+  typeof value === fn
+    ? fn
+    : () =>
+        console.error("Error: Requested call of a method that does not exist.");
+
+console.log(callWith(fn, "foo[0].bar", [1, 2], object)); // 3
+console.log(callWith(fn, ["foo", 0, "bar"], [1, 2], object)); // 3
+callWith(fn, "foo[1].nope", object); // Error: Requested call of a method that does not exist.
+```
+
+You can also provide an optional fourth parameter of `context`, which will be the `this` value in the method call. This will default to the `object` itself.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  calculate: true,
+  foo: [
+    {
+      bar(a, b) {
+        return this.calculate ? a + b : 0;
+      }
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any): any =>
+  typeof value === fn
+    ? fn
+    : () =>
+        console.error("Error: Requested call of a method that does not exist.");
+
+console.log(callWith(fn, "foo[0].bar", [1, 2], object)); // 3
+console.log(callWith(fn, "foo[0].bar", [1, 2], object, {})); // 0
+```
+
+**NOTE**: Because `context` is optional, it cannot be independently curried; you must apply it in the call when the `object` is passed.
 
 ## Additional objects
 
