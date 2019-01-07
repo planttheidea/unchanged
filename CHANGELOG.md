@@ -2,6 +2,25 @@
 
 Yes, the irony is not lost on me. :)
 
+## 2.0.0
+
+Rewrite in TypeScript!
+
+**BREAKING CHANGES**
+
+- `transform` has changed to be `setWith`, and the signature has changed as well (see [the documentation](README.md#setWith) for details)
+
+**NEW FEATURES**
+
+- Added [`is`](README.md#is) method for assertion
+- Added function-first `*With` methods corresponding to each existing method (see [the documentation](README.md#transform-methods) for details)
+- TypeScript typings
+
+**ADDITIONAL CHANGES**
+
+- Faster `get`s, `set`s, `merge`s, and `remove`s
+- Distinct `main`, `module`, and `browser` builds for better universality of consumption
+
 ## 1.5.2
 
 - Fix `rollup` build setup with latest `curriable` and `pathington` setups

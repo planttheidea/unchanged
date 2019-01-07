@@ -1,47 +1,71 @@
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import {uglify} from 'rollup-plugin-uglify';
+import resolve from "rollup-plugin-node-resolve";
+import minify from "rollup-plugin-babel-minify";
+import typescript from "rollup-plugin-typescript2";
 
-import pkg from './package.json';
+import pkg from "./package.json";
 
-const DEV_CONFIG = {
-  external: Object.keys(pkg.dependencies),
-  input: 'src/index.js',
+const EXTERNALS = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.peerDependencies || {})
+];
+
+const UMD_CONFIG = {
+  external: EXTERNALS,
+  input: "src/index.ts",
   output: {
-    exports: 'named',
-    file: 'dist/unchanged.js',
-    format: 'umd',
-    globals: Object.keys(pkg.dependencies).reduce((globals, pkgName) => {
-      globals[pkgName] = pkgName;
+    exports: "named",
+    file: pkg.browser,
+    format: "umd",
+    globals: EXTERNALS.reduce((globals, name) => {
+      globals[name] = name;
 
       return globals;
     }, {}),
-    name: 'unchanged',
-    sourcemap: true,
+    name: pkg.name,
+    sourcemap: true
   },
   plugins: [
     resolve({
+      browser: true,
       main: true,
-      module: true,
+      module: true
     }),
-    babel({
-      exclude: 'node_modules/**',
-    }),
-  ],
+    typescript({
+      typescript: require("typescript")
+    })
+  ]
 };
 
-export default [
-  DEV_CONFIG,
-  {
-    ...DEV_CONFIG,
-    output: {
-      ...DEV_CONFIG.output,
-      file: 'dist/unchanged.min.js',
-      sourcemap: false,
+const FORMATTED_CONFIG = {
+  ...UMD_CONFIG,
+  output: [
+    {
+      ...UMD_CONFIG.output,
+      file: pkg.main,
+      format: "cjs"
     },
-    plugins: [
-      ...DEV_CONFIG.plugins,
-      uglify(),
-    ],
+    {
+      ...UMD_CONFIG.output,
+      file: pkg.module,
+      format: "es"
+    }
+  ]
+};
+
+const MINIFIED_CONFIG = {
+  ...UMD_CONFIG,
+  output: {
+    ...UMD_CONFIG.output,
+    file: pkg.browser.replace(".js", ".min.js"),
+    sourcemap: false
   },
-];
+  plugins: [
+    ...UMD_CONFIG.plugins,
+    minify({
+      comments: false,
+      sourceMap: false
+    })
+  ]
+};
+
+export default [UMD_CONFIG, FORMATTED_CONFIG, MINIFIED_CONFIG];

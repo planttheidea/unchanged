@@ -1,7 +1,7 @@
-const fs = require('fs');
-const Table = require('cli-table');
+const fs = require("fs");
+const Table = require("cli-table");
 
-const {repeats, test} = require('./test');
+const { repeats, test } = require("./test");
 
 const {
   objectGetNative,
@@ -16,7 +16,7 @@ const {
   arrayGetRamda,
   arrayGetUnchanged,
   arrayGetUnchangedDotty
-} = require('./get');
+} = require("./get");
 
 const {
   objectGetInNative,
@@ -31,7 +31,7 @@ const {
   arrayGetInLodashFpDotty,
   arrayGetInUnchanged,
   arrayGetInUnchangedDotty
-} = require('./getin');
+} = require("./getin");
 
 const {
   objectSetNative,
@@ -46,7 +46,7 @@ const {
   arraySetRamda,
   arraySetUnchanged,
   arraySetUnchangedDotty
-} = require('./set');
+} = require("./set");
 
 const {
   objectSetInNative,
@@ -61,105 +61,105 @@ const {
   arraySetInRamda,
   arraySetInUnchanged,
   arraySetInUnchangedDotty
-} = require('./setin');
+} = require("./setin");
 
-const TABLE_HEAD = repeats.map((number) => {
+const TABLE_HEAD = repeats.map(number => {
   return `${number} ops`;
 });
 
 const TEST_TITLES = {
-  getArray: 'get array index',
-  getInArray: 'get nested array index',
-  getInObject: 'get nested object property',
-  getObject: 'get object property',
-  setArray: 'set array index',
-  setInArray: 'set nested array index',
-  setInObject: 'set nested object property',
-  setObject: 'set object property'
+  getArray: "get array index",
+  getInArray: "get nested array index",
+  getInObject: "get nested object property",
+  getObject: "get object property",
+  setArray: "set array index",
+  setInArray: "set nested array index",
+  setInObject: "set nested object property",
+  setObject: "set object property"
 };
 
 const TESTS = {
   getObject: {
     native: objectGetNative,
-    'lodash fp (array)': objectGetLodashFp,
-    'lodash fp (dotty)': objectGetLodashFpDotty,
+    "lodash fp (array)": objectGetLodashFp,
+    "lodash fp (dotty)": objectGetLodashFpDotty,
     ramda: objectGetRamda,
-    'unchanged (array)': objectGetUnchanged,
-    'unchanged (dotty)': objectGetUnchangedDotty
+    "unchanged (array)": objectGetUnchanged,
+    "unchanged (dotty)": objectGetUnchangedDotty
   },
   getArray: {
     native: arrayGetNative,
-    'lodash fp (array)': arrayGetLodashFp,
-    'lodash fp (dotty)': arrayGetLodashFpDotty,
+    "lodash fp (array)": arrayGetLodashFp,
+    "lodash fp (dotty)": arrayGetLodashFpDotty,
     ramda: arrayGetRamda,
-    'unchanged (array)': arrayGetUnchanged,
-    'unchanged (dotty)': arrayGetUnchangedDotty
+    "unchanged (array)": arrayGetUnchanged,
+    "unchanged (dotty)": arrayGetUnchangedDotty
   },
   getInObject: {
     native: objectGetInNative,
-    'lodash fp (array)': objectGetInLodashFp,
-    'lodash fp (dotty)': objectGetInLodashFpDotty,
+    "lodash fp (array)": objectGetInLodashFp,
+    "lodash fp (dotty)": objectGetInLodashFpDotty,
     ramda: objectGetInRamda,
-    'unchanged (array)': objectGetInUnchanged,
-    'unchanged (dotty)': objectGetInUnchangedDotty
+    "unchanged (array)": objectGetInUnchanged,
+    "unchanged (dotty)": objectGetInUnchangedDotty
   },
   getInArray: {
     native: arrayGetInNative,
-    'lodash fp (array)': arrayGetInLodashFp,
-    'lodash fp (dotty)': arrayGetInLodashFpDotty,
+    "lodash fp (array)": arrayGetInLodashFp,
+    "lodash fp (dotty)": arrayGetInLodashFpDotty,
     ramda: arrayGetInRamda,
-    'unchanged (array)': arrayGetInUnchanged,
-    'unchanged (dotty)': arrayGetInUnchangedDotty
+    "unchanged (array)": arrayGetInUnchanged,
+    "unchanged (dotty)": arrayGetInUnchangedDotty
   },
   setObject: {
     native: objectSetNative,
-    'lodash fp (array)': objectSetLodashFp,
-    'lodash fp (dotty)': objectSetLodashFpDotty,
+    "lodash fp (array)": objectSetLodashFp,
+    "lodash fp (dotty)": objectSetLodashFpDotty,
     ramda: objectSetRamda,
-    'unchanged (array)': objectSetUnchanged,
-    'unchanged (dotty)': objectSetUnchangedDotty
+    "unchanged (array)": objectSetUnchanged,
+    "unchanged (dotty)": objectSetUnchangedDotty
   },
   setArray: {
     native: arraySetNative,
-    'lodash fp (array)': arraySetLodashFp,
-    'lodash fp (dotty)': arraySetLodashFpDotty,
+    "lodash fp (array)": arraySetLodashFp,
+    "lodash fp (dotty)": arraySetLodashFpDotty,
     ramda: arraySetRamda,
-    'unchanged (array)': arraySetUnchanged,
-    'unchanged (dotty)': arraySetUnchangedDotty
+    "unchanged (array)": arraySetUnchanged,
+    "unchanged (dotty)": arraySetUnchangedDotty
   },
   setInObject: {
     native: objectSetInNative,
-    'lodash fp (array)': objectSetInLodashFp,
-    'lodash fp (dotty)': objectSetInLodashFpDotty,
+    "lodash fp (array)": objectSetInLodashFp,
+    "lodash fp (dotty)": objectSetInLodashFpDotty,
     ramda: objectSetInRamda,
-    'unchanged (array)': objectSetInUnchanged,
-    'unchanged (dotty)': objectSetInUnchangedDotty
+    "unchanged (array)": objectSetInUnchanged,
+    "unchanged (dotty)": objectSetInUnchangedDotty
   },
   setInArray: {
     native: arraySetInNative,
-    'lodash fp (array)': arraySetInLodashFp,
-    'lodash fp (dotty)': arraySetInLodashFpDotty,
+    "lodash fp (array)": arraySetInLodashFp,
+    "lodash fp (dotty)": arraySetInLodashFpDotty,
     ramda: arraySetInRamda,
-    'unchanged (array)': arraySetInUnchanged,
-    'unchanged (dotty)': arraySetInUnchangedDotty
+    "unchanged (array)": arraySetInUnchanged,
+    "unchanged (dotty)": arraySetInUnchangedDotty
   }
 };
 
-const results = [['Test', ...TABLE_HEAD].join(',')];
+const results = [["Test", ...TABLE_HEAD].join(",")];
 
-Object.keys(TESTS).forEach((testType) => {
+Object.keys(TESTS).forEach(testType => {
   const testTitle = TEST_TITLES[testType];
 
-  console.log('');
+  console.log("");
   console.log(`Running benchmarks for ${testTitle}...`);
 
-  results.push(new Array(TABLE_HEAD.length + 1).fill('---'));
+  results.push(new Array(TABLE_HEAD.length + 1).fill("---"));
 
   const typeTable = new Table({
-    head: ['', ...TABLE_HEAD]
+    head: ["", ...TABLE_HEAD]
   });
 
-  Object.keys(TESTS[testType]).forEach((testName) => {
+  Object.keys(TESTS[testType]).forEach(testName => {
     const result = test(testName, TESTS[testType][testName]);
     const resultRow = [testName, ...result];
 
@@ -169,19 +169,19 @@ Object.keys(TESTS).forEach((testType) => {
         .map((result, index) => {
           return index === 0 ? `[${testTitle}] ${result}` : result;
         })
-        .join(',')
+        .join(",")
     );
   });
 
   console.log(typeTable.toString());
 });
 
-console.log('');
+console.log("");
 
 // write to file
 if (fs && fs.writeFileSync) {
-  fs.writeFileSync('benchmark_results.csv', results.join('\n'), 'utf8');
-  console.log('benchmarks done! Results saved to benchmark_results.csv');
+  fs.writeFileSync("benchmark_results.csv", results.join("\n"), "utf8");
+  console.log("benchmarks done! Results saved to benchmark_results.csv");
 } else {
-  console.log('benchmarks done!');
+  console.log("benchmarks done!");
 }
