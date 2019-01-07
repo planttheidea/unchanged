@@ -8,7 +8,7 @@ Supports nested key paths via path arrays or [dotty syntax](https://github.com/p
 
 - [Usage](#usage)
 - [Types](#types)
-- [Standard methods](#methods)
+- [Standard methods](#standard-methods)
   - [get](#get)
   - [getOr](#getor)
   - [set](#set)
@@ -19,7 +19,7 @@ Supports nested key paths via path arrays or [dotty syntax](https://github.com/p
   - [merge](#merge)
   - [assign](#assign)
   - [call](#call)
-- [Transform methods]
+- [Transform methods](#transform-methods)
   - [getWith](#getwith)
   - [getWithOr](#getwithor)
   - [setWith](#setwith)
