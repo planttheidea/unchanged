@@ -1,4 +1,7 @@
 import * as src from '../src';
+// import * as src from '../dist/unchanged';
+// import * as src from '../dist/unchanged.cjs';
+// import * as src from '../dist/unchanged.esm';
 import { assoc } from 'ramda';
 
 // import '../benchmarks';
