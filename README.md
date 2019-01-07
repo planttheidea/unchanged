@@ -2,7 +2,7 @@
 
 A tiny (~2.0kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
 
-Supports nested key paths via path arrays or [dot-bracket syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
+Supports nested key paths via path arrays or [dotty syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
 
 ## Table of contents
 
@@ -45,14 +45,25 @@ Supports nested key paths via path arrays or [dot-bracket syntax](https://github
 import {
   __,
   add,
+  addWith,
   assign,
+  assignWith,
   call,
+  callWith,
   get,
+  getWith,
   getOr,
+  getWithOr,
+  has,
+  hasWith,
+  is,
+  isWith,
   merge,
+  mergeWith,
   remove,
+  removeWith,
   set,
-  transform
+  setWith
 } from "unchanged";
 
 const object: unchanged.Unchangeable = {
@@ -1023,16 +1034,15 @@ This includes popular solutions like [Immutable.js](https://facebook.github.io/i
 
 Standard stuff, clone the repo and `npm install` dependencies. The npm scripts available:
 
-- `build` => run webpack to build development `dist` file with NODE_ENV=development
-- `build:minified` => run webpack to build production `dist` file with NODE_ENV=production
+- `benchmark` => run benchmark suite comparing top-level and deeply-nested `get` and `set` operations with `lodash` and `ramda`
+- `build` => run `rollup` to build `dist` files for CommonJS, ESM, and UMD consumers
+- `clean` => run `rimraf` on the `dist` folder
 - `dev` => run webpack dev server to run example app / playground
-- `dist` => runs `build` and `build:minified`
+- `dist` => runs `clean` and `build`
 - `lint` => run ESLint against all files in the `src` folder
+- `lint:fix` => run `lint` with autofixing applied
 - `prepublish` => runs `prepublish:compile` when publishing
-- `prepublish:compile` => run `lint`, `test:coverage`, `transpile:es`, `transpile:lib`, `dist`
+- `prepublish:compile` => run `lint`, `test:coverage`, `dist`
 - `test` => run AVA test functions with `NODE_ENV=test`
 - `test:coverage` => run `test` but with `nyc` for coverage checker
 - `test:watch` => run `test`, but with persistent watcher
-- `transpile:lib` => run babel against all files in `src` to create files in `lib`
-- `transpile:es` => run babel against all files in `src` to create files in `es`, preserving ES2015 modules (for
-  [`pkg.module`](https://github.com/rollup/rollup/wiki/pkg.module))
