@@ -833,6 +833,17 @@ describe('getShallowClone', () => {
     expect(result).not.toBe(object);
     expect(result).toEqual(object);
   });
+
+  it('should return a shallow clone of the object if a pure object', () => {
+    const object = Object.create(null);
+
+    object.foo = 'bar';
+
+    const result: unchanged.Unchangeable = getShallowClone(object);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual(object);
+  });
 });
 
 describe('isCloneable', () => {

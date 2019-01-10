@@ -33,9 +33,9 @@
     "ramda": "^0.26.1",
     "react": "^16.7.0",
     "react-dom": "^16.4.2",
-    "rollup": "^1.0.2",
-    "rollup-plugin-babel-minify": "^6.2.0",
+    "rollup": "^1.1.0",
     "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-terser": "^4.0.2",
     "rollup-plugin-typescript2": "^0.18.1",
     "ts-jest": "^23.10.4",
     "ts-loader": "^5.3.3",
@@ -77,5 +77,5 @@
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",
-  "version": "2.0.0"
+  "version": "2.0.1"
 }

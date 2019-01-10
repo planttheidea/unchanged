@@ -1,5 +1,5 @@
 import resolve from "rollup-plugin-node-resolve";
-import minify from "rollup-plugin-babel-minify";
+import { terser } from "rollup-plugin-terser";
 import typescript from "rollup-plugin-typescript2";
 
 import pkg from "./package.json";
@@ -59,13 +59,7 @@ const MINIFIED_CONFIG = {
     file: pkg.browser.replace(".js", ".min.js"),
     sourcemap: false
   },
-  plugins: [
-    ...UMD_CONFIG.plugins,
-    minify({
-      comments: false,
-      sourceMap: false
-    })
-  ]
+  plugins: [...UMD_CONFIG.plugins, terser()]
 };
 
 export default [UMD_CONFIG, FORMATTED_CONFIG, MINIFIED_CONFIG];
