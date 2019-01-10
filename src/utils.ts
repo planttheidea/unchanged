@@ -2,7 +2,13 @@
 import { parse } from 'pathington';
 
 const O = Object;
-const { create, getOwnPropertySymbols, keys, propertyIsEnumerable } = O;
+const {
+  create,
+  getOwnPropertySymbols,
+  getPrototypeOf,
+  keys,
+  propertyIsEnumerable,
+} = O;
 const { toString: toStringObject } = O.prototype;
 
 const { toString: toStringFunction } = Function.prototype;
@@ -245,7 +251,7 @@ export const getShallowClone = (
 
   return isGlobalConstructor(object.constructor)
     ? {}
-    : assign(create(object.__proto__), object);
+    : assign(create(object.__proto__ || getPrototypeOf(object)), object);
 };
 
 /**
