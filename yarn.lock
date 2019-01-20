@@ -1515,9 +1515,9 @@ csstype@^2.2.0:
   integrity sha512-wv7IRqCGsL7WGKB8gPvrl+++HlFM9kxAM6jL1EXNPNTshEJYilMkbfS2SnuHha77uosp/YVK0wAp2jmlBzn1tg==
 
 curriable@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.4.tgz#0bbdd0fea2679f195c8f83a33e1a5904ce2b5978"
-  integrity sha512-ztdZozdCEpuzsTW0ruWqhO3TEOjsj3KG3wTiotd2joU7+3XJY/1NqrsDJr2gdnLGM8g3ZLIwenG34EWp9Jrt2A==
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/curriable/-/curriable-1.2.5.tgz#fb6ff7ad8740927ea09db15d395d9d26ca9d2726"
+  integrity sha512-hQwrkCn8DNiCw5CG8OS0td2wfpCDtxo1dmrVYxCDWUBHQPkpAvN9RqBVbmC64oSQaBqPQD2SOCXcTWH1zXe2mA==
 
 cyclist@~0.2.2:
   version "0.2.2"
