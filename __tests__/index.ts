@@ -17,6 +17,8 @@ import {
   isWith,
   merge,
   mergeWith,
+  not,
+  notWith,
   remove,
   removeWith,
   set,
@@ -2581,6 +2583,353 @@ describe('mergeWith', () => {
     const result: any = mergeWith(fn, path, object);
 
     expect(result).toBe(null);
+  });
+});
+
+describe('not', () => {
+  it('should return false with the value matching at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = object[path[0]];
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'baz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = object[path];
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'baz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+    const value: any = object[path[0]][path[1]];
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+    const value: any = 'quz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+
+    const parsedPath: unchanged.ParsedPath = parse(path);
+
+    const value: any = object[parsedPath[0]][parsedPath[1]];
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+
+    const value: any = 'quz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false if the path is empty and the value matches', () => {
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = object;
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if the path is empty and the value does not match', () => {
+    const path: unchanged.Path = [];
+    const object: null = null;
+    const value: any = undefined;
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the simple array path', () => {
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+    const value: any = 'bar';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the simple string path', () => {
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = {};
+    const value: any = 'bar';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the nested array path', () => {
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+    const value: any = 'baz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the nested string path', () => {
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+    const value: any = 'baz';
+
+    const result: boolean = not(path, value, object);
+
+    expect(result).toBe(true);
+  });
+});
+
+describe('notWith', () => {
+  it('should return false with the value matching at the simple array path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the simple array path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'baz';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the simple string path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the simple string path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'baz';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the nested array path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the nested array path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+    const value: any = 'quz';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false with the value matching at the nested string path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(false);
+  });
+
+  it('should return true with the value not matching at the nested string path', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: ['bar'],
+    };
+
+    const value: any = 'quz';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toEqual(true);
+  });
+
+  it('should return false if the path is empty and the value matches', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value && value.foo === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = [];
+    const object: unchanged.Unchangeable = { foo: 'bar' };
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toBe(false);
+  });
+
+  it('should return true if the path is empty and the value does not match', () => {
+    const fn: unchanged.withHandler = (value: any): boolean =>
+      value && value.foo === 'bar' ? 'blah' : value;
+    const path: unchanged.Path = [];
+    const object: null = null;
+    const value: any = 'blah';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the simple array path', () => {
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+    const value: any = 'bar';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the simple string path', () => {
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
+    const path: unchanged.Path = 'foo';
+    const object: unchanged.Unchangeable = {};
+    const value: any = 'bar';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return true if no match at the nested array path', () => {
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
+    const path: unchanged.Path = ['foo', 0];
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+    const value: any = 'baz';
+
+    const result: boolean = notWith(fn, path, value, object);
+
+    expect(result).toBe(true);
+  });
+
+  it('should return false if no match at the nested string path', () => {
+    const fn: unchanged.withHandler = (value: any) => value === 'bar';
+    const path: unchanged.Path = 'foo[0]';
+    const object: unchanged.Unchangeable = {
+      foo: [],
+    };
+    const value: any = 'baz';
+
+    const result: boolean = isWith(fn, path, value, object);
+
+    expect(result).toBe(false);
+  });
+
+  it('should throw if the function passed is not a function', () => {
+    const fn: null = null;
+    const path: unchanged.Path = ['foo'];
+    const object: unchanged.Unchangeable = {};
+    const value: any = 'bar';
+
+    expect(() => isWith(fn, path, value, object)).toThrowError();
   });
 });
 

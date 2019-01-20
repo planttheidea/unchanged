@@ -138,6 +138,19 @@ const assign: Function =
   typeof O.assign === 'function' ? O.assign : assignFallback;
 
 /**
+ * @function createWithProto
+ *
+ * @description
+ * create a new object with the prototype of the object passed
+ *
+ * @param object object whose prototype will be the new object's prototype
+ * @returns object with the prototype of the one passed
+ */
+export const createWithProto: Function = (
+  object: unchanged.Unchangeable,
+): unchanged.Unchangeable => create(object.__proto__ || getPrototypeOf(object));
+
+/**
  * @function isCloneable
  *
  * @description
@@ -183,8 +196,7 @@ export const isEmptyPath: Function = (path: any): boolean =>
  */
 export const isGlobalConstructor: Function = (fn: any): boolean =>
   typeof fn === 'function' &&
-  // @ts-ignore
-  global[fn.name || toStringFunction.call(fn).split(FUNCTION_NAME)[1]] === fn;
+  !!~toStringFunction.call(fn).indexOf('[native code]');
 
 /**
  * @function callIfFunction
@@ -251,7 +263,7 @@ export const getShallowClone = (
 
   return isGlobalConstructor(object.constructor)
     ? {}
-    : assign(create(object.__proto__ || getPrototypeOf(object)), object);
+    : assign(createWithProto(object), object);
 };
 
 /**
@@ -420,7 +432,7 @@ export const getMergedObject: Function = (
   const targetClone: unchanged.Unchangeable =
     target.constructor === O || isGlobalConstructor(target.constructor)
       ? {}
-      : create(target.__proto__);
+      : createWithProto(target);
 
   return reduce(
     getOwnProperties(source),

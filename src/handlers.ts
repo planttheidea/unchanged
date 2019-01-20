@@ -309,6 +309,23 @@ export const createMerge: Function = (
 };
 
 /**
+ * @function createNot
+ *
+ * @description
+ * create handlers for not / notWith
+ *
+ * @param isWithHandler not the method using a with handler
+ * @returns not / notWithHandler
+ */
+export const createNot: Function = (isWithHandler: boolean): Function => {
+  const is: Function = createIs(isWithHandler);
+
+  return function () {
+    return !is.apply(this, arguments);
+  };
+};
+
+/**
  * @function createRemove
  *
  * @description

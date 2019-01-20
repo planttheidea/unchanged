@@ -10,6 +10,7 @@ import {
   createHas,
   createIs,
   createMerge,
+  createNot,
   createRemove,
   createSet,
 } from './handlers';
@@ -47,6 +48,10 @@ export const isWith = curry(createIs(true), 4);
 export const merge = curry(createMerge(false, true), 3);
 
 export const mergeWith = curry(createMerge(true, true), 3);
+
+export const not = curry(createNot(false), 3);
+
+export const notWith = curry(createNot(true), 4);
 
 export const remove = curry(createRemove(false), 2);
 
