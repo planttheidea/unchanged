@@ -15,6 +15,7 @@ Supports nested key paths via path arrays or [dotty syntax](https://github.com/p
   - [remove](#remove)
   - [has](#has)
   - [is](#is)
+  - [not](#not)
   - [add](#add)
   - [merge](#merge)
   - [assign](#assign)
@@ -26,6 +27,7 @@ Supports nested key paths via path arrays or [dotty syntax](https://github.com/p
   - [removeWith](#removewith)
   - [hasWith](#haswith)
   - [isWith](#iswith)
+  - [notWith](#notwith)
   - [addWith](#addwith)
   - [mergeWith](#mergewith)
   - [assignWith](#assignwith)
@@ -250,7 +252,7 @@ function is(
 ): boolean;
 ```
 
-Returns `true` if the value at the `path` in `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality.
+Returns `true` if the value at the `path` in `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality, `false` otherwise.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -263,7 +265,33 @@ const object: unchanged.Unchangeable = {
 
 console.log(is("foo[0].bar", "baz", object)); // true
 console.log(is(["foo", 0, "bar"], "baz", object)); // true
-console.log(is("foo[0].bar", "quz', object)); // false
+console.log(is("foo[0].bar", "quz", object)); // false
+```
+
+### not
+
+```typescript
+function not(
+  path: unchanged.Path,
+  value: any,
+  object: unchanged.Unchangeable
+): boolean;
+```
+
+Returns `false` if the value at the `path` in `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality, `true` otherwise.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz"
+    }
+  ]
+};
+
+console.log(not("foo[0].bar", "baz", object)); // false
+console.log(not(["foo", 0, "bar"], "baz", object)); // false
+console.log(not("foo[0].bar", "quz", object)); // true
 ```
 
 ### add
@@ -671,7 +699,7 @@ function isWith(
 ): boolean;
 ```
 
-Returns `true` if the return value of `fn` based on the value returned from `path` in the `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality.
+Returns `true` if the return value of `fn` based on the value returned from `path` in the `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality, `false` otherwise.
 
 ```typescript
 const object: unchanged.Unchangeable = {
@@ -688,6 +716,35 @@ const fn: unchanged.withHandler = (value: any): number =>
 console.log(isWith(fn, "foo[0].bar", object)); // true
 console.log(isWith(fn, ["foo", 0, "bar"], object)); // true
 console.log(isWith(fn, "foo[0].quz", object)); // false
+```
+
+### notWith
+
+```typescript
+function notWith(
+  fn: unchanged.withHandler,
+  path: unchanged.Path,
+  object: unchanged.Unchangeable
+): boolean;
+```
+
+Returns `false` if the return value of `fn` based on the value returned from `path` in the `object` is equal to `value` based on [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness#Same-value-zero_equality) equality, `true` otherwise.
+
+```typescript
+const object: unchanged.Unchangeable = {
+  foo: [
+    {
+      bar: "baz",
+      quz: "not baz"
+    }
+  ]
+};
+const fn: unchanged.withHandler = (value: any): number =>
+  value && value.length === 3;
+
+console.log(notWith(fn, "foo[0].bar", object)); // false
+console.log(notWith(fn, ["foo", 0, "bar"], object)); // false
+console.log(notWith(fn, "foo[0].quz", object)); // true
 ```
 
 ### addWith

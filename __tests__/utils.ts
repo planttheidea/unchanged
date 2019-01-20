@@ -6,6 +6,7 @@ import {
   callIfFunction,
   cloneArray,
   cloneIfPossible,
+  createWithProto,
   getCoalescedValue,
   getDeepClone,
   getFullPath,
@@ -107,6 +108,33 @@ describe('cloneIfPossible', () => {
     const result: unchanged.Unchangeable = cloneIfPossible(object);
 
     expect(result).toBe(object);
+  });
+});
+
+describe('createWithProto', () => {
+  it('should clone the object with a custom prototype', () => {
+    class Foo {
+      value: any;
+
+      constructor(value: any) {
+        this.value = value;
+      }
+    }
+
+    const object: unchanged.Unchangeable = new Foo('bar');
+
+    const result: unchanged.Unchangeable = createWithProto(object);
+
+    expect(result instanceof Foo).toBe(true);
+  });
+
+  it('should clone the pure object with a null prototype', () => {
+    const object: unchanged.Unchangeable = Object.create(null);
+
+    const result: unchanged.Unchangeable = createWithProto(object);
+
+    expect(result.__proto__).toBe(undefined);
+    expect(Object.getPrototypeOf(result)).toBe(null);
   });
 });
 

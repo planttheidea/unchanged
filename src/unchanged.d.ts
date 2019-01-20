@@ -119,6 +119,20 @@ declare module 'unchanged' {
     ...extraArgs: any[]
   ): unchanged.Unchangeable;
 
+  export function not(
+    path: unchanged.Path,
+    value: any,
+    object: unchanged.Unchangeable,
+  ): boolean;
+
+  export function notWith(
+    fn: unchanged.withHandler,
+    path: unchanged.Path,
+    value: any,
+    object: unchanged.Unchangeable,
+    ...extraArgs: any[]
+  ): boolean;
+
   export function remove(
     path: unchanged.Path,
     object: unchanged.Unchangeable,

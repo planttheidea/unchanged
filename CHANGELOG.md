@@ -2,6 +2,11 @@
 
 Yes, the irony is not lost on me. :)
 
+## 2.1.0
+
+- Add [not](README.md#not) and [notWith](README.md#notwith) methods
+- Ensure that objects with custom prototypes always use the same creator
+
 ## 2.0.1
 
 - Fix [#33](https://github.com/planttheidea/unchanged/issues/33) - ensure objects created with `Object.create(null)` do not error
