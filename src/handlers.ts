@@ -38,7 +38,7 @@ export function createCall<IsWith extends true | false>(
       parameters: any[],
       object: unchanged.Unchangeable | unchanged.Fn,
       context: any = object,
-    ): any {
+    ) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -49,13 +49,13 @@ export function createCall<IsWith extends true | false>(
         return callIfFunction(fn(object, ...extraArgs), context, parameters);
       }
 
-      const value: any = getValueAtPath(path, object);
+      const value = getValueAtPath(path, object);
 
       if (value === void 0) {
         return;
       }
 
-      const result: any = fn(value, ...extraArgs);
+      const result = fn(value, ...extraArgs);
 
       return callIfFunction(result, context, parameters);
     };
@@ -66,8 +66,8 @@ export function createCall<IsWith extends true | false>(
     parameters: any[],
     object: unchanged.Unchangeable | Function,
     context: any = object,
-  ): any {
-    const callable: any = isEmptyPath(path) ? object : getValueAtPath(path, object);
+  ) {
+    const callable = isEmptyPath(path) ? object : getValueAtPath(path, object);
 
     return callIfFunction(callable, context, parameters);
   };
@@ -93,7 +93,7 @@ export function createGet<IsWith extends true | false>(
       fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-    ): any {
+    ) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -104,13 +104,13 @@ export function createGet<IsWith extends true | false>(
         return fn(object, ...extraArgs);
       }
 
-      const value: any = getValueAtPath(path, object);
+      const value = getValueAtPath(path, object);
 
       return value === void 0 ? value : fn(value, ...extraArgs);
     };
   }
 
-  return function get(path: unchanged.Path, object: unchanged.Unchangeable): any {
+  return function get(path: unchanged.Path, object: unchanged.Unchangeable) {
     return isEmptyPath(path) ? object : getValueAtPath(path, object);
   };
 }
@@ -136,7 +136,7 @@ export function createGetOr<IsWith extends true | false>(
       noMatchValue: any,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-    ): any {
+    ) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -147,17 +147,13 @@ export function createGetOr<IsWith extends true | false>(
         return fn(object, ...extraArgs);
       }
 
-      const value: any = getValueAtPath(path, object);
+      const value = getValueAtPath(path, object);
 
       return value === void 0 ? noMatchValue : fn(value, ...extraArgs);
     };
   }
 
-  return function getOr(
-    noMatchValue: any,
-    path: unchanged.Path,
-    object: unchanged.Unchangeable,
-  ): any {
+  return function getOr(noMatchValue: any, path: unchanged.Path, object: unchanged.Unchangeable) {
     return isEmptyPath(path) ? object : getValueAtPath(path, object, noMatchValue);
   };
 }
@@ -182,7 +178,7 @@ export function createHas<IsWith extends true | false>(
       fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-    ): boolean {
+    ) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -199,7 +195,7 @@ export function createHas<IsWith extends true | false>(
     };
   }
 
-  return function has(path: unchanged.Path, object: unchanged.Unchangeable): boolean {
+  return function has(path: unchanged.Path, object: unchanged.Unchangeable) {
     return isEmptyPath(path) ? object != null : getValueAtPath(path, object) !== void 0;
   };
 }
@@ -225,7 +221,7 @@ export function createIs<IsWith extends true | false>(
       path: unchanged.Path,
       value: any,
       object: unchanged.Unchangeable,
-    ): boolean {
+    ) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -240,7 +236,7 @@ export function createIs<IsWith extends true | false>(
     };
   }
 
-  return function is(path: unchanged.Path, value: any, object: unchanged.Unchangeable): boolean {
+  return function is(path: unchanged.Path, value: any, object: unchanged.Unchangeable) {
     const _path = isEmptyPath(path) ? object : getValueAtPath(path, object);
 
     return isSameValueZero(_path, value);
@@ -345,7 +341,7 @@ export function createNot<IsWith extends true | false>(
 ): unchanged.NotWith | unchanged.Not {
   const is: Function = createIs(isWithHandler);
 
-  return function () {
+  return function not() {
     return !is.apply(this, arguments);
   };
 }
@@ -389,9 +385,9 @@ export function createRemove<IsWith extends true | false>(
         ? getDeepClone(
             path,
             object,
-            (ref: unchanged.Unchangeable, key: string): void => {
+            (ref: unchanged.Unchangeable, key: number | string): void => {
               if (isArray(ref)) {
-                splice(ref, key);
+                splice(ref, key as number);
               } else {
                 delete ref[key];
               }
@@ -413,9 +409,9 @@ export function createRemove<IsWith extends true | false>(
       ? getDeepClone(
           path,
           object,
-          (ref: unchanged.Unchangeable, key: string): void => {
+          (ref: unchanged.Unchangeable, key: number | string): void => {
             if (isArray(ref)) {
-              splice(ref, key);
+              splice(ref, key as number);
             } else {
               delete ref[key];
             }
@@ -503,7 +499,7 @@ export function createAdd<IsWith extends true | false>(
       fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-    ) {
+    ): unchanged.Unchangeable {
       return _add.apply(
         this,
         [fn, getFullPath(path, object, fn), object].concat(slice(arguments, 3)),
@@ -511,7 +507,11 @@ export function createAdd<IsWith extends true | false>(
     };
   }
 
-  return function add(path: unchanged.Path, value: any, object: unchanged.Unchangeable) {
+  return function add(
+    path: unchanged.Path,
+    value: any,
+    object: unchanged.Unchangeable,
+  ): unchanged.Unchangeable {
     return _add(getFullPath(path, object), value, object);
   };
 }

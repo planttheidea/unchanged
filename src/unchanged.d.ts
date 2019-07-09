@@ -133,7 +133,7 @@ declare namespace unchanged {
 }
 
 declare module 'unchanged' {
-  export type Curried<Fn extends (...args: any[]) => any> = import('curriable').Curried<Fn>;
+  type Curried<Handler extends unchanged.Fn> = import('curriable').Curried<Handler>;
 
   export const add: Curried<unchanged.Add>;
   export const addWith: Curried<unchanged.AddWith>;

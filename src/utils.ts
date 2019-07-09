@@ -2,31 +2,25 @@
 import { parse } from 'pathington';
 
 const O = Object;
-const {
-  create,
-  getOwnPropertySymbols,
-  getPrototypeOf,
-  keys,
-  propertyIsEnumerable,
-} = O;
-const { toString: toStringObject } = O.prototype;
-
-const { toString: toStringFunction } = Function.prototype;
+const { create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerable } = O;
 
 const { isArray } = Array;
 
+const toStringFunction = Function.prototype.bind.call(
+  Function.prototype.call,
+  Function.prototype.toString,
+);
+const toStringObject = Function.prototype.bind.call(Function.prototype.call, O.prototype.toString);
+
 /**
- * @constant FUNCTION_NAME the RegExp expression matching function names
+ * @constant HAS_SYMBOL_SUPPORT are Symbols supported
  */
-const FUNCTION_NAME = /^\s*function\s*([^\(]*)/i;
+const HAS_SYMBOL_SUPPORT = typeof Symbol === 'function' && typeof Symbol.for === 'function';
 
 /**
  * @constant REACT_ELEMENT the symbol / number specific to react elements
  */
-const REACT_ELEMENT: symbol | number =
-  typeof Symbol === 'function' && typeof Symbol.for === 'function'
-    ? Symbol.for('react.element')
-    : 0xeac7;
+const REACT_ELEMENT: symbol | number = HAS_SYMBOL_SUPPORT ? Symbol.for('react.element') : 0xeac7;
 
 /**
  * @function cloneArray
@@ -37,11 +31,11 @@ const REACT_ELEMENT: symbol | number =
  * @param array the array to clone
  * @returns the cloned array
  */
-export const cloneArray: Function = (array: any[]): any[] => {
-  // @ts-ignore
-  const cloned = new array.constructor();
+export const cloneArray = (array: any[]): any[] => {
+  const Constructor = array.constructor as ArrayConstructor;
+  const cloned = Constructor === Array ? [] : new Constructor();
 
-  for (let index = 0; index < array.length; index++) {
+  for (let index = 0, length = array.length; index < length; index++) {
     cloned[index] = array[index];
   }
 
@@ -59,10 +53,14 @@ export const cloneArray: Function = (array: any[]): any[] => {
  * @param initialValue the initial value of the reduction
  * @returns the reduced value
  */
-export const reduce = (array: any[], fn: Function, initialValue: any): any => {
-  let value: any = initialValue;
+export const reduce = (
+  array: any[],
+  fn: (accum: any, value: any) => any,
+  initialValue: any,
+): any => {
+  let value = initialValue;
 
-  for (let index: number = 0; index < array.length; index++) {
+  for (let index = 0, length = array.length; index < length; index++) {
     value = fn(value, array[index]);
   }
 
@@ -78,9 +76,11 @@ export const reduce = (array: any[], fn: Function, initialValue: any): any => {
  * @param object the object to get the properties of
  * @returns the keys and symbols the object has
  */
-export const getOwnProperties: Function = (
-  object: unchanged.Unchangeable,
-): (string | symbol)[] => {
+export const getOwnProperties = (object: unchanged.Unchangeable): (string | symbol)[] => {
+  if (!HAS_SYMBOL_SUPPORT) {
+    return keys(object);
+  }
+
   const ownSymbols: symbol[] = getOwnPropertySymbols(object);
 
   if (!ownSymbols.length) {
@@ -112,7 +112,7 @@ export const getOwnProperties: Function = (
  * @param source the object to shallowly merge into target
  * @returns the shallowly merged object
  */
-export const assignFallback: Function = (
+export const assignFallback = (
   target: unchanged.Unchangeable,
   source: unchanged.Unchangeable,
 ): unchanged.Unchangeable => {
@@ -122,10 +122,7 @@ export const assignFallback: Function = (
 
   return reduce(
     getOwnProperties(source),
-    (
-      clonedObject: unchanged.Unchangeable,
-      property: string,
-    ): unchanged.Unchangeable => {
+    (clonedObject: unchanged.Unchangeable, property: string) => {
       clonedObject[property] = source[property];
 
       return clonedObject;
@@ -134,8 +131,7 @@ export const assignFallback: Function = (
   );
 };
 
-const assign: Function =
-  typeof O.assign === 'function' ? O.assign : assignFallback;
+const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
 
 /**
  * @function createWithProto
@@ -146,9 +142,8 @@ const assign: Function =
  * @param object object whose prototype will be the new object's prototype
  * @returns object with the prototype of the one passed
  */
-export const createWithProto: Function = (
-  object: unchanged.Unchangeable,
-): unchanged.Unchangeable => create(object.__proto__ || getPrototypeOf(object));
+export const createWithProto = (object: unchanged.Unchangeable): unchanged.Unchangeable =>
+  create(object.__proto__ || getPrototypeOf(object));
 
 /**
  * @function isCloneable
@@ -159,16 +154,12 @@ export const createWithProto: Function = (
  * @param object the object that is being checked for cloneability
  * @returns whether the object can be cloned
  */
-export const isCloneable: Function = (object: any): boolean => {
-  if (
-    !object ||
-    typeof object !== 'object' ||
-    object.$$typeof === REACT_ELEMENT
-  ) {
+export const isCloneable = (object: any) => {
+  if (!object || typeof object !== 'object' || object.$$typeof === REACT_ELEMENT) {
     return false;
   }
 
-  const type: string = toStringObject.call(object);
+  const type: string = toStringObject(object);
 
   return type !== '[object Date]' && type !== '[object RegExp]';
 };
@@ -182,8 +173,7 @@ export const isCloneable: Function = (object: any): boolean => {
  * @param path the path to check for emptiness
  * @returns whether the path passed is considered empty
  */
-export const isEmptyPath: Function = (path: any): boolean =>
-  path == null || (isArray(path) && !path.length);
+export const isEmptyPath = (path: any) => path == null || (isArray(path) && !path.length);
 
 /**
  * @function isGlobalConstructor
@@ -194,9 +184,8 @@ export const isEmptyPath: Function = (path: any): boolean =>
  * @param fn the fn to check if a global constructor
  * @returns whether the fn passed is a global constructor
  */
-export const isGlobalConstructor: Function = (fn: any): boolean =>
-  typeof fn === 'function' &&
-  !!~toStringFunction.call(fn).indexOf('[native code]');
+export const isGlobalConstructor = (fn: any) =>
+  typeof fn === 'function' && !!~toStringFunction(fn).indexOf('[native code]');
 
 /**
  * @function callIfFunction
@@ -209,11 +198,7 @@ export const isGlobalConstructor: Function = (fn: any): boolean =>
  * @param parameters the parameters to call the function with
  * @returns the result of the function call, or undefined
  */
-export const callIfFunction = (
-  object: any,
-  context: any,
-  parameters: any[],
-): any =>
+export const callIfFunction = (object: any, context: any, parameters: any[]) =>
   typeof object === 'function' ? object.apply(context, parameters) : void 0;
 
 /**
@@ -225,7 +210,7 @@ export const callIfFunction = (
  * @param key the key to base the empty child on
  * @returns the empty object the child is built from
  */
-export const getNewEmptyChild: Function = (key: any): unchanged.Unchangeable =>
+export const getNewEmptyChild = (key: any): unchanged.Unchangeable =>
   typeof key === 'number' ? [] : {};
 
 /**
@@ -237,9 +222,8 @@ export const getNewEmptyChild: Function = (key: any): unchanged.Unchangeable =>
  * @param object the object to base the empty object on
  * @returns an empty version of the object passed
  */
-export const getNewEmptyObject: Function = (
-  object: unchanged.Unchangeable,
-): unchanged.Unchangeable => (isArray(object) ? [] : {});
+export const getNewEmptyObject = (object: unchanged.Unchangeable): unchanged.Unchangeable =>
+  isArray(object) ? [] : {};
 
 /**
  * @function getShallowClone
@@ -250,9 +234,7 @@ export const getNewEmptyObject: Function = (
  * @param object the object to clone
  * @returns a shallow clone of the object passed
  */
-export const getShallowClone = (
-  object: unchanged.Unchangeable,
-): unchanged.Unchangeable => {
+export const getShallowClone = (object: unchanged.Unchangeable): unchanged.Unchangeable => {
   if (object.constructor === O) {
     return assign({}, object);
   }
@@ -261,9 +243,7 @@ export const getShallowClone = (
     return cloneArray(object);
   }
 
-  return isGlobalConstructor(object.constructor)
-    ? {}
-    : assign(createWithProto(object), object);
+  return isGlobalConstructor(object.constructor) ? {} : assign(createWithProto(object), object);
 };
 
 /**
@@ -276,7 +256,7 @@ export const getShallowClone = (
  * @param value2 the second value to test
  * @returns are the two values passed equal based on SameValueZero
  */
-export const isSameValueZero: Function = (value1: any, value2: any): boolean =>
+export const isSameValueZero = (value1: any, value2: any) =>
   value1 === value2 || (value1 !== value1 && value2 !== value2);
 
 /**
@@ -288,7 +268,7 @@ export const isSameValueZero: Function = (value1: any, value2: any): boolean =>
  * @param object the object to clone
  * @returns a cloned version of the object, or the object itself if not cloneable
  */
-export const cloneIfPossible: Function = (object: any): any =>
+export const cloneIfPossible = (object: any) =>
   isCloneable(object) ? getShallowClone(object) : object;
 
 /**
@@ -302,7 +282,7 @@ export const cloneIfPossible: Function = (object: any): any =>
  * @param nextKey the key to base the empty child object on
  * @returns a clone of the object, or an empty child object
  */
-export const getCloneOrEmptyObject: Function = (
+export const getCloneOrEmptyObject = (
   object: unchanged.Unchangeable,
   nextKey: any,
 ): unchanged.Unchangeable =>
@@ -318,10 +298,8 @@ export const getCloneOrEmptyObject: Function = (
  * @param fallbackValue the value to coalesce to
  * @returns the coalesced value
  */
-export const getCoalescedValue: Function = (
-  value: any,
-  fallbackValue: any,
-): any => (value === void 0 ? fallbackValue : value);
+export const getCoalescedValue = (value: any, fallbackValue: any) =>
+  value === void 0 ? fallbackValue : value;
 
 /**
  * @function getParsedPath
@@ -332,9 +310,8 @@ export const getCoalescedValue: Function = (
  * @param path the path to parse
  * @returns the parsed path
  */
-export const getParsedPath: Function = (
-  path: unchanged.Path,
-): unchanged.ParsedPath => (isArray(path) ? path : parse(path));
+export const getParsedPath = (path: unchanged.Path): unchanged.ParsedPath =>
+  isArray(path) ? path : parse(path);
 
 /**
  * @function getCloneAtPath
@@ -349,14 +326,14 @@ export const getParsedPath: Function = (
  * @param index the path index
  * @returns the object deeply cloned at the path specified
  */
-export const getCloneAtPath: Function = (
+export const getCloneAtPath = (
   path: unchanged.ParsedPath,
   object: unchanged.Unchangeable,
-  onMatch: Function,
+  onMatch: (object: unchanged.Unchangeable, key: unchanged.PathItem) => any,
   index: number,
-): any => {
-  const key: unchanged.PathItem = path[index];
-  const nextIndex: number = index + 1;
+) => {
+  const key = path[index];
+  const nextIndex = index + 1;
 
   if (nextIndex === path.length) {
     onMatch(object, key);
@@ -383,16 +360,13 @@ export const getCloneAtPath: Function = (
  * @param onMatch once a patch match is found, the callback to fire
  * @returns the clone of the object at path specified
  */
-export const getDeepClone: Function = (
+export const getDeepClone = (
   path: unchanged.Path,
   object: unchanged.Unchangeable,
-  onMatch: Function,
+  onMatch: (object: unchanged.Unchangeable, key: unchanged.PathItem) => any,
 ): unchanged.Unchangeable => {
-  const parsedPath: unchanged.ParsedPath = getParsedPath(path);
-  const topLevelClone: unchanged.Unchangeable = getCloneOrEmptyObject(
-    object,
-    parsedPath[0],
-  );
+  const parsedPath = getParsedPath(path);
+  const topLevelClone = getCloneOrEmptyObject(object, parsedPath[0]);
 
   if (parsedPath.length === 1) {
     onMatch(topLevelClone, parsedPath[0]);
@@ -414,7 +388,7 @@ export const getDeepClone: Function = (
  * @param isDeep is the merge a deep merge
  * @returns the merged object
  */
-export const getMergedObject: Function = (
+export const getMergedObject = (
   target: unchanged.Unchangeable,
   source: unchanged.Unchangeable,
   isDeep: boolean,
@@ -459,7 +433,7 @@ export const getMergedObject: Function = (
  * @param noMatchValue the value returned if no match is found
  * @returns the matching value, or the fallback provided
  */
-export const getValueAtPath: Function = (
+export const getValueAtPath = (
   path: unchanged.Path,
   object: unchanged.Unchangeable,
   noMatchValue?: any,
@@ -467,9 +441,7 @@ export const getValueAtPath: Function = (
   const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
-    return object
-      ? getCoalescedValue(object[parsedPath[0]], noMatchValue)
-      : noMatchValue;
+    return object ? getCoalescedValue(object[parsedPath[0]], noMatchValue) : noMatchValue;
   }
 
   let ref: any = object;
@@ -498,10 +470,10 @@ export const getValueAtPath: Function = (
  * @param fn the function to transform the retrieved value with
  * @returns the full path to add to
  */
-export const getFullPath: Function = (
+export const getFullPath = (
   path: unchanged.Path,
   object: unchanged.Unchangeable,
-  fn?: Function,
+  fn?: (value: any) => any,
 ): unchanged.Path => {
   const isPathEmpty: boolean = isEmptyPath(path);
   const valueAtPath: any = isPathEmpty
@@ -526,11 +498,11 @@ export const getFullPath: Function = (
  * @param array the array to remove the value from
  * @param splicedIndex the index of the value to remove
  */
-export const splice: Function = (array: any[], splicedIndex: number): void => {
+export const splice = (array: any[], splicedIndex: number): void => {
   if (array.length) {
     const { length } = array;
 
-    let index: number = splicedIndex;
+    let index = splicedIndex;
 
     while (index < length - 1) {
       array[index] = array[index + 1];
@@ -550,6 +522,6 @@ export const splice: Function = (array: any[], splicedIndex: number): void => {
  *
  * @throws
  */
-export const throwInvalidFnError: Function = (): never => {
+export const throwInvalidFnError = (): never => {
   throw new TypeError('handler passed is not of type "function".');
 };
