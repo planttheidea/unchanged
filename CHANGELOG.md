@@ -2,6 +2,11 @@
 
 Yes, the irony is not lost on me. :)
 
+## 2.1.1
+
+- Fix issue where `getOwnPropertySymbols` was expected to always be supported when `Object.assign` was natively supported
+- Greatly improve typings of handlers
+
 ## 2.1.0
 
 - Add [not](README.md#not) and [notWith](README.md#notwith) methods

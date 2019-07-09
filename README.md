@@ -1,45 +1,47 @@
 # unchanged
 
-A tiny (~2.0kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
+A tiny (~2.1kB minified+gzipped), [fast](https://github.com/planttheidea/unchanged/blob/master/benchmark_results.csv), unopinionated handler for updating JS objects and arrays immutably.
 
 Supports nested key paths via path arrays or [dotty syntax](https://github.com/planttheidea/pathington), and all methods are curriable (with placeholder support) for composability. Can be a drop-in replacement for the `lodash/fp` methods `get`, `set`, `merge`, and `omit` with a 90% smaller footprint.
 
 ## Table of contents
 
-- [Usage](#usage)
-- [Types](#types)
-- [Standard methods](#standard-methods)
-  - [get](#get)
-  - [getOr](#getor)
-  - [set](#set)
-  - [remove](#remove)
-  - [has](#has)
-  - [is](#is)
-  - [not](#not)
-  - [add](#add)
-  - [merge](#merge)
-  - [assign](#assign)
-  - [call](#call)
-- [Transform methods](#transform-methods)
-  - [getWith](#getwith)
-  - [getWithOr](#getwithor)
-  - [setWith](#setwith)
-  - [removeWith](#removewith)
-  - [hasWith](#haswith)
-  - [isWith](#iswith)
-  - [notWith](#notwith)
-  - [addWith](#addwith)
-  - [mergeWith](#mergewith)
-  - [assignWith](#assignwith)
-  - [callWith](#callwith)
-- [Additional objects](#additional-objects)
-  - [\_\_](#__)
-- [Differences from other libraries](#differences-from-other-libraries)
-  - [lodash](#lodash)
-  - [ramda](#ramda)
-  - [Other immutability libraries](#other-immutability-libraries)
-- [Browser support](#browser-support)
-- [Development](#development)
+- [unchanged](#unchanged)
+  - [Table of contents](#Table-of-contents)
+  - [Usage](#Usage)
+  - [Types](#Types)
+  - [Standard methods](#Standard-methods)
+    - [get](#get)
+    - [getOr](#getOr)
+    - [set](#set)
+    - [remove](#remove)
+    - [has](#has)
+    - [is](#is)
+    - [not](#not)
+    - [add](#add)
+    - [merge](#merge)
+    - [assign](#assign)
+    - [call](#call)
+  - [Transform methods](#Transform-methods)
+    - [getWith](#getWith)
+    - [getWithOr](#getWithOr)
+    - [setWith](#setWith)
+    - [removeWith](#removeWith)
+    - [hasWith](#hasWith)
+    - [isWith](#isWith)
+    - [notWith](#notWith)
+    - [addWith](#addWith)
+    - [mergeWith](#mergeWith)
+    - [assignWith](#assignWith)
+    - [callWith](#callWith)
+  - [Additional objects](#Additional-objects)
+    - [\_\_](#)
+  - [Differences from other libraries](#Differences-from-other-libraries)
+    - [lodash](#lodash)
+    - [ramda](#ramda)
+    - [Other immutability libraries](#Other-immutability-libraries)
+  - [Browser support](#Browser-support)
+  - [Development](#Development)
 
 ## Usage
 
@@ -102,7 +104,7 @@ This library is both written in, and provided with, types by TypeScript. The int
 // the path used to compute nested locations
 type Path = (number | string)[] | number | string;
 // the callback used in transform methods
-type withHandler = (value: any, ...extraParams: any[]) => any;
+type WithHandler = (value: any, ...extraParams: any[]) => any;
 // the generic object that is computed upon, either an array or object
 interface Unchangeable {
   [key: string]: any;
@@ -113,7 +115,7 @@ interface Unchangeable {
 Notice in the `Unchangeable` interface, there is no reference to symbols. That is because to date, TypeScript does not support Symbols as an index type. If you need to use symbols as object keys, the best workaround I've found is to typecast when it complains:
 
 ```typescript
-const symbolKey: string = (Symbol("key") as unknown) as string;
+const symbolKey = (Symbol("key") as unknown) as string;
 
 const object: { [symbolKey]: string } = {
   [symbolKey]: "bar"
@@ -1022,7 +1024,7 @@ setFooOnThing('bar');
 
 [`lodash/fp`](https://lodash.com/) (the functional programming implementation of `lodash`) is identical in implementation to `unchanged`'s methods, just with a _10.5x_ larger footprint. These methods should map directly:
 
-- _lodash_ => _unchanged_
+- _lodash/fp_ => _unchanged_
 - `curry.placeholder` => `__`
 - `get` => `get`
 - `getOr` => `getOr`
@@ -1042,7 +1044,7 @@ setFooOnThing('bar');
 - `omit` => `remove`
 - `assocPath` => `set`
 
-Another difference is that the `ramda` methods that clone objects (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging.
+Another difference is that the `ramda` methods that clone (`assocPath`, for example) only work with objects; arrays are implicitly converted into objects, which can make updating collections challenging.
 
 The last main difference is the way that objects are copied, example:
 
