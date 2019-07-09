@@ -505,17 +505,17 @@ export const getFullPath = (
  */
 export const splice = (array: any[], splicedIndex: number): void => {
   if (array.length) {
-    const { length } = array;
+    const cutoff = array.length - 1;
 
     let index = splicedIndex;
 
-    while (index < length - 1) {
+    while (index < cutoff) {
       array[index] = array[index + 1];
 
       ++index;
     }
 
-    --array.length;
+    array.length = cutoff;
   }
 };
 
