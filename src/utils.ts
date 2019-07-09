@@ -6,11 +6,16 @@ const { create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerabl
 
 const { isArray } = Array;
 
-const toStringFunction = Function.prototype.bind.call(
+type ToString = (value: any) => string;
+
+const toStringFunction: ToString = Function.prototype.bind.call(
   Function.prototype.call,
   Function.prototype.toString,
 );
-const toStringObject = Function.prototype.bind.call(Function.prototype.call, O.prototype.toString);
+const toStringObject: ToString = Function.prototype.bind.call(
+  Function.prototype.call,
+  O.prototype.toString,
+);
 
 /**
  * @constant HAS_SYMBOL_SUPPORT are Symbols supported
@@ -159,7 +164,7 @@ export const isCloneable = (object: any) => {
     return false;
   }
 
-  const type: string = toStringObject(object);
+  const type = toStringObject(object);
 
   return type !== '[object Date]' && type !== '[object RegExp]';
 };
