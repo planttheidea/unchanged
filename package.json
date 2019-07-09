@@ -69,11 +69,12 @@
     "lint": "NODE_ENV=test tslint 'src/*.ts'",
     "lint:fix": "npm run lint -- --fix",
     "prepublish": "if in-publish; then npm run prepublish:compile; fi",
-    "prepublish:compile": "npm run lint && npm run test:coverage && npm run dist",
+    "prepublish:compile": "npm run lint && npm run typecheck && npm run test:coverage && npm run dist",
     "start": "npm run dev",
     "test": "NODE_PATH=. jest",
     "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,
   "types": "dist/index.d.ts",

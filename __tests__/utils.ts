@@ -219,7 +219,7 @@ describe('getDeepClone', () => {
     const value = 'value';
 
     const path = 'deeply[0].nested';
-    const object: null = null;
+    const object: any = null;
     const callback = jest.fn().mockImplementation((ref: unchanged.Unchangeable, key: string) => {
       expect(ref).toEqual({});
       expect(key).toEqual(path.split('.')[1]);
@@ -278,10 +278,10 @@ describe('getFullPath', () => {
     expect(result).toEqual(path);
   });
 
-  it('should return the added index if path is an empty string and value is an array', () => {
+  it('should return the added index if path is null and value is an array', () => {
     const path: any = null;
     const object: any[] = [];
-    const fn: void = undefined;
+    const fn: any = undefined;
 
     const result = getFullPath(path, object, fn);
 
@@ -348,7 +348,9 @@ describe('getOwnProperties', () => {
 
     const result = getOwnProperties(object);
 
-    expect(result).toEqual([].concat(Object.keys(object), [symbol]));
+    const keys = Object.keys(object);
+
+    expect(result).toEqual(keys.concat([(symbol as unknown) as string]));
   });
 
   it('should get only keys if no symbols in the object passed exist', () => {
@@ -376,7 +378,9 @@ describe('getOwnProperties', () => {
 
     const result = getOwnProperties(object);
 
-    expect(result).toEqual([].concat(Object.keys(object), [symbol]));
+    const keys = Object.keys(object);
+
+    expect(result).toEqual(keys.concat([(symbol as unknown) as string]));
   });
 });
 
@@ -646,7 +650,7 @@ describe('getValueAtPath', () => {
 
   it('should return undefined when the object does not exist', () => {
     const path = 'path';
-    const object: null = null;
+    const object: any = null;
     const fallbackValue: undefined = undefined;
 
     const result: void = getValueAtPath(path, object, fallbackValue);
@@ -656,7 +660,7 @@ describe('getValueAtPath', () => {
 
   it('should return the fallback when the object does not exist and a fallback is provided', () => {
     const path = 'path';
-    const object: null = null;
+    const object: any = null;
     const fallbackValue = 'fallback';
 
     const result: void = getValueAtPath(path, object, fallbackValue);

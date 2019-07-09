@@ -90,7 +90,7 @@ describe('add', () => {
   });
 
   it('should add to the array object directly if an empty path', () => {
-    const path: null = null;
+    const path: any = null;
     const value = 'value';
     const object: any[] = [];
 
@@ -101,7 +101,7 @@ describe('add', () => {
   });
 
   it('should return the value directly if the object is not an array and path is empty', () => {
-    const path: null = null;
+    const path: any = null;
     const value = 'value';
     const object = {};
 
@@ -193,7 +193,7 @@ describe('addWith', () => {
 
   it('should add to the array object directly if an empty path', () => {
     const fn = (value: any) => ({ value });
-    const path: null = null;
+    const path: any = null;
     const object: any[] = [];
 
     const result = addWith(fn, path, object);
@@ -208,7 +208,7 @@ describe('addWith', () => {
 
   it('should return the value directly if the object is not an array and path is empty', () => {
     const fn = (value: any) => ({ value });
-    const path: null = null;
+    const path: any = null;
     const object = {};
 
     const result = addWith(fn, path, object);
@@ -667,7 +667,7 @@ describe('assignWith', () => {
   });
 
   it('should return the original objects if the path is empty and the fn returns falsy', () => {
-    const fn = (value: any): object => null;
+    const fn = (value: any): any => null;
     const path: any[] = [];
     const object = { untouched: true };
 
@@ -677,7 +677,7 @@ describe('assignWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object = {};
 
@@ -716,7 +716,7 @@ describe('call', () => {
     const parameters: any[] = [123, null];
     const context = { iam: 'context' };
 
-    const fn = jest.fn().mockImplementation(function () {
+    const fn = jest.fn().mockImplementation(function (this: any) {
       expect(this).toBe(context);
 
       return 'called';
@@ -864,7 +864,7 @@ describe('callWith', () => {
     const parameters: any[] = [123, null];
     const context: object = { iam: 'context' };
 
-    const fn = jest.fn().mockImplementation(function () {
+    const fn = jest.fn().mockImplementation(function (this: any) {
       expect(this).toBe(context);
 
       return 'called';
@@ -1062,7 +1062,7 @@ describe('callWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path: any[] = [];
     const parameters: any[] = [123, null];
     const object = jest.fn().mockReturnValue('called');
@@ -1366,7 +1366,7 @@ describe('getWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -1528,7 +1528,7 @@ describe('getWithOr', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
     const fallbackValue: string = 'fallback';
@@ -1749,7 +1749,7 @@ describe('hasWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -2095,7 +2095,7 @@ describe('isWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
     const value: any = 'bar';
@@ -2555,7 +2555,7 @@ describe('mergeWith', () => {
   });
 
   it('should return the original objects if the path is empty and the fn returns falsy', () => {
-    const fn = (value: any): object => null;
+    const fn = (value: any): any => null;
     const path: any[] = [];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -2565,7 +2565,7 @@ describe('mergeWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -2573,7 +2573,7 @@ describe('mergeWith', () => {
   });
 
   it('should return the value returned by fn if the object is not cloneable', () => {
-    const fn = (value: any): object => null;
+    const fn = (value: any): any => null;
     const path: any[] = [];
     const value: any = { foo: 'bar' };
     const object: any = 123;
@@ -2922,7 +2922,7 @@ describe('notWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
     const value: any = 'bar';
@@ -3186,7 +3186,7 @@ describe('removeWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
 
@@ -3411,7 +3411,7 @@ describe('setWith', () => {
   });
 
   it('should throw if the function passed is not a function', () => {
-    const fn: null = null;
+    const fn: any = null;
     const path = ['foo'];
     const object: unchanged.Unchangeable = {};
 

@@ -288,7 +288,7 @@ export function createMerge<IsWith extends true | false>(
       const result: unchanged.Unchangeable = getDeepClone(
         path,
         object,
-        (ref: unchanged.Unchangeable, key: string): void => {
+        (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
           const objectToMerge: any = fn(ref[key], ...extraArgs);
 
           if (objectToMerge) {
@@ -317,7 +317,7 @@ export function createMerge<IsWith extends true | false>(
       : getDeepClone(
           path,
           object,
-          (ref: unchanged.Unchangeable, key: string): void => {
+          (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
             ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
           },
         );
@@ -341,7 +341,7 @@ export function createNot<IsWith extends true | false>(
 ): unchanged.NotWith | unchanged.Not {
   const is: Function = createIs(isWithHandler);
 
-  return function not() {
+  return function not(this: any) {
     return !is.apply(this, arguments);
   };
 }
@@ -453,7 +453,7 @@ export function createSet<IsWith extends true | false>(
         : getDeepClone(
             path,
             object,
-            (ref: unchanged.Unchangeable, key: string): void => {
+            (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
               ref[key] = fn(ref[key], ...extraArgs);
             },
           );
@@ -470,7 +470,7 @@ export function createSet<IsWith extends true | false>(
       : getDeepClone(
           path,
           object,
-          (ref: unchanged.Unchangeable, key: string): void => {
+          (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
             ref[key] = value;
           },
         );
@@ -496,6 +496,7 @@ export function createAdd<IsWith extends true | false>(
 
   if (isWithHandler) {
     return function addWith(
+      this: any,
       fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
