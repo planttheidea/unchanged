@@ -2,7 +2,7 @@
 
 Yes, the irony is not lost on me. :)
 
-## 2.1.1
+## 2.2.0
 
 - Fix issue where `getOwnPropertySymbols` was expected to always be supported when `Object.assign` was natively supported
 - Greatly improve typings of handlers
