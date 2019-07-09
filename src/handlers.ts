@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 const { isArray } = Array;
-const { slice } = Array.prototype;
+const slice = Function.prototype.bind.call(Function.prototype.bind, Array.prototype.slice);
 
 /**
  * @function createCall
@@ -25,20 +25,25 @@ const { slice } = Array.prototype;
  * @param isWithHandler is the method using a with handler
  * @returns call / callWith
  */
-export const createCall: Function = (isWithHandler: boolean): Function => {
+export function createCall<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.CallWith : unchanged.Call;
+export function createCall<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.CallWith | unchanged.Call {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function callWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       parameters: any[],
-      object: unchanged.Unchangeable | Function,
+      object: unchanged.Unchangeable | unchanged.Fn,
       context: any = object,
     ): any {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 5);
+      const extraArgs: any[] = slice(arguments, 5);
 
       if (isEmptyPath(path)) {
         return callIfFunction(fn(object, ...extraArgs), context, parameters);
@@ -56,19 +61,17 @@ export const createCall: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (
+  return function call(
     path: unchanged.Path,
     parameters: any[],
     object: unchanged.Unchangeable | Function,
-    context = object,
-  ): any => {
-    const callable: any = isEmptyPath(path)
-      ? object
-      : getValueAtPath(path, object);
+    context: any = object,
+  ): any {
+    const callable: any = isEmptyPath(path) ? object : getValueAtPath(path, object);
 
     return callIfFunction(callable, context, parameters);
   };
-};
+}
 
 /**
  * @function createGet
@@ -79,10 +82,15 @@ export const createCall: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns get / getWith
  */
-export const createGet: Function = (isWithHandler: boolean): Function => {
+export function createGet<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.GetWith : unchanged.Get;
+export function createGet<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.GetWith | unchanged.Get {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function getWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): any {
@@ -90,7 +98,7 @@ export const createGet: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 4);
+      const extraArgs: any[] = slice(arguments, 4);
 
       if (isEmptyPath(path)) {
         return fn(object, ...extraArgs);
@@ -102,9 +110,10 @@ export const createGet: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (path: unchanged.Path, object: unchanged.Unchangeable): any =>
-    isEmptyPath(path) ? object : getValueAtPath(path, object);
-};
+  return function get(path: unchanged.Path, object: unchanged.Unchangeable): any {
+    return isEmptyPath(path) ? object : getValueAtPath(path, object);
+  };
+}
 
 /**
  * @function createGetOr
@@ -115,10 +124,15 @@ export const createGet: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns getOr / getWithOr
  */
-export const createGetOr: Function = (isWithHandler: boolean): Function => {
+export function createGetOr<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.GetWithOr : unchanged.GetOr;
+export function createGetOr<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.GetWithOr | unchanged.GetOr {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function getWithOr(
+      fn: unchanged.WithHandler,
       noMatchValue: any,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
@@ -127,7 +141,7 @@ export const createGetOr: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 4);
+      const extraArgs: any[] = slice(arguments, 4);
 
       if (isEmptyPath(path)) {
         return fn(object, ...extraArgs);
@@ -139,13 +153,14 @@ export const createGetOr: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (
+  return function getOr(
     noMatchValue: any,
     path: unchanged.Path,
     object: unchanged.Unchangeable,
-  ): any =>
-    isEmptyPath(path) ? object : getValueAtPath(path, object, noMatchValue);
-};
+  ): any {
+    return isEmptyPath(path) ? object : getValueAtPath(path, object, noMatchValue);
+  };
+}
 
 /**
  * @function createHas
@@ -156,10 +171,15 @@ export const createGetOr: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns has / hasWith
  */
-export const createHas: Function = (isWithHandler: boolean): Function => {
+export function createHas<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.HasWith : unchanged.Has;
+export function createHas<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.HasWith | unchanged.Has {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function hasWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): boolean {
@@ -167,7 +187,7 @@ export const createHas: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 3);
+      const extraArgs: any[] = slice(arguments, 3);
 
       if (isEmptyPath(path)) {
         return !!fn(object, ...extraArgs);
@@ -179,11 +199,10 @@ export const createHas: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (path: unchanged.Path, object: unchanged.Unchangeable): boolean =>
-    isEmptyPath(path)
-      ? object != null
-      : getValueAtPath(path, object) !== void 0;
-};
+  return function has(path: unchanged.Path, object: unchanged.Unchangeable): boolean {
+    return isEmptyPath(path) ? object != null : getValueAtPath(path, object) !== void 0;
+  };
+}
 
 /**
  * @function createIs
@@ -194,10 +213,15 @@ export const createHas: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns is / isWith
  */
-export const createIs: Function = (isWithHandler: boolean): Function => {
+export function createIs<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.IsWith : unchanged.Is;
+export function createIs<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.IsWith | unchanged.Is {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function isWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       value: any,
       object: unchanged.Unchangeable,
@@ -206,28 +230,22 @@ export const createIs: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 4);
+      const extraArgs: any[] = slice(arguments, 4);
 
       if (isEmptyPath(path)) {
         return isSameValueZero(fn(object, ...extraArgs), value);
       }
 
-      return isSameValueZero(
-        fn(getValueAtPath(path, object), ...extraArgs),
-        value,
-      );
+      return isSameValueZero(fn(getValueAtPath(path, object), ...extraArgs), value);
     };
   }
 
-  return (
-    path: unchanged.Path,
-    value: any,
-    object: unchanged.Unchangeable,
-  ): boolean =>
-    isEmptyPath(path)
-      ? isSameValueZero(object, value)
-      : isSameValueZero(getValueAtPath(path, object), value);
-};
+  return function is(path: unchanged.Path, value: any, object: unchanged.Unchangeable): boolean {
+    const _path = isEmptyPath(path) ? object : getValueAtPath(path, object);
+
+    return isSameValueZero(_path, value);
+  };
+}
 
 /**
  * @function createMerge
@@ -239,13 +257,17 @@ export const createIs: Function = (isWithHandler: boolean): Function => {
  * @param isDeep is the handler for a deep merge or shallow
  * @returns merge / mergeWith
  */
-export const createMerge: Function = (
-  isWithHandler: boolean,
+export function createMerge<IsWith extends true | false>(
+  isWithHandler: IsWith,
   isDeep: boolean,
-): Function => {
+): IsWith extends true ? unchanged.MergeWith : unchanged.Merge;
+export function createMerge<IsWith extends true | false>(
+  isWithHandler: IsWith,
+  isDeep: boolean,
+): unchanged.MergeWith | unchanged.Merge {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function mergeWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -253,7 +275,7 @@ export const createMerge: Function = (
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 3);
+      const extraArgs: any[] = slice(arguments, 3);
 
       if (!isCloneable(object)) {
         return fn(object, ...extraArgs);
@@ -262,9 +284,7 @@ export const createMerge: Function = (
       if (isEmptyPath(path)) {
         const objectToMerge: any = fn(object, ...extraArgs);
 
-        return objectToMerge
-          ? getMergedObject(object, objectToMerge, isDeep)
-          : object;
+        return objectToMerge ? getMergedObject(object, objectToMerge, isDeep) : object;
       }
 
       let hasChanged: boolean = false;
@@ -287,11 +307,11 @@ export const createMerge: Function = (
     };
   }
 
-  return (
+  return function merge(
     path: unchanged.Path,
     objectToMerge: unchanged.Unchangeable,
     object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable => {
+  ): unchanged.Unchangeable {
     if (!isCloneable(object)) {
       return objectToMerge;
     }
@@ -306,7 +326,7 @@ export const createMerge: Function = (
           },
         );
   };
-};
+}
 
 /**
  * @function createNot
@@ -317,13 +337,18 @@ export const createMerge: Function = (
  * @param isWithHandler not the method using a with handler
  * @returns not / notWithHandler
  */
-export const createNot: Function = (isWithHandler: boolean): Function => {
+export function createNot<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.NotWith : unchanged.Not;
+export function createNot<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.NotWith | unchanged.Not {
   const is: Function = createIs(isWithHandler);
 
   return function () {
     return !is.apply(this, arguments);
   };
-};
+}
 
 /**
  * @function createRemove
@@ -334,10 +359,15 @@ export const createNot: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns remove / removeWith
  */
-export const createRemove: Function = (isWithHandler: boolean): Function => {
+export function createRemove<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.RemoveWith : unchanged.Remove;
+export function createRemove<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.RemoveWith | unchanged.Remove {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function removeWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -345,7 +375,7 @@ export const createRemove: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 3);
+      const extraArgs: any[] = slice(arguments, 3);
 
       if (isEmptyPath(path)) {
         const emptyObject: unchanged.Unchangeable = getNewEmptyObject(object);
@@ -371,10 +401,10 @@ export const createRemove: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (
+  return function remove(
     path: unchanged.Path,
     object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable => {
+  ): unchanged.Unchangeable {
     if (isEmptyPath(path)) {
       return getNewEmptyObject(object);
     }
@@ -393,7 +423,7 @@ export const createRemove: Function = (isWithHandler: boolean): Function => {
         )
       : object;
   };
-};
+}
 
 /**
  * @function createSet
@@ -404,10 +434,15 @@ export const createRemove: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns set / setWith
  */
-export const createSet: Function = (isWithHandler: boolean): Function => {
+export function createSet<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.SetWith : unchanged.Set;
+export function createSet<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.SetWith | unchanged.Set {
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function setWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
@@ -415,7 +450,7 @@ export const createSet: Function = (isWithHandler: boolean): Function => {
         throwInvalidFnError();
       }
 
-      const extraArgs: any[] = slice.call(arguments, 3);
+      const extraArgs: any[] = slice(arguments, 3);
 
       return isEmptyPath(path)
         ? fn(object, ...extraArgs)
@@ -429,12 +464,12 @@ export const createSet: Function = (isWithHandler: boolean): Function => {
     };
   }
 
-  return (
+  return function set(
     path: unchanged.Path,
     value: any,
     object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable =>
-    isEmptyPath(path)
+  ): unchanged.Unchangeable {
+    return isEmptyPath(path)
       ? value
       : getDeepClone(
           path,
@@ -443,7 +478,8 @@ export const createSet: Function = (isWithHandler: boolean): Function => {
             ref[key] = value;
           },
         );
-};
+  };
+}
 
 /**
  * @function createAdd
@@ -454,27 +490,28 @@ export const createSet: Function = (isWithHandler: boolean): Function => {
  * @param isWithHandler is the method using a with handler
  * @returns add / addWith
  */
-export const createAdd: Function = (isWithHandler: boolean): Function => {
-  const add: Function = createSet(isWithHandler);
+export function createAdd<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): IsWith extends true ? unchanged.AddWith : unchanged.Add;
+export function createAdd<IsWith extends true | false>(
+  isWithHandler: IsWith,
+): unchanged.AddWith | unchanged.Add {
+  const _add: Function = createSet(isWithHandler);
 
   if (isWithHandler) {
-    return function (
-      fn: unchanged.withHandler,
+    return function addWith(
+      fn: unchanged.WithHandler,
       path: unchanged.Path,
       object: unchanged.Unchangeable,
-    ): unchanged.Unchangeable {
-      return add.apply(
+    ) {
+      return _add.apply(
         this,
-        [fn, getFullPath(path, object, fn), object].concat(
-          slice.call(arguments, 3),
-        ),
+        [fn, getFullPath(path, object, fn), object].concat(slice(arguments, 3)),
       );
     };
   }
 
-  return (
-    path: unchanged.Path,
-    value: any,
-    object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable => add(getFullPath(path, object), value, object);
-};
+  return function add(path: unchanged.Path, value: any, object: unchanged.Unchangeable) {
+    return _add(getFullPath(path, object), value, object);
+  };
+}
