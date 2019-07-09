@@ -7,6 +7,7 @@
     "no-increment-decrement": false,
     "object-shorthand-properties-first": false,
     "prefer-array-literal": false,
-    "ter-arrow-parens": true
+    "ter-arrow-parens": true,
+    "variable-name": false
   }
 }

@@ -1,5 +1,5 @@
 // external dependencies
-import { __, curry } from 'curriable';
+import { Curried, __, curry } from 'curriable';
 
 // handlers
 import {
@@ -17,46 +17,46 @@ import {
 
 export { __ };
 
-export const add = curry(createAdd(false), 3);
+export const add = curry(createAdd(false));
 
-export const addWith = curry(createAdd(true), 3);
+export const addWith = curry(createAdd(true));
 
-export const assign = curry(createMerge(false, false), 3);
+export const assign = curry(createMerge(false, false));
 
-export const assignWith = curry(createMerge(true, false), 3);
+export const assignWith = curry(createMerge(true, false));
 
-export const call = curry(createCall(false), 3);
+export const call = curry(createCall(false), 3) as Curried<unchanged.Call>;
 
-export const callWith = curry(createCall(true), 4);
+export const callWith = curry(createCall(true), 4) as Curried<unchanged.CallWith>;
 
-export const get = curry(createGet(false), 2);
+export const get = curry(createGet(false));
 
-export const getOr = curry(createGetOr(false), 3);
+export const getOr = curry(createGetOr(false));
 
-export const getWith = curry(createGet(true), 3);
+export const getWith = curry(createGet(true));
 
-export const getWithOr = curry(createGetOr(true), 4);
+export const getWithOr = curry(createGetOr(true));
 
-export const has = curry(createHas(false), 2);
+export const has = curry(createHas(false));
 
-export const hasWith = curry(createHas(true), 3);
+export const hasWith = curry(createHas(true));
 
-export const is = curry(createIs(false), 3);
+export const is = curry(createIs(false));
 
-export const isWith = curry(createIs(true), 4);
+export const isWith = curry(createIs(true));
 
-export const merge = curry(createMerge(false, true), 3);
+export const merge = curry(createMerge(false, true));
 
-export const mergeWith = curry(createMerge(true, true), 3);
+export const mergeWith = curry(createMerge(true, true));
 
-export const not = curry(createNot(false), 3);
+export const not = curry(createNot(false));
 
-export const notWith = curry(createNot(true), 4);
+export const notWith = curry(createNot(true));
 
-export const remove = curry(createRemove(false), 2);
+export const remove = curry(createRemove(false));
 
-export const removeWith = curry(createRemove(true), 3);
+export const removeWith = curry(createRemove(true));
 
-export const set = curry(createSet(false), 3);
+export const set = curry(createSet(false));
 
-export const setWith = curry(createSet(true), 3);
+export const setWith = curry(createSet(true));

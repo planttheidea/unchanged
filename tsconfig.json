@@ -4,11 +4,12 @@
     "esModuleInterop": true,
     "jsx": "react",
     "lib": ["dom", "es2015"],
-    "module": "es2015",
+    "module": "esNext",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "outDir": "./dist",
     "sourceMap": true,
+    "strict": true,
     "target": "es5",
     "types": ["jest", "node", "react"]
   },
