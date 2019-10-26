@@ -380,10 +380,10 @@ export function createRemove<IsWith extends true | false>(
       return value !== void 0 && fn(value, ...extraArgs)
         ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
           if (isArray(ref)) {
-              splice(ref, key as number);
-            } else {
-              delete ref[key];
-            }
+            splice(ref, key as number);
+          } else {
+            delete ref[key];
+          }
         })
         : object;
     };
@@ -400,10 +400,10 @@ export function createRemove<IsWith extends true | false>(
     return getValueAtPath(path, object) !== void 0
       ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
         if (isArray(ref)) {
-            splice(ref, key as number);
-          } else {
-            delete ref[key];
-          }
+          splice(ref, key as number);
+        } else {
+          delete ref[key];
+        }
       })
       : object;
   };
