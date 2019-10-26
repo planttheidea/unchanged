@@ -3417,4 +3417,20 @@ describe('setWith', () => {
 
     expect(() => setWith(fn, path, object)).toThrowError();
   });
+
+  it('should create a new object with the value set at the simple string path based on extra arguments', () => {
+    const fn = (ignoredValue: string, actualValue: string): string => `--${actualValue}--`;
+    const path = 'foo';
+    const object: unchanged.Unchangeable = { foo: 'bar', untouched: true };
+    const extra = 'extra';
+
+    const result = setWith(fn, path, object, extra);
+
+    expect(result).not.toBe(object);
+    expect(result).toEqual({
+      ...object,
+      [path]: `--${extra}--`,
+    });
+  });
+
 });
