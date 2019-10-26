@@ -14,7 +14,7 @@ import {
 } from './utils';
 
 const { isArray } = Array;
-const slice = Function.prototype.bind.call(Function.prototype.bind, Array.prototype.slice);
+const slice = Function.prototype.bind.call(Function.prototype.call, Array.prototype.slice);
 
 /**
  * @function createCall
@@ -314,13 +314,9 @@ export function createMerge<IsWith extends true | false>(
 
     return isEmptyPath(path)
       ? getMergedObject(object, objectToMerge, true)
-      : getDeepClone(
-          path,
-          object,
-          (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
-            ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
-          },
-        );
+      : getDeepClone(path, object, (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
+        ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
+      });
   };
 }
 
@@ -382,17 +378,13 @@ export function createRemove<IsWith extends true | false>(
       const value: any = getValueAtPath(path, object);
 
       return value !== void 0 && fn(value, ...extraArgs)
-        ? getDeepClone(
-            path,
-            object,
-            (ref: unchanged.Unchangeable, key: number | string): void => {
-              if (isArray(ref)) {
-                splice(ref, key as number);
-              } else {
-                delete ref[key];
-              }
-            },
-          )
+        ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
+          if (isArray(ref)) {
+              splice(ref, key as number);
+            } else {
+              delete ref[key];
+            }
+        })
         : object;
     };
   }
@@ -406,17 +398,13 @@ export function createRemove<IsWith extends true | false>(
     }
 
     return getValueAtPath(path, object) !== void 0
-      ? getDeepClone(
-          path,
-          object,
-          (ref: unchanged.Unchangeable, key: number | string): void => {
-            if (isArray(ref)) {
-              splice(ref, key as number);
-            } else {
-              delete ref[key];
-            }
-          },
-        )
+      ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
+        if (isArray(ref)) {
+            splice(ref, key as number);
+          } else {
+            delete ref[key];
+          }
+      })
       : object;
   };
 }
@@ -467,13 +455,9 @@ export function createSet<IsWith extends true | false>(
   ): unchanged.Unchangeable {
     return isEmptyPath(path)
       ? value
-      : getDeepClone(
-          path,
-          object,
-          (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
-            ref[key] = value;
-          },
-        );
+      : getDeepClone(path, object, (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
+        ref[key] = value;
+      });
   };
 }
 
