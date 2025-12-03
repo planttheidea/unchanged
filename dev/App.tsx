@@ -1,5 +1,5 @@
 import { assoc } from 'ramda';
-import * as src from '../src';
+import * as src from '../src/index.js';
 // import * as src from '../dist/unchanged';
 // import * as src from '../dist/unchanged.cjs';
 // import * as src from '../dist/unchanged.esm';
@@ -52,18 +52,18 @@ console.log(src.set('key', 'value', object));
 
 // const simpleArray = ['simple', 'value'];
 
-// const deepObject = {
-//   deeply: [
-//     {
-//       nested: {
-//         'object with quoted keys': 'value',
-//       },
-//       untouched: true,
-//     },
-//     'untouched',
-//   ],
-//   untouched: true,
-// };
+const deepObject = {
+  deeply: [
+    {
+      nested: {
+        'object with quoted keys': 'value',
+      },
+      untouched: true,
+    },
+    'untouched',
+  ],
+  untouched: true,
+};
 
 // const deepArray = {
 //   deeply: {
@@ -206,23 +206,23 @@ console.log(src.set('key', 'value', object));
 //   },
 // });
 
-// type MethodParam = {
-//   quz: string;
-// };
+interface MethodParam {
+  quz: string;
+}
 
-// const deepCallObject = Object.assign({}, deepObject, {
-//   deeply: {
-//     nested: [
-//       function method({ quz }: MethodParam) {
-//         console.log('deep scope', this);
+const deepCallResult = src.get('deeply.nested[0]')({
+  ...deepObject,
+  deeply: {
+    nested: [
+      function method(this: any, { quz }: MethodParam) {
+        console.log('deep scope', this);
+        return quz;
+      },
+    ],
+  },
+});
 
-//         return quz;
-//       },
-//     ],
-//   },
-// });
-
-// console.log(src.get('deeply.nested[0]', deepCallObject));
+console.log(deepCallResult);
 
 // console.log(
 //   'simple method found',

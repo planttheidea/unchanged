@@ -1,19 +1,7 @@
-// external dependencies
 import { Curried, __, curry } from 'curriable';
-
-// handlers
-import {
-  createAdd,
-  createCall,
-  createGet,
-  createGetOr,
-  createHas,
-  createIs,
-  createMerge,
-  createNot,
-  createRemove,
-  createSet,
-} from './handlers';
+import { createAdd, createCall, createMerge, createNot, createRemove, createSet } from './handlers.js';
+import type { AnyPath, HasDeep, PickDeep, PickDeepOr, Unchangeable } from './internalTypes.js';
+import { getValueAtPath, hasFullPath } from './utils.js';
 
 export { __ };
 
@@ -29,21 +17,102 @@ export const call = curry(createCall(false), 3) as Curried<unchanged.Call>;
 
 export const callWith = curry(createCall(true), 4) as Curried<unchanged.CallWith>;
 
-export const get = curry(createGet(false));
+/**
+ * Get the value at the `path` for the given `object`.
+ */
+export function get<const P extends AnyPath>(path: P): <const V extends Unchangeable>(value: V) => PickDeep<V, P>;
+export function get<const P extends AnyPath, const V extends Unchangeable>(path: P, value: V): PickDeep<V, P>;
+export function get<const P extends AnyPath, const EagerV extends Unchangeable>(
+  path: P,
+  ...rest: [eagerValue: EagerV] | []
+) {
+  if (!rest.length) {
+    return <const V extends Unchangeable>(value: V) => getValueAtPath(path, value);
+  }
 
-export const getOr = curry(createGetOr(false));
+  const [eagerValue] = rest;
 
-export const getWith = curry(createGet(true));
+  return getValueAtPath(path, eagerValue);
+}
 
-export const getWithOr = curry(createGetOr(true));
+/**
+ * Get the value at the `path` for the given `object`. If there is no value found at the given path, return the
+ * provided default.
+ */
+export function getOr<const P extends AnyPath>(
+  path: P,
+): <const V extends Unchangeable, const N>(value: V, noMatchValue: N) => PickDeepOr<V, P, N>;
+export function getOr<const P extends AnyPath, const V extends Unchangeable, const N>(
+  path: P,
+  value: V,
+  noMatchValue: N,
+): PickDeepOr<V, P, N>;
+export function getOr<const P extends AnyPath, const EagerV extends Unchangeable, const EagerN>(
+  path: P,
+  ...rest: [eagerValue: EagerV, eagerNoMatchValue: EagerN] | []
+) {
+  if (!rest.length) {
+    return <const V extends Unchangeable, const N>(value: V, noMatchValue: N) =>
+      getValueAtPath(path, value, noMatchValue);
+  }
 
-export const has = curry(createHas(false));
+  const [eagerValue, noMatchValue] = rest;
 
-export const hasWith = curry(createHas(true));
+  return getValueAtPath(path, eagerValue, noMatchValue);
+}
 
-export const is = curry(createIs(false));
+/**
+ * Whether the `path` exists in the given `object`.
+ */
+export function has<const P extends AnyPath>(path: P): <const V>(value: V) => HasDeep<V, P>;
+export function has<const P extends AnyPath, const V>(path: P, value: V): HasDeep<V, P>;
+export function has<const P extends AnyPath, const EagerV extends Unchangeable>(
+  path: P,
+  ...rest: [eagerValue: EagerV] | []
+) {
+  if (!rest.length) {
+    return <const V extends Unchangeable>(value: V) => hasFullPath(path, value);
+  }
 
-export const isWith = curry(createIs(true));
+  const eagerValue = rest[0];
+
+  return hasFullPath(path, eagerValue);
+}
+
+/**
+ * Whether the `expected` value matches the given `object` at `path` with
+ * [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness#same-value_equality_using_object.is)
+ * equality.
+ */
+export function is<const P extends AnyPath>(path: P): <const E>(expected: E) => <const V>(value: V) => boolean;
+export function is<const P extends AnyPath>(path: P): <const E, const V>(expected: E, value: V) => boolean;
+export function is<const P extends AnyPath, const E, const V>(path: P, expected: E, value: V): HasDeep<V, P>;
+export function is<const P extends AnyPath, const EagerE, const EagerV extends Unchangeable>(
+  path: P,
+  ...rest: [eagerExpected: EagerE, eagerValue: EagerV] | [eagerExpected: EagerE] | []
+) {
+  if (!rest.length) {
+    return <const E, const V extends Unchangeable>(expected: E, ...rest: [eagerValue?: V]) => {
+      if (!rest.length) {
+        return <const V extends Unchangeable>(value: V) => Object.is(getValueAtPath(path, value), expected);
+      }
+
+      const [eagerValue] = rest;
+
+      return Object.is(getValueAtPath(path, eagerValue), eagerExpected);
+    };
+  }
+
+  const [eagerExpected] = rest;
+
+  if (rest.length === 1) {
+    return <const V extends Unchangeable>(value: V) => Object.is(getValueAtPath(path, value), eagerExpected);
+  }
+
+  const [, eagerValue] = rest;
+
+  return Object.is(getValueAtPath(path, eagerValue), eagerExpected);
+}
 
 export const merge = curry(createMerge(false, true));
 
