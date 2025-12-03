@@ -22,5 +22,5 @@ module.exports = {
 
       return `${testTime.toFixed(3)}ms`;
     });
-  }
+  },
 };

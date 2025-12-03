@@ -16,32 +16,13 @@ declare namespace unchanged {
 
   export type Add = (path: Path, value: any, object: Unchangeable) => Unchangeable;
 
-  export type AddWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => Unchangeable;
+  export type AddWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => Unchangeable;
 
-  export type Assign = (
-    path: Path,
-    objectToAssign: Unchangeable,
-    object: Unchangeable,
-  ) => Unchangeable;
+  export type Assign = (path: Path, objectToAssign: Unchangeable, object: Unchangeable) => Unchangeable;
 
-  export type AssignWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => Unchangeable;
+  export type AssignWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => Unchangeable;
 
-  export type Call = (
-    path: Path,
-    parameters: any[],
-    object: Unchangeable | Fn,
-    context?: any,
-  ) => any;
+  export type Call = (path: Path, parameters: any[], object: Unchangeable | Fn, context?: any) => any;
 
   export type CallWith = (
     fn: WithHandler,
@@ -56,12 +37,7 @@ declare namespace unchanged {
 
   export type GetOr = (fallbackValue: any, path: Path, object: Unchangeable) => any;
 
-  export type GetWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => any;
+  export type GetWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => any;
 
   export type GetWithOr = (
     fn: WithHandler,
@@ -73,63 +49,27 @@ declare namespace unchanged {
 
   export type Has = (path: Path, object: Unchangeable) => boolean;
 
-  export type HasWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => boolean;
+  export type HasWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => boolean;
 
   export type Is = (path: Path, value: any, object: Unchangeable) => boolean;
 
-  export type IsWith = (
-    fn: WithHandler,
-    path: Path,
-    value: any,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => boolean;
+  export type IsWith = (fn: WithHandler, path: Path, value: any, object: Unchangeable, ...extraArgs: any[]) => boolean;
 
-  export type Merge = (
-    path: Path,
-    objectToMerge: Unchangeable,
-    object: Unchangeable,
-  ) => Unchangeable;
+  export type Merge = (path: Path, objectToMerge: Unchangeable, object: Unchangeable) => Unchangeable;
 
-  export type MergeWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => Unchangeable;
+  export type MergeWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => Unchangeable;
 
   export type Not = (path: Path, value: any, object: Unchangeable) => boolean;
 
-  export type NotWith = (
-    fn: WithHandler,
-    path: Path,
-    value: any,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => boolean;
+  export type NotWith = (fn: WithHandler, path: Path, value: any, object: Unchangeable, ...extraArgs: any[]) => boolean;
 
   export type Remove = (path: Path, object: Unchangeable) => Unchangeable;
 
-  export type RemoveWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => Unchangeable;
+  export type RemoveWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => Unchangeable;
 
   export type Set = (path: Path, value: any, object: Unchangeable) => Unchangeable;
 
-  export type SetWith = (
-    fn: WithHandler,
-    path: Path,
-    object: Unchangeable,
-    ...extraArgs: any[]
-  ) => Unchangeable;
+  export type SetWith = (fn: WithHandler, path: Path, object: Unchangeable, ...extraArgs: any[]) => Unchangeable;
 }
 
 declare module 'unchanged' {

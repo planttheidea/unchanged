@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
-const {assoc} = require('ramda');
-const {set} = require('../dist/unchanged.cjs');
+const { assoc } = require('ramda');
+const { set } = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -13,18 +13,18 @@ const array = [Math.random(), Math.random(), Math.random(), Math.random(), Math.
 module.exports = {
   // objects
   objectSetNative(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
     for (let i = 0; i < cycles; i++) {
       newValue = Math.random();
 
-      Object.assign({}, obj, {value: newValue});
+      Object.assign({}, obj, { value: newValue });
     }
   },
   objectSetLodashFp(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
@@ -35,7 +35,7 @@ module.exports = {
     }
   },
   objectSetLodashFpDotty(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
@@ -46,7 +46,7 @@ module.exports = {
     }
   },
   objectSetRamda(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
@@ -57,7 +57,7 @@ module.exports = {
     }
   },
   objectSetUnchanged(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
@@ -68,7 +68,7 @@ module.exports = {
     }
   },
   objectSetUnchangedDotty(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let newValue;
 
@@ -84,7 +84,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -98,7 +100,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -112,7 +116,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -126,7 +132,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -140,7 +148,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -154,7 +164,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);

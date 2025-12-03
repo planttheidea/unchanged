@@ -1,6 +1,6 @@
 {
   "author": "tony_quetano@planttheidea.com",
-  "browser": "dist/unchanged.js",
+  "browser": "dist/umd/index.js",
   "browserslist": [
     "defaults",
     "Explorer >= 9",
@@ -18,42 +18,57 @@
   },
   "description": "A tiny, fast, unopinionated handler for updating JS objects and arrays immutably",
   "devDependencies": {
-    "@types/jest": "^24.0.20",
+    "@planttheidea/build-tools": "^1.2.2",
     "@types/node": "^12.11.7",
     "@types/ramda": "^0.26.33",
-    "@types/react": "^16.9.11",
+    "@types/react": "^19.2.7",
+    "@vitest/coverage-v8": "^4.0.15",
     "benchmark": "^2.1.4",
     "cli-table": "^0.3.1",
-    "eslint": "^6.6.0",
-    "html-webpack-plugin": "^3.2.0",
-    "jest": "^24.9.0",
+    "eslint": "^9.39.1",
     "lodash": "^4.17.10",
     "nyc": "^14.1.1",
+    "prettier": "^3.7.4",
     "ramda": "^0.26.1",
-    "react": "^16.11.0",
-    "react-dom": "^16.11.0",
-    "rollup": "^1.25.2",
-    "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-terser": "^5.1.2",
-    "rollup-plugin-typescript2": "^0.24.3",
-    "ts-jest": "^24.1.0",
-    "ts-loader": "^6.2.1",
-    "tslint": "^5.20.0",
-    "tslint-config-airbnb": "^5.11.2",
-    "tslint-loader": "^3.5.4",
-    "typescript": "^3.6.4",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.9.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "rollup": "^4.53.3",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.6",
+    "vitest": "^4.0.15"
   },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/es/index.d.mts",
+        "default": "./dist/es/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      },
+      "default": {
+        "types": "./dist/umd/index.d.ts",
+        "default": "./dist/umd/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "index.d.ts",
+    "package.json"
+  ],
+  "homepage": "https://github.com/planttheidea/unchanged#readme",
   "keywords": [
     "immutable",
     "functional"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/planttheidea/unchanged#readme",
-  "main": "dist/unchanged.cjs.js",
-  "module": "dist/unchanged.esm.js",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/es/index.mjs",
   "name": "unchanged",
   "repository": {
     "type": "git",
@@ -61,22 +76,34 @@
   },
   "scripts": {
     "benchmark": "npm run dist && NODE_ENV=production node ./benchmarks/index.js",
-    "build": "NODE_ENV=production rollup -c",
-    "clean": "rimraf dist",
-    "dev": "NODE_ENV=development webpack-dev-server --colors --progress --config=webpack/webpack.config.js",
+    "build": "npm run clean && npm run build:dist && npm run build:types",
+    "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
+    "build:types": "pti fix-types -l dist",
+    "clean": "rm -rf dist",
+    "clean:cjs": "rm -rf dist/cjs",
+    "clean:es": "rm -rf dist/es",
+    "clean:umd": "rm -rf dist/umd",
+    "dev": "vite --config=config/vite.config.ts",
     "dist": "npm run clean && npm run build",
-    "lint": "NODE_ENV=test tslint 'src/*.ts'",
+    "format": "prettier . --log-level=warn --write",
+    "format:check": "prettier . --log-level=warn --check",
+    "lint": "eslint --max-warnings=0",
     "lint:fix": "npm run lint -- --fix",
     "prepublishOnly": "npm run lint && npm run typecheck && npm run test:coverage && npm run dist",
     "release": "release-it",
-    "release:beta": "release-it --config=.release-it.beta.json",
+    "release:alpha": "release-it --config=config/release-it/alpha.json",
+    "release:beta": "release-it --config=config/release-it/beta.json",
+    "release:rc": "release-it --config=config/release-it/rc.json",
+    "release:scripts": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
+    "release:stable": "release-it --config=config/release-it/stable.json",
     "start": "npm run dev",
-    "test": "NODE_PATH=. jest",
+    "test": "vitest run --config=config/vitest.config.ts",
     "test:coverage": "npm run test -- --coverage",
     "test:watch": "npm run test -- --watch",
     "typecheck": "tsc --noEmit"
   },
   "sideEffects": false,
-  "types": "dist/index.d.ts",
+  "type": "module",
+  "types": "./index.d.ts",
   "version": "2.2.1"
 }

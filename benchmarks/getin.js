@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
-const {path} = require('ramda');
-const {get} = require('../dist/unchanged.cjs');
+const { path } = require('ramda');
+const { get } = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -14,7 +14,7 @@ module.exports = {
   // objects
   objectGetInNative(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -25,7 +25,7 @@ module.exports = {
   },
   objectGetInLodashFp(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -36,7 +36,7 @@ module.exports = {
   },
   objectGetInLodashFpDotty(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -47,7 +47,7 @@ module.exports = {
   },
   objectGetInRamda(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -58,7 +58,7 @@ module.exports = {
   },
   objectGetInUnchanged(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -69,7 +69,7 @@ module.exports = {
   },
   objectGetInUnchangedDotty(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let val;
@@ -84,7 +84,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -95,7 +96,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -106,7 +108,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -117,7 +120,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -128,7 +132,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -139,7 +144,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);

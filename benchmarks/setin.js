@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
-const {assocPath} = require('ramda');
-const {set} = require('../dist/unchanged.cjs');
+const { assocPath } = require('ramda');
+const { set } = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -14,7 +14,7 @@ module.exports = {
   // objects
   objectSetInNative(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     for (let i = 0; i < cycles; i++) {
@@ -27,7 +27,7 @@ module.exports = {
   },
   objectSetInLodashFp(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let newValue;
@@ -40,7 +40,7 @@ module.exports = {
   },
   objectSetInLodashFpDotty(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let newValue;
@@ -53,7 +53,7 @@ module.exports = {
   },
   objectSetInRamda(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let newValue;
@@ -66,7 +66,7 @@ module.exports = {
   },
   objectSetInUnchanged(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let newValue;
@@ -79,7 +79,7 @@ module.exports = {
   },
   objectSetInUnchangedDotty(cycles) {
     const obj = {
-      data: {value},
+      data: { value },
     };
 
     let newValue;
@@ -96,7 +96,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let newArr; let index;
+    let newArr;
+    let index;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -110,7 +111,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let newArr; let index;
+    let newArr;
+    let index;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -125,7 +127,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let newArr; let index;
+    let newArr;
+    let index;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -140,7 +143,8 @@ module.exports = {
     const arr = [array];
     const maxIndex = arr[0].length - 1;
 
-    let newArr; let index;
+    let newArr;
+    let index;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -155,7 +159,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);
@@ -168,7 +174,9 @@ module.exports = {
     const arr = array;
     const maxIndex = arr.length - 1;
 
-    let newArr; let index; let newVal;
+    let newArr;
+    let index;
+    let newVal;
 
     for (let i = 0; i < cycles; i++) {
       newArr = [].concat(arr);

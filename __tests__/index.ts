@@ -1381,12 +1381,7 @@ describe('getWithOr', () => {
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toEqual(true);
   });
@@ -1397,12 +1392,7 @@ describe('getWithOr', () => {
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toEqual(true);
   });
@@ -1415,12 +1405,7 @@ describe('getWithOr', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toEqual(true);
   });
@@ -1433,12 +1418,7 @@ describe('getWithOr', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toEqual(true);
   });
@@ -1449,12 +1429,7 @@ describe('getWithOr', () => {
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toBe(false);
   });
@@ -1465,12 +1440,7 @@ describe('getWithOr', () => {
     const object: unchanged.Unchangeable = {};
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toBe(fallbackValue);
   });
@@ -1481,12 +1451,7 @@ describe('getWithOr', () => {
     const object: unchanged.Unchangeable = {};
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toBe(fallbackValue);
   });
@@ -1499,12 +1464,7 @@ describe('getWithOr', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toBe(fallbackValue);
   });
@@ -1517,12 +1477,7 @@ describe('getWithOr', () => {
     };
     const fallbackValue: string = 'fallback';
 
-    const result = getWithOr(
-      fn,
-      fallbackValue,
-      path,
-      object,
-    );
+    const result = getWithOr(fn, fallbackValue, path, object);
 
     expect(result).toBe(fallbackValue);
   });
@@ -1683,8 +1638,7 @@ describe('hasWith', () => {
   });
 
   it('should return true if the path is empty and the object is existy', () => {
-    const fn = (value: any): boolean =>
-      value && typeof value === 'object';
+    const fn = (value: any): boolean => value && typeof value === 'object';
     const path: any[] = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
 
@@ -1694,8 +1648,7 @@ describe('hasWith', () => {
   });
 
   it('should return false if the path is empty and the object is not existy', () => {
-    const fn = (value: any): boolean =>
-      value && typeof value === 'object';
+    const fn = (value: any): boolean => value && typeof value === 'object';
     const path: any[] = [];
     const object: any = null;
 
@@ -1917,8 +1870,7 @@ describe('is', () => {
 
 describe('isWith', () => {
   it('should return true with the value matching at the simple array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -1929,8 +1881,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the simple array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'baz';
@@ -1941,8 +1892,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the simple string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -1953,8 +1903,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the simple string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'baz';
@@ -1965,8 +1914,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the nested array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1979,8 +1927,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the nested array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -1993,8 +1940,7 @@ describe('isWith', () => {
   });
 
   it('should return true with the value matching at the nested string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2008,8 +1954,7 @@ describe('isWith', () => {
   });
 
   it('should return false with the value not matching at the nested string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2023,8 +1968,7 @@ describe('isWith', () => {
   });
 
   it('should return true if the path is empty and the value matches', () => {
-    const fn = (value: any): boolean =>
-      value && value.foo === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value && value.foo === 'bar' ? 'blah' : value);
     const path: any[] = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -2035,8 +1979,7 @@ describe('isWith', () => {
   });
 
   it('should return false if the path is empty and the value does not match', () => {
-    const fn = (value: any): boolean =>
-      value && value.foo === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value && value.foo === 'bar' ? 'blah' : value);
     const path: any[] = [];
     const object: any = null;
     const value: any = 'blah';
@@ -2744,8 +2687,7 @@ describe('not', () => {
 
 describe('notWith', () => {
   it('should return false with the value matching at the simple array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -2756,8 +2698,7 @@ describe('notWith', () => {
   });
 
   it('should return true with the value not matching at the simple array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo'];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'baz';
@@ -2768,8 +2709,7 @@ describe('notWith', () => {
   });
 
   it('should return false with the value matching at the simple string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -2780,8 +2720,7 @@ describe('notWith', () => {
   });
 
   it('should return true with the value not matching at the simple string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo';
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'baz';
@@ -2792,8 +2731,7 @@ describe('notWith', () => {
   });
 
   it('should return false with the value matching at the nested array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2806,8 +2744,7 @@ describe('notWith', () => {
   });
 
   it('should return true with the value not matching at the nested array path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = ['foo', 0];
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2820,8 +2757,7 @@ describe('notWith', () => {
   });
 
   it('should return false with the value matching at the nested string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2835,8 +2771,7 @@ describe('notWith', () => {
   });
 
   it('should return true with the value not matching at the nested string path', () => {
-    const fn = (value: any): boolean =>
-      value === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value === 'bar' ? 'blah' : value);
     const path = 'foo[0]';
     const object: unchanged.Unchangeable = {
       foo: ['bar'],
@@ -2850,8 +2785,7 @@ describe('notWith', () => {
   });
 
   it('should return false if the path is empty and the value matches', () => {
-    const fn = (value: any): boolean =>
-      value && value.foo === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value && value.foo === 'bar' ? 'blah' : value);
     const path: any[] = [];
     const object: unchanged.Unchangeable = { foo: 'bar' };
     const value: any = 'blah';
@@ -2862,8 +2796,7 @@ describe('notWith', () => {
   });
 
   it('should return true if the path is empty and the value does not match', () => {
-    const fn = (value: any): boolean =>
-      value && value.foo === 'bar' ? 'blah' : value;
+    const fn = (value: any): boolean => (value && value.foo === 'bar' ? 'blah' : value);
     const path: any[] = [];
     const object: any = null;
     const value = 'blah';
@@ -3400,8 +3333,7 @@ describe('setWith', () => {
   });
 
   it('should return the value passed if the path is empty', () => {
-    const fn = (value: { untouched: boolean }): string =>
-      `--${value.untouched}--`;
+    const fn = (value: { untouched: boolean }): string => `--${value.untouched}--`;
     const path: any[] = [];
     const object: unchanged.Unchangeable = { untouched: true };
 
@@ -3432,5 +3364,4 @@ describe('setWith', () => {
       [path]: `--${extra}--`,
     });
   });
-
 });

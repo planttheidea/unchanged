@@ -1,7 +1,7 @@
 /* eslint no-unused-vars: 0 */
 const _ = require('lodash/fp');
-const {path} = require('ramda');
-const {get} = require('../dist/unchanged.cjs');
+const { path } = require('ramda');
+const { get } = require('../dist/unchanged.cjs');
 
 /**
  * Data
@@ -13,7 +13,7 @@ const array = [Math.random(), Math.random(), Math.random(), Math.random(), Math.
 module.exports = {
   // objects
   objectGetNative(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -22,7 +22,7 @@ module.exports = {
     }
   },
   objectGetLodashFp(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -31,7 +31,7 @@ module.exports = {
     }
   },
   objectGetLodashFpDotty(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -40,7 +40,7 @@ module.exports = {
     }
   },
   objectGetRamda(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -49,7 +49,7 @@ module.exports = {
     }
   },
   objectGetUnchanged(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -58,7 +58,7 @@ module.exports = {
     }
   },
   objectGetUnchangedDotty(cycles) {
-    const obj = {value};
+    const obj = { value };
 
     let val;
 
@@ -71,7 +71,8 @@ module.exports = {
   arrayGetNative(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -81,7 +82,8 @@ module.exports = {
   arrayGetLodashFp(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -91,7 +93,8 @@ module.exports = {
   arrayGetLodashFpDotty(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -101,7 +104,8 @@ module.exports = {
   arrayGetRamda(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -111,7 +115,8 @@ module.exports = {
   arrayGetUnchanged(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);
@@ -121,7 +126,8 @@ module.exports = {
   arrayGetUnchangedDotty(cycles) {
     const maxIndex = array.length - 1;
 
-    let index; let val;
+    let index;
+    let val;
 
     for (let i = 0; i < cycles; i++) {
       index = ~~(Math.random() * maxIndex);

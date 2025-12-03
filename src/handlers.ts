@@ -28,9 +28,7 @@ const slice = Function.prototype.bind.call(Function.prototype.call, Array.protot
 export function createCall<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.CallWith : unchanged.Call;
-export function createCall<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.CallWith | unchanged.Call {
+export function createCall<IsWith extends true | false>(isWithHandler: IsWith): unchanged.CallWith | unchanged.Call {
   if (isWithHandler) {
     return function callWith(
       fn: unchanged.WithHandler,
@@ -85,15 +83,9 @@ export function createCall<IsWith extends true | false>(
 export function createGet<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.GetWith : unchanged.Get;
-export function createGet<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.GetWith | unchanged.Get {
+export function createGet<IsWith extends true | false>(isWithHandler: IsWith): unchanged.GetWith | unchanged.Get {
   if (isWithHandler) {
-    return function getWith(
-      fn: unchanged.WithHandler,
-      path: unchanged.Path,
-      object: unchanged.Unchangeable,
-    ) {
+    return function getWith(fn: unchanged.WithHandler, path: unchanged.Path, object: unchanged.Unchangeable) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -127,9 +119,7 @@ export function createGet<IsWith extends true | false>(
 export function createGetOr<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.GetWithOr : unchanged.GetOr;
-export function createGetOr<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.GetWithOr | unchanged.GetOr {
+export function createGetOr<IsWith extends true | false>(isWithHandler: IsWith): unchanged.GetWithOr | unchanged.GetOr {
   if (isWithHandler) {
     return function getWithOr(
       fn: unchanged.WithHandler,
@@ -170,15 +160,9 @@ export function createGetOr<IsWith extends true | false>(
 export function createHas<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.HasWith : unchanged.Has;
-export function createHas<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.HasWith | unchanged.Has {
+export function createHas<IsWith extends true | false>(isWithHandler: IsWith): unchanged.HasWith | unchanged.Has {
   if (isWithHandler) {
-    return function hasWith(
-      fn: unchanged.WithHandler,
-      path: unchanged.Path,
-      object: unchanged.Unchangeable,
-    ) {
+    return function hasWith(fn: unchanged.WithHandler, path: unchanged.Path, object: unchanged.Unchangeable) {
       if (typeof fn !== 'function') {
         throwInvalidFnError();
       }
@@ -212,9 +196,7 @@ export function createHas<IsWith extends true | false>(
 export function createIs<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.IsWith : unchanged.Is;
-export function createIs<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.IsWith | unchanged.Is {
+export function createIs<IsWith extends true | false>(isWithHandler: IsWith): unchanged.IsWith | unchanged.Is {
   if (isWithHandler) {
     return function isWith(
       fn: unchanged.WithHandler,
@@ -315,8 +297,8 @@ export function createMerge<IsWith extends true | false>(
     return isEmptyPath(path)
       ? getMergedObject(object, objectToMerge, true)
       : getDeepClone(path, object, (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
-        ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
-      });
+          ref[key] = getMergedObject(ref[key], objectToMerge, isDeep);
+        });
   };
 }
 
@@ -332,9 +314,7 @@ export function createMerge<IsWith extends true | false>(
 export function createNot<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.NotWith : unchanged.Not;
-export function createNot<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.NotWith | unchanged.Not {
+export function createNot<IsWith extends true | false>(isWithHandler: IsWith): unchanged.NotWith | unchanged.Not {
   const is: Function = createIs(isWithHandler);
 
   return function not(this: any) {
@@ -379,32 +359,29 @@ export function createRemove<IsWith extends true | false>(
 
       return value !== void 0 && fn(value, ...extraArgs)
         ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
-          if (isArray(ref)) {
-            splice(ref, key as number);
-          } else {
-            delete ref[key];
-          }
-        })
+            if (isArray(ref)) {
+              splice(ref, key as number);
+            } else {
+              delete ref[key];
+            }
+          })
         : object;
     };
   }
 
-  return function remove(
-    path: unchanged.Path,
-    object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable {
+  return function remove(path: unchanged.Path, object: unchanged.Unchangeable): unchanged.Unchangeable {
     if (isEmptyPath(path)) {
       return getNewEmptyObject(object);
     }
 
     return getValueAtPath(path, object) !== void 0
       ? getDeepClone(path, object, (ref: unchanged.Unchangeable, key: number | string): void => {
-        if (isArray(ref)) {
-          splice(ref, key as number);
-        } else {
-          delete ref[key];
-        }
-      })
+          if (isArray(ref)) {
+            splice(ref, key as number);
+          } else {
+            delete ref[key];
+          }
+        })
       : object;
   };
 }
@@ -421,9 +398,7 @@ export function createRemove<IsWith extends true | false>(
 export function createSet<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.SetWith : unchanged.Set;
-export function createSet<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.SetWith | unchanged.Set {
+export function createSet<IsWith extends true | false>(isWithHandler: IsWith): unchanged.SetWith | unchanged.Set {
   if (isWithHandler) {
     return function setWith(
       fn: unchanged.WithHandler,
@@ -438,26 +413,18 @@ export function createSet<IsWith extends true | false>(
 
       return isEmptyPath(path)
         ? fn(object, ...extraArgs)
-        : getDeepClone(
-            path,
-            object,
-            (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
-              ref[key] = fn(ref[key], ...extraArgs);
-            },
-          );
+        : getDeepClone(path, object, (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
+            ref[key] = fn(ref[key], ...extraArgs);
+          });
     };
   }
 
-  return function set(
-    path: unchanged.Path,
-    value: any,
-    object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable {
+  return function set(path: unchanged.Path, value: any, object: unchanged.Unchangeable): unchanged.Unchangeable {
     return isEmptyPath(path)
       ? value
       : getDeepClone(path, object, (ref: unchanged.Unchangeable, key: unchanged.PathItem): void => {
-        ref[key] = value;
-      });
+          ref[key] = value;
+        });
   };
 }
 
@@ -473,9 +440,7 @@ export function createSet<IsWith extends true | false>(
 export function createAdd<IsWith extends true | false>(
   isWithHandler: IsWith,
 ): IsWith extends true ? unchanged.AddWith : unchanged.Add;
-export function createAdd<IsWith extends true | false>(
-  isWithHandler: IsWith,
-): unchanged.AddWith | unchanged.Add {
+export function createAdd<IsWith extends true | false>(isWithHandler: IsWith): unchanged.AddWith | unchanged.Add {
   const _add: Function = createSet(isWithHandler);
 
   if (isWithHandler) {
@@ -485,18 +450,11 @@ export function createAdd<IsWith extends true | false>(
       path: unchanged.Path,
       object: unchanged.Unchangeable,
     ): unchanged.Unchangeable {
-      return _add.apply(
-        this,
-        [fn, getFullPath(path, object, fn), object].concat(slice(arguments, 3)),
-      );
+      return _add.apply(this, [fn, getFullPath(path, object, fn), object].concat(slice(arguments, 3)));
     };
   }
 
-  return function add(
-    path: unchanged.Path,
-    value: any,
-    object: unchanged.Unchangeable,
-  ): unchanged.Unchangeable {
+  return function add(path: unchanged.Path, value: any, object: unchanged.Unchangeable): unchanged.Unchangeable {
     return _add(getFullPath(path, object), value, object);
   };
 }

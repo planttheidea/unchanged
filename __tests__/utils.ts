@@ -350,7 +350,7 @@ describe('getOwnProperties', () => {
 
     const keys = Object.keys(object);
 
-    expect(result).toEqual(keys.concat([(symbol as unknown) as string]));
+    expect(result).toEqual(keys.concat([symbol as unknown as string]));
   });
 
   it('should get only keys if no symbols in the object passed exist', () => {
@@ -380,7 +380,7 @@ describe('getOwnProperties', () => {
 
     const keys = Object.keys(object);
 
-    expect(result).toEqual(keys.concat([(symbol as unknown) as string]));
+    expect(result).toEqual(keys.concat([symbol as unknown as string]));
   });
 });
 
@@ -510,8 +510,7 @@ describe('getMergedObject', () => {
       constructor(value: any) {
         if (value && value.constructor === Object) {
           return Object.keys(value).reduce((reduced: Foo, key) => {
-            const deepValue =
-              value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
+            const deepValue = value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
 
             if (reduced[key]) {
               reduced[key].value = deepValue;
@@ -522,7 +521,7 @@ describe('getMergedObject', () => {
             }
 
             return reduced;
-          },                               this);
+          }, this);
         }
 
         this.value = value;
@@ -568,8 +567,7 @@ describe('getMergedObject', () => {
       constructor(value: any) {
         if (value && value.constructor === Object) {
           return Object.keys(value).reduce((reduced: Foo, key) => {
-            const deepValue =
-              value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
+            const deepValue = value[key] && value[key].constructor === Object ? new Foo(value[key]) : value[key];
 
             if (reduced[key]) {
               reduced[key].value = deepValue;
@@ -580,7 +578,7 @@ describe('getMergedObject', () => {
             }
 
             return reduced;
-          },                               this);
+          }, this);
         }
 
         this.value = value;
@@ -757,7 +755,7 @@ describe('getNewEmptyObject', () => {
 
 describe('getParsedPath', () => {
   it('should return the path passed if an array', () => {
-    const path = ['foo', (Symbol('bar') as unknown) as string];
+    const path = ['foo', Symbol('bar') as unknown as string];
 
     const result = getParsedPath(path);
 

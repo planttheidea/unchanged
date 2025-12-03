@@ -8,14 +8,8 @@ const { isArray } = Array;
 
 type ToString = (value: any) => string;
 
-const toStringFunction: ToString = Function.prototype.bind.call(
-  Function.prototype.call,
-  Function.prototype.toString,
-);
-const toStringObject: ToString = Function.prototype.bind.call(
-  Function.prototype.call,
-  O.prototype.toString,
-);
+const toStringFunction: ToString = Function.prototype.bind.call(Function.prototype.call, Function.prototype.toString);
+const toStringObject: ToString = Function.prototype.bind.call(Function.prototype.call, O.prototype.toString);
 
 /**
  * @constant HAS_SYMBOL_SUPPORT are Symbols supported
@@ -58,11 +52,7 @@ export const cloneArray = (array: any[]): any[] => {
  * @param initialValue the initial value of the reduction
  * @returns the reduced value
  */
-export const reduce = (
-  array: any[],
-  fn: (accum: any, value: any) => any,
-  initialValue: any,
-): any => {
+export const reduce = (array: any[], fn: (accum: any, value: any) => any, initialValue: any): any => {
   let value = initialValue;
 
   for (let index = 0, length = array.length; index < length; index++) {
@@ -215,8 +205,7 @@ export const callIfFunction = (object: any, context: any, parameters: any[]) =>
  * @param key the key to base the empty child on
  * @returns the empty object the child is built from
  */
-export const getNewEmptyChild = (key: any): unchanged.Unchangeable =>
-  typeof key === 'number' ? [] : {};
+export const getNewEmptyChild = (key: any): unchanged.Unchangeable => (typeof key === 'number' ? [] : {});
 
 /**
  * @function getNewEmptyObject
@@ -273,8 +262,7 @@ export const isSameValueZero = (value1: any, value2: any) =>
  * @param object the object to clone
  * @returns a cloned version of the object, or the object itself if not cloneable
  */
-export const cloneIfPossible = (object: any) =>
-  isCloneable(object) ? getShallowClone(object) : object;
+export const cloneIfPossible = (object: any) => (isCloneable(object) ? getShallowClone(object) : object);
 
 /**
  * @function getCloneOrEmptyObject
@@ -287,10 +275,7 @@ export const cloneIfPossible = (object: any) =>
  * @param nextKey the key to base the empty child object on
  * @returns a clone of the object, or an empty child object
  */
-export const getCloneOrEmptyObject = (
-  object: unchanged.Unchangeable,
-  nextKey: any,
-): unchanged.Unchangeable =>
+export const getCloneOrEmptyObject = (object: unchanged.Unchangeable, nextKey: any): unchanged.Unchangeable =>
   isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
 
 /**
@@ -303,8 +288,7 @@ export const getCloneOrEmptyObject = (
  * @param fallbackValue the value to coalesce to
  * @returns the coalesced value
  */
-export const getCoalescedValue = (value: any, fallbackValue: any) =>
-  value === void 0 ? fallbackValue : value;
+export const getCoalescedValue = (value: any, fallbackValue: any) => (value === void 0 ? fallbackValue : value);
 
 /**
  * @function getParsedPath
@@ -315,8 +299,7 @@ export const getCoalescedValue = (value: any, fallbackValue: any) =>
  * @param path the path to parse
  * @returns the parsed path
  */
-export const getParsedPath = (path: unchanged.Path): unchanged.ParsedPath =>
-  isArray(path) ? path : parse(path);
+export const getParsedPath = (path: unchanged.Path): unchanged.ParsedPath => (isArray(path) ? path : parse(path));
 
 /**
  * @function getCloneAtPath
@@ -343,12 +326,7 @@ export const getCloneAtPath = (
   if (nextIndex === path.length) {
     onMatch(object, key);
   } else {
-    object[key] = getCloneAtPath(
-      path,
-      getCloneOrEmptyObject(object[key], path[nextIndex]),
-      onMatch,
-      nextIndex,
-    );
+    object[key] = getCloneAtPath(path, getCloneOrEmptyObject(object[key], path[nextIndex]), onMatch, nextIndex);
   }
 
   return object;
@@ -409,17 +387,12 @@ export const getMergedObject = (
   }
 
   const targetClone: unchanged.Unchangeable =
-    target.constructor === O || isGlobalConstructor(target.constructor)
-      ? {}
-      : createWithProto(target);
+    target.constructor === O || isGlobalConstructor(target.constructor) ? {} : createWithProto(target);
 
   return reduce(
     getOwnProperties(source),
     (clone: unchanged.Unchangeable, key: string): unchanged.Unchangeable => {
-      clone[key] =
-        isDeep && isCloneable(source[key])
-          ? getMergedObject(target[key], source[key], isDeep)
-          : source[key];
+      clone[key] = isDeep && isCloneable(source[key]) ? getMergedObject(target[key], source[key], isDeep) : source[key];
 
       return clone;
     },
@@ -438,11 +411,7 @@ export const getMergedObject = (
  * @param noMatchValue the value returned if no match is found
  * @returns the matching value, or the fallback provided
  */
-export const getValueAtPath = (
-  path: unchanged.Path,
-  object: unchanged.Unchangeable,
-  noMatchValue?: any,
-) => {
+export const getValueAtPath = (path: unchanged.Path, object: unchanged.Unchangeable, noMatchValue?: any) => {
   const parsedPath = getParsedPath(path);
 
   if (parsedPath.length === 1) {
@@ -481,11 +450,7 @@ export const getFullPath = (
   fn?: (value: any) => any,
 ): unchanged.Path => {
   const isPathEmpty: boolean = isEmptyPath(path);
-  const valueAtPath: any = isPathEmpty
-    ? object
-    : fn
-    ? fn(getValueAtPath(path, object))
-    : getValueAtPath(path, object);
+  const valueAtPath: any = isPathEmpty ? object : fn ? fn(getValueAtPath(path, object)) : getValueAtPath(path, object);
 
   return isArray(valueAtPath)
     ? isArray(path)

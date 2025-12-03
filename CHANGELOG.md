@@ -4,7 +4,8 @@ Yes, the irony is not lost on me. :)
 
 ## 2.2.0
 
-- Fix issue where `getOwnPropertySymbols` was expected to always be supported when `Object.assign` was natively supported
+- Fix issue where `getOwnPropertySymbols` was expected to always be supported when `Object.assign` was natively
+  supported
 - Greatly improve typings of handlers
 
 ## 2.1.0
@@ -14,7 +15,8 @@ Yes, the irony is not lost on me. :)
 
 ## 2.0.1
 
-- Fix [#33](https://github.com/planttheidea/unchanged/issues/33) - ensure objects created with `Object.create(null)` do not error
+- Fix [#33](https://github.com/planttheidea/unchanged/issues/33) - ensure objects created with `Object.create(null)` do
+  not error
 - Switch from `babel-minify` to `terser` for minified build
 
 ## 2.0.0
@@ -23,12 +25,14 @@ Rewrite in TypeScript!
 
 **BREAKING CHANGES**
 
-- `transform` has changed to be `setWith`, and the signature has changed as well (see [the documentation](README.md#setWith) for details)
+- `transform` has changed to be `setWith`, and the signature has changed as well (see
+  [the documentation](README.md#setWith) for details)
 
 **NEW FEATURES**
 
 - Added [`is`](README.md#is) method for assertion
-- Added function-first `*With` methods corresponding to each existing method (see [the documentation](README.md#transform-methods) for details)
+- Added function-first `*With` methods corresponding to each existing method (see
+  [the documentation](README.md#transform-methods) for details)
 - TypeScript typings
 
 **ADDITIONAL CHANGES**
@@ -73,7 +77,8 @@ Rewrite in TypeScript!
 
 ## 1.3.2
 
-- Use direct assignment instead of `.push()` when cloning arrays, to prevent breakage when the array has a custom `push` method
+- Use direct assignment instead of `.push()` when cloning arrays, to prevent breakage when the array has a custom `push`
+  method
 
 ## 1.3.1
 
@@ -114,11 +119,13 @@ Rewrite in TypeScript!
 
 ## 1.0.3
 
-- Use custom `splice` for `remove` instead of native (in case item is an extension of an `Array` and has messed with `splice`)
+- Use custom `splice` for `remove` instead of native (in case item is an extension of an `Array` and has messed with
+  `splice`)
 
 ## 1.0.2
 
-- Do not create a new object if the object type does not match what the key thinks it should be (causes invalid results for array-like objects)
+- Do not create a new object if the object type does not match what the key thinks it should be (causes invalid results
+  for array-like objects)
 
 ## 1.0.1
 
