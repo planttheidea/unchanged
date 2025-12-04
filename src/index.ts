@@ -1,5 +1,6 @@
-import { Curried, __, curry } from 'curriable';
-import { createAdd, createCall, createMerge, createNot, createRemove, createSet } from './handlers.js';
+import type { Curried } from 'curriable';
+import { __, curry } from 'curriable';
+import { createAdd, createCall, createMerge, createRemove, createSet } from './handlers.js';
 import type { AnyPath, HasDeep, PickDeep, PickDeepOr, Unchangeable } from './internalTypes.js';
 import { getValueAtPath, hasFullPath } from './utils.js';
 
@@ -118,9 +119,40 @@ export const merge = curry(createMerge(false, true));
 
 export const mergeWith = curry(createMerge(true, true));
 
-export const not = curry(createNot(false));
+/**
+ * Whether the `expected` value does not match the given `object` at `path` with
+ * [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness#same-value_equality_using_object.is)
+ * equality.
+ */
+export function not<const P extends AnyPath>(path: P): <const E>(expected: E) => <const V>(value: V) => boolean;
+export function not<const P extends AnyPath>(path: P): <const E, const V>(expected: E, value: V) => boolean;
+export function not<const P extends AnyPath, const E, const V>(path: P, expected: E, value: V): HasDeep<V, P>;
+export function not<const P extends AnyPath, const EagerE, const EagerV extends Unchangeable>(
+  path: P,
+  ...rest: [eagerExpected: EagerE, eagerValue: EagerV] | [eagerExpected: EagerE] | []
+) {
+  if (!rest.length) {
+    return <const E, const V extends Unchangeable>(expected: E, ...rest: [eagerValue?: V]) => {
+      if (!rest.length) {
+        return <const V extends Unchangeable>(value: V) => !is(path, expected, value);
+      }
 
-export const notWith = curry(createNot(true));
+      const [eagerValue] = rest;
+
+      return !is(path, expected, eagerValue);
+    };
+  }
+
+  const [eagerExpected] = rest;
+
+  if (rest.length === 1) {
+    return <const V extends Unchangeable>(value: V) => !is(path, eagerExpected, value);
+  }
+
+  const [, eagerValue] = rest;
+
+  return !is(path, eagerExpected, eagerValue);
+}
 
 export const remove = curry(createRemove(false));
 

@@ -154,24 +154,6 @@ export function createMerge<IsWith extends true | false>(isWithHandler: IsWith, 
 }
 
 /**
- * @function createNot
- *
- * @description
- * create handlers for not / notWith
- *
- * @param isWithHandler not the method using a with handler
- * @returns not / notWithHandler
- */
-export function createNot<IsWith extends true | false>(isWithHandler: IsWith): IsWith extends true ? NotWith : Not;
-export function createNot<IsWith extends true | false>(isWithHandler: IsWith): NotWith | Not {
-  const is: Function = createIs(isWithHandler);
-
-  return function not(this: any) {
-    return !is.apply(this, arguments);
-  };
-}
-
-/**
  * @function createRemove
  *
  * @description
