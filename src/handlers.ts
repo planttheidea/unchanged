@@ -202,10 +202,11 @@ export function createRemove<IsWith extends true | false>(isWithHandler: IsWith)
       const value: any = getValueAtPath(path, object);
 
       return value !== void 0 && fn(value, ...extraArgs)
-        ? getDeepClone(path, object, (ref: Unchangeable, key: number | string): void => {
-            if (isArray(ref)) {
-              splice(ref, key as number);
+        ? getDeepClone(path, object, (ref, key): void => {
+            if (Array.isArray(ref)) {
+              ref.splice(key as number);
             } else {
+              // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
               delete ref[key];
             }
           })
@@ -220,9 +221,10 @@ export function createRemove<IsWith extends true | false>(isWithHandler: IsWith)
 
     return getValueAtPath(path, object) !== void 0
       ? getDeepClone(path, object, (ref: Unchangeable, key: number | string): void => {
-          if (isArray(ref)) {
-            splice(ref, key as number);
+          if (Array.isArray(ref)) {
+            ref.splice(key as number);
           } else {
+            // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
             delete ref[key];
           }
         })

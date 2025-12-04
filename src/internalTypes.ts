@@ -13,21 +13,27 @@ export type EmptyPath = null | [];
 type PickArray<V extends unknown[], I extends number> = V[I];
 type PickObject<V extends object, K extends keyof V> = V[K];
 
-export interface NoMatchFound {
+export interface NoMatch {
   $$noMatch: true;
 }
 
-type _PickDeep<V, P extends unknown[]> = P extends [infer Next, ...infer Rest]
-  ? V extends object
-    ? Next extends keyof V
-      ? _PickDeep<PickObject<V, Next>, Rest>
-      : NoMatchFound
-    : V extends unknown[]
-      ? Next extends number
-        ? _PickDeep<PickArray<V, Next>, Rest>
-        : NoMatchFound
-      : V
-  : V;
+interface UnknownMatch {
+  $$unknown: true;
+}
+
+type _PickDeep<V, P extends unknown[]> = unknown extends V
+  ? UnknownMatch
+  : P extends [infer Next, ...infer Rest]
+    ? V extends object
+      ? Next extends keyof V
+        ? _PickDeep<PickObject<V, Next>, Rest>
+        : NoMatch
+      : V extends unknown[]
+        ? Next extends number
+          ? _PickDeep<PickArray<V, Next>, Rest>
+          : NoMatch
+        : V
+    : V;
 
 export type PickDeepInternal<V, P> = EmptyPath extends P
   ? V
@@ -37,12 +43,20 @@ export type PickDeepInternal<V, P> = EmptyPath extends P
       ? _PickDeep<V, [...P]>
       : V;
 
-export type PickDeep<V, P extends AnyPath, Result = PickDeepInternal<V, ParsePath<P>>> = NoMatchFound extends Result
+export type PickDeep<V, P extends AnyPath, Result = PickDeepInternal<V, ParsePath<P>>> = NoMatch extends Result
   ? undefined
-  : Result;
+  : UnknownMatch extends Result
+    ? any
+    : Result;
 
-export type PickDeepOr<V, P extends AnyPath, N, Result = PickDeep<V, P>> = NoMatchFound extends Result ? N : Result;
+export type PickDeepOr<V, P extends AnyPath, N, Result = PickDeep<V, P>> = NoMatch extends Result
+  ? N
+  : UnknownMatch extends Result
+    ? any
+    : Result;
 
-export type HasDeep<V, P extends AnyPath, Result = PickDeepInternal<V, ParsePath<P>>> = NoMatchFound extends Result
+export type HasDeep<V, P extends AnyPath, Result = PickDeepInternal<V, ParsePath<P>>> = NoMatch extends Result
   ? false
-  : true;
+  : UnknownMatch extends Result
+    ? boolean
+    : true;

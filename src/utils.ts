@@ -5,7 +5,8 @@ import type {
   AnyPath,
   EmptyPath,
   HasDeep,
-  NoMatchFound,
+  NoMatch,
+  PickDeep,
   PickDeepInternal,
   PickDeepOr,
   Unchangeable,
@@ -24,13 +25,13 @@ const toStringFunction: ToString = Function.prototype.bind.call(Function.prototy
 const toStringObject: ToString = Function.prototype.bind.call(Function.prototype.call, O.prototype.toString);
 
 const HAS_SYMBOL_SUPPORT = typeof Symbol === 'function' && typeof Symbol.for === 'function';
-const NO_MATCH_FOUND = { [Symbol('$$noMatch')]: true } as unknown as NoMatchFound;
+const NO_MATCH_FOUND: NoMatch = { $$noMatch: true };
 const REACT_ELEMENT: symbol | number = HAS_SYMBOL_SUPPORT ? Symbol.for('react.element') : 0xeac7;
 
 /**
  * clone an array to a new array
  */
-export const cloneArray = (array: any[]): any[] => {
+export function cloneArray<const V extends any[]>(array: V): V {
   const Constructor = array.constructor as ArrayConstructor;
   const cloned = Constructor === Array ? [] : new Constructor();
 
@@ -38,8 +39,8 @@ export const cloneArray = (array: any[]): any[] => {
     cloned[index] = array[index];
   }
 
-  return cloned;
-};
+  return cloned as V;
+}
 
 /**
  * a targeted reduce method faster than the native
@@ -114,7 +115,7 @@ export const createWithProto = (object: Unchangeable): Unchangeable =>
 /**
  * is the object passed considered cloneable
  */
-export const isCloneable = (object: any) => {
+export function isCloneable(object: any): boolean {
   if (!object || typeof object !== 'object' || object.$$typeof === REACT_ELEMENT) {
     return false;
   }
@@ -122,7 +123,7 @@ export const isCloneable = (object: any) => {
   const type = toStringObject(object);
 
   return type !== '[object Date]' && type !== '[object RegExp]';
-};
+}
 
 /**
  * is the path passed an empty path
@@ -146,7 +147,9 @@ export const callIfFunction = (object: any, context: any, parameters: any[]) =>
 /**
  * get a new empty child object based on the key passed
  */
-export const getNewEmptyChild = (key: any): Unchangeable => (typeof key === 'number' ? [] : {});
+export function getNewEmptyChild<V>(key: PathItem): V {
+  return (typeof key === 'number' ? [] : {}) as V;
+}
 
 /**
  * get a new empty object based on the object passed
@@ -156,17 +159,17 @@ export const getNewEmptyObject = (object: Unchangeable): Unchangeable => (isArra
 /**
  * create a shallow clone of the object passed, respecting its prototype
  */
-export const getShallowClone = (object: Unchangeable): Unchangeable => {
-  if (object.constructor === O) {
-    return assign({}, object);
+export function getShallowClone<const V extends Unchangeable>(value: V): V {
+  if (value.constructor === Object) {
+    return { ...value };
   }
 
-  if (isArray(object)) {
-    return cloneArray(object);
+  if (Array.isArray(value)) {
+    return [...value] as unknown as V;
   }
 
-  return isGlobalConstructor(object.constructor) ? {} : assign(createWithProto(object), object);
-};
+  return isGlobalConstructor(value.constructor) ? ({} as V) : assign(createWithProto(value), value);
+}
 
 /**
  * clone the object if it can be cloned, otherwise return the object itself
@@ -177,8 +180,12 @@ export const cloneIfPossible = (object: any) => (isCloneable(object) ? getShallo
  * if the object is cloneable, get a clone of the object, else get a new
  * empty child object based on the key
  */
-export const getCloneOrEmptyObject = (object: Unchangeable, nextKey: any): Unchangeable =>
-  isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
+export function getCloneOrEmptyObject<const V extends Unchangeable, K extends PathItem>(
+  object: V,
+  nextKey: K,
+): K extends keyof V ? V : any {
+  return isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
+}
 
 /**
  * return the value if not undefined, otherwise return the fallback value
@@ -189,43 +196,45 @@ export const getCoalescedValue = (value: any, fallbackValue: any) => (value === 
  * get a new object, cloned at the path specified while leveraging
  * structural sharing for the rest of the properties
  */
-export const getCloneAtPath = (
-  path: Path,
-  object: Unchangeable,
-  onMatch: (object: Unchangeable, key: PathItem) => any,
+export function getCloneAtPath<const P extends Path, const V extends Unchangeable>(
+  path: P,
+  object: V,
+  onMatch: (object: V, key: P[number]) => PickDeep<V, P>,
   index: number,
-) => {
+): V {
   const key = path[index]!;
   const nextIndex = index + 1;
 
   if (nextIndex === path.length) {
     onMatch(object, key);
   } else {
-    object[key] = getCloneAtPath(path, getCloneOrEmptyObject(object[key], path[nextIndex]), onMatch, nextIndex);
+    // @ts-expect-error - Allow reassignment for deep cloning with structural sharing.
+    object[key] = getCloneAtPath(path, getCloneOrEmptyObject(object[key], path[nextIndex]!), onMatch, nextIndex);
   }
 
   return object;
-};
+}
 
 /**
  * get a clone of the object at the path specified
  */
-export const getDeepClone = (
-  path: Path,
-  object: Unchangeable,
-  onMatch: (object: Unchangeable, key: PathItem) => any,
-): Unchangeable => {
-  const parsedPath = parse(path);
-  const topLevelClone = getCloneOrEmptyObject(object, parsedPath[0]);
+export function getDeepClone<const P extends Path, const V extends Unchangeable>(
+  path: P,
+  object: V,
+  onMatch: (object: V, key: P[number]) => any,
+): V {
+  const parsedPath = parse(path) as Path;
+  const initialKey = parsedPath[0]!;
+  const topLevelClone = getCloneOrEmptyObject(object, initialKey);
 
   if (parsedPath.length === 1) {
-    onMatch(topLevelClone, parsedPath[0]!);
+    onMatch(topLevelClone, initialKey);
 
     return topLevelClone;
   }
 
-  return getCloneAtPath(parsedPath, topLevelClone, onMatch, 0);
-};
+  return getCloneAtPath(parsedPath as P, topLevelClone, onMatch, 0);
+}
 
 /**
  * merge the source into the target, either deeply or shallowly
@@ -263,64 +272,45 @@ export function getValueAtPathInternal<const P extends AnyPath, const V extends 
   value: V | null | undefined,
 ): EmptyPath extends P ? V : PickDeepInternal<V, ParsePath<P>> {
   if (value == null) {
+    // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
     return NO_MATCH_FOUND;
   }
 
-  const parsedPath = parse(path);
+  const parsedPath = parse(path) as Path;
 
   if (isEmptyPath(parsedPath)) {
+    // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
     return value;
   }
 
   if (parsedPath.length === 1) {
-    const key = parsedPath[0] as PathItem;
+    const key = parsedPath[0]!;
 
-    return Object.hasOwn(value, key) ? value[key] : NO_MATCH_FOUND;
+    return Object.hasOwn(value, key)
+      ? value[key]
+      : // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
+        NO_MATCH_FOUND;
   }
 
   let ref: any = value;
-  let key = parsedPath[0] as PathItem;
+  let key = parsedPath[0]!;
 
   for (let index = 0; index < parsedPath.length - 1; index++) {
     // Handle bunk edge cases by bailing out.
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (key == null) {
-      return NO_MATCH_FOUND;
-    }
-
-    if (!ref?.[key]) {
+    if (key == null || !ref?.[key]) {
+      // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
       return NO_MATCH_FOUND;
     }
 
     ref = ref[key];
-    key = parsedPath[index + 1] as PathItem;
+    key = parsedPath[index + 1]!;
   }
 
-  return ref && Object.hasOwn(ref, key) ? ref[key] : undefined;
-}
-
-/**
- * get the value at the nested property, or the fallback provided
- */
-export function getValueAtPath<const P extends AnyPath, const V extends Unchangeable, const N = undefined>(
-  path: P,
-  value: V | null | undefined,
-  noMatchValue?: N,
-): EmptyPath extends P ? V : PickDeepOr<V, ParsePath<P>, N> {
-  const result = getValueAtPathInternal(path, value);
-
-  // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
-  return result === NO_MATCH_FOUND ? noMatchValue : result;
-}
-
-/**
- * get the value at the nested property, or the fallback provided
- */
-export function hasFullPath<const P extends AnyPath, const V extends Unchangeable>(
-  path: P,
-  value: V | null | undefined,
-): HasDeep<V, ParsePath<P>> {
-  return getValueAtPathInternal(path, value) !== NO_MATCH_FOUND;
+  return ref && Object.hasOwn(ref, key)
+    ? ref[key]
+    : // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
+      undefined;
 }
 
 /**
@@ -333,23 +323,29 @@ export function getFullPath<const P extends Path, const V extends Unchangeable>(
 }
 
 /**
- * a faster, more targeted version of the native splice
+ * get the value at the nested property, or the fallback provided
  */
-export const splice = (array: any[], splicedIndex: number): void => {
-  if (array.length) {
-    const cutoff = array.length - 1;
+export function getValueAtPath<const P extends AnyPath, const V extends Unchangeable, const N = undefined>(
+  path: P,
+  value: V | null | undefined,
+  noMatchValue?: N,
+): EmptyPath extends P ? V : PickDeepOr<V, P, N> {
+  const result = getValueAtPathInternal(path, value);
 
-    let index = splicedIndex;
+  // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
+  return result === NO_MATCH_FOUND ? noMatchValue : result;
+}
 
-    while (index < cutoff) {
-      array[index] = array[index + 1];
-
-      ++index;
-    }
-
-    array.length = cutoff;
-  }
-};
+/**
+ * get the value at the nested property, or the fallback provided
+ */
+export function hasFullPath<const P extends AnyPath, const V extends Unchangeable>(
+  path: P,
+  value: V | null | undefined,
+): HasDeep<V, P> {
+  // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
+  return getValueAtPathInternal(path, value) !== NO_MATCH_FOUND;
+}
 
 /**
  * throw the TypeError based on the invalid handler
