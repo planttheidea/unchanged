@@ -12,105 +12,64 @@ import type {
   Unchangeable,
 } from './internalTypes.js';
 
-const O = Object;
-const { create, getOwnPropertySymbols, getPrototypeOf, keys, propertyIsEnumerable } = O;
-
-const { isArray } = Array;
-
-type ToString = (value: any) => string;
+type TODO_FIX_YOUR_TYPES = any;
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
-const toStringFunction: ToString = Function.prototype.bind.call(Function.prototype.call, Function.prototype.toString);
+const propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
 // eslint-disable-next-line @typescript-eslint/unbound-method
-const toStringObject: ToString = Function.prototype.bind.call(Function.prototype.call, O.prototype.toString);
+const toStringFunction = Function.prototype.toString;
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const toStringObject = Object.prototype.toString;
 
 const HAS_SYMBOL_SUPPORT = typeof Symbol === 'function' && typeof Symbol.for === 'function';
 const NO_MATCH_FOUND: NoMatch = { $$noMatch: true };
 const REACT_ELEMENT: symbol | number = HAS_SYMBOL_SUPPORT ? Symbol.for('react.element') : 0xeac7;
 
 /**
- * clone an array to a new array
+ * Clone an array into a new array, keeping the original prototype if not the global array.
  */
 export function cloneArray<const V extends any[]>(array: V): V {
-  const Constructor = array.constructor as ArrayConstructor;
-  const cloned = Constructor === Array ? [] : new Constructor();
+  const clone = Array.from(array) as V;
 
-  for (let index = 0, length = array.length; index < length; index++) {
-    cloned[index] = array[index];
+  if (array.constructor !== Array) {
+    Object.setPrototypeOf(clone, Object.getPrototypeOf(array));
   }
 
-  return cloned as V;
+  return clone;
 }
 
-/**
- * a targeted reduce method faster than the native
- */
-export const reduce = (array: any[], fn: (accum: any, value: any) => any, initialValue: any): any => {
-  let value = initialValue;
+function clonePrototype<const V>(original: V, clone: V): V {
+  Object.setPrototypeOf(clone, Object.getPrototypeOf(original));
 
-  for (let index = 0, length = array.length; index < length; index++) {
-    value = fn(value, array[index]);
-  }
-
-  return value;
-};
+  return clone;
+}
 
 /**
  * get the all properties (keys and symbols) of the object passed
  */
 export const getOwnProperties = (object: Unchangeable): Array<string | symbol> => {
+  const properties: Array<string | symbol> = Object.keys(object);
+
   if (!HAS_SYMBOL_SUPPORT) {
-    return keys(object);
+    return properties;
   }
 
-  const ownSymbols: symbol[] = getOwnPropertySymbols(object);
+  const ownSymbols: symbol[] = Object.getOwnPropertySymbols(object);
 
   if (!ownSymbols.length) {
-    return keys(object);
+    return properties;
   }
 
-  return keys(object).concat(
-    reduce(
-      ownSymbols,
-      (enumerableSymbols: symbol[], symbol: symbol): symbol[] => {
-        if (propertyIsEnumerable.call(object, symbol)) {
-          enumerableSymbols.push(symbol);
-        }
+  return properties.concat(
+    ownSymbols.reduce((enumerableSymbols: symbol[], symbol: symbol): symbol[] => {
+      if (propertyIsEnumerable.call(object, symbol)) {
+        enumerableSymbols.push(symbol);
+      }
 
-        return enumerableSymbols;
-      },
-      [],
-    ),
+      return enumerableSymbols;
+    }, []),
   );
 };
-
-/**
- * a targeted fallback if native Object.assign is unavailable
- */
-export const assignFallback = (target: Unchangeable, source: Unchangeable): Unchangeable => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!source) {
-    return target;
-  }
-
-  return reduce(
-    getOwnProperties(source),
-    (clonedObject: Unchangeable, property: string) => {
-      clonedObject[property] = source[property];
-
-      return clonedObject;
-    },
-    Object(target),
-  );
-};
-
-const assign = typeof O.assign === 'function' ? O.assign : assignFallback;
-
-/**
- * create a new object with the prototype of the object passed
- */
-export const createWithProto = (object: Unchangeable): Unchangeable =>
-  create(object.__proto__ ?? getPrototypeOf(object));
 
 /**
  * is the object passed considered cloneable
@@ -120,7 +79,7 @@ export function isCloneable(object: any): boolean {
     return false;
   }
 
-  const type = toStringObject(object);
+  const type = toStringObject.call(object);
 
   return type !== '[object Date]' && type !== '[object RegExp]';
 }
@@ -129,14 +88,14 @@ export function isCloneable(object: any): boolean {
  * is the path passed an empty path
  */
 export function isEmptyPath(path: any): path is EmptyPath {
-  return path == null || (isArray(path) && !path.length);
+  return path == null || (Array.isArray(path) && !path.length);
 }
 
 /**
  * is the fn passed a global constructor
  */
 export const isGlobalConstructor = (fn: any) =>
-  typeof fn === 'function' && !!~toStringFunction(fn).indexOf('[native code]');
+  typeof fn === 'function' && !!~toStringFunction.call(fn).indexOf('[native code]');
 
 /**
  * if the object passed is a function, call it and return its return, else return undefined
@@ -154,21 +113,15 @@ export function getNewEmptyChild<V>(key: PathItem): V {
 /**
  * get a new empty object based on the object passed
  */
-export const getNewEmptyObject = (object: Unchangeable): Unchangeable => (isArray(object) ? [] : {});
+export const getNewEmptyObject = (object: Unchangeable): Unchangeable => (Array.isArray(object) ? [] : {});
 
 /**
  * create a shallow clone of the object passed, respecting its prototype
  */
 export function getShallowClone<const V extends Unchangeable>(value: V): V {
-  if (value.constructor === Object) {
-    return { ...value };
-  }
+  const clone = (Array.isArray(value) ? [...value] : { ...value }) as V;
 
-  if (Array.isArray(value)) {
-    return [...value] as unknown as V;
-  }
-
-  return isGlobalConstructor(value.constructor) ? ({} as V) : assign(createWithProto(value), value);
+  return value.constructor !== clone.constructor ? clonePrototype(value, clone) : clone;
 }
 
 /**
@@ -183,8 +136,8 @@ export const cloneIfPossible = (object: any) => (isCloneable(object) ? getShallo
 export function getCloneOrEmptyObject<const V extends Unchangeable, K extends PathItem>(
   object: V,
   nextKey: K,
-): K extends keyof V ? V : any {
-  return isCloneable(object) ? getShallowClone(object) : getNewEmptyChild(nextKey);
+): TODO_FIX_YOUR_TYPES {
+  return isCloneable(object) ? getShallowClone(object) : typeof nextKey === 'number' ? [] : {};
 }
 
 /**
@@ -240,9 +193,9 @@ export function getDeepClone<const P extends Path, const V extends Unchangeable>
  * merge the source into the target, either deeply or shallowly
  */
 export const getMergedObject = (target: Unchangeable, source: Unchangeable, isDeep: boolean): Unchangeable => {
-  const isObject1Array = isArray(target);
+  const isObject1Array = Array.isArray(target);
 
-  if (isObject1Array !== isArray(source) || !isCloneable(target)) {
+  if (isObject1Array !== Array.isArray(source) || !isCloneable(target)) {
     return cloneIfPossible(source);
   }
 
@@ -251,16 +204,17 @@ export const getMergedObject = (target: Unchangeable, source: Unchangeable, isDe
   }
 
   const targetClone: Unchangeable =
-    target.constructor === O || isGlobalConstructor(target.constructor) ? {} : createWithProto(target);
+    target.constructor === Object || isGlobalConstructor(target.constructor)
+      ? {}
+      : Object.create(Object.getPrototypeOf(target));
 
-  return reduce(
-    getOwnProperties(source),
-    (clone: Unchangeable, key: string): Unchangeable => {
+  return getOwnProperties(source).reduce(
+    (clone, key) => {
       clone[key] = isDeep && isCloneable(source[key]) ? getMergedObject(target[key], source[key], isDeep) : source[key];
 
       return clone;
     },
-    assign(targetClone, target),
+    Object.assign(targetClone, target),
   );
 };
 
@@ -319,7 +273,11 @@ export function getValueAtPathInternal<const P extends AnyPath, const V extends 
 export function getFullPath<const P extends Path, const V extends Unchangeable>(path: P, value: V): Path {
   const valueAtPath = getValueAtPath(path, value);
 
-  return isArray(valueAtPath) ? (isArray(path) ? path.concat([valueAtPath.length]) : [valueAtPath.length]) : path;
+  return Array.isArray(valueAtPath)
+    ? Array.isArray(path)
+      ? path.concat([valueAtPath.length])
+      : [valueAtPath.length]
+    : path;
 }
 
 /**
