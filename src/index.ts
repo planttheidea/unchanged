@@ -1,18 +1,16 @@
-import { __, curry } from 'curriable';
-import { isFn } from 'validation.js';
-import { createAdd, createMerge, createRemove, createSet } from './handlers.js';
 import type { AnyFn, AnyPath, EmptyPath, HasDeep, PickDeep, PickDeepOr, Unchangeable } from './internalTypes.js';
 import { getValueAtPath, hasFullPath } from './utils.js';
+import { isCallable } from './validation.js';
 
-export { __ };
+// export { __ };
 
-export const add = curry(createAdd(false));
+// export const add = curry(createAdd(false));
 
-export const addWith = curry(createAdd(true));
+// export const addWith = curry(createAdd(true));
 
-export const assign = curry(createMerge(false, false));
+// export const assign = curry(createMerge(false, false));
 
-export const assignWith = curry(createMerge(true, false));
+// export const assignWith = curry(createMerge(true, false));
 
 export function call<const P extends AnyPath>(
   path: P,
@@ -62,7 +60,7 @@ export function call<
         return <const V extends Unchangeable | AnyFn<A>>(value: V, context = value) => {
           const fn = getValueAtPath(path, value);
 
-          if (isFn<A>(fn)) {
+          if (isCallable<A>(fn)) {
             return context !== value ? fn.apply(context, args) : fn(...args);
           }
         };
@@ -72,7 +70,7 @@ export function call<
 
       const fn = getValueAtPath(path, eagerValue);
 
-      if (isFn<A>(fn)) {
+      if (isCallable<A>(fn)) {
         return eagerContext !== eagerValue ? fn.apply(eagerContext, args) : fn(...args);
       }
     };
@@ -84,7 +82,7 @@ export function call<
     return <const V extends Unchangeable | AnyFn<A>>(value: V, context = value) => {
       const fn = getValueAtPath(path, value);
 
-      if (isFn<A>(fn)) {
+      if (isCallable<A>(fn)) {
         return context !== value ? fn.apply(context, eagerArgs) : fn(...eagerArgs);
       }
     };
@@ -94,7 +92,7 @@ export function call<
 
   const fn = getValueAtPath(path, eagerValue);
 
-  if (isFn<A>(fn)) {
+  if (isCallable<A>(fn)) {
     return eagerContext !== eagerValue ? fn.apply(eagerContext, eagerArgs) : fn(...eagerArgs);
   }
 }
@@ -196,9 +194,9 @@ export function is<const P extends AnyPath, const EagerE, const EagerV extends U
   return Object.is(getValueAtPath(path, eagerValue), eagerExpected);
 }
 
-export const merge = curry(createMerge(false, true));
+// export const merge = curry(createMerge(false, true));
 
-export const mergeWith = curry(createMerge(true, true));
+// export const mergeWith = curry(createMerge(true, true));
 
 /**
  * Whether the `expected` value does not match the given `object` at `path` with
@@ -235,10 +233,10 @@ export function not<const P extends AnyPath, const EagerE, const EagerV extends 
   return !is(path, eagerExpected, eagerValue);
 }
 
-export const remove = curry(createRemove(false));
+// export const remove = curry(createRemove(false));
 
-export const removeWith = curry(createRemove(true));
+// export const removeWith = curry(createRemove(true));
 
-export const set = curry(createSet(false));
+// export const set = curry(createSet(false));
 
-export const setWith = curry(createSet(true));
+// export const setWith = curry(createSet(true));

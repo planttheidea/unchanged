@@ -8,10 +8,9 @@ import {
   getValueAtPath,
   getNewEmptyObject,
   isCloneable,
-  isEmptyPath,
-  splice,
   throwInvalidFnError,
 } from './utils.js';
+import { isEmptyPath } from './validation.js';
 
 type Handler<Value, ExtraArgs extends unknown[], Result> = (value: Value, ...extraArgs: ExtraArgs) => Result;
 
