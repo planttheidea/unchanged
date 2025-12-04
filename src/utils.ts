@@ -230,12 +230,12 @@ export function getValueAtPathInternal<const P extends AnyPath, const V extends 
     return NO_MATCH_FOUND;
   }
 
-  const parsedPath = parse(path) as Path;
-
-  if (isEmptyPath(parsedPath)) {
+  if (isEmptyPath(path)) {
     // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
     return value;
   }
+
+  const parsedPath = parse(path) as Path;
 
   if (parsedPath.length === 1) {
     const key = parsedPath[0]!;

@@ -1,6 +1,8 @@
 import type { ParsePath, Path, PathItem, ReadonlyPath } from 'pathington';
 
-export type AnyPath = Path | ReadonlyPath | PathItem;
+export type AnyFn<A extends unknown[] = unknown[]> = (...args: A) => any;
+export type AnyPath = EmptyPath | Path | ReadonlyPath | PathItem;
+export type AnyParseablePath = Exclude<AnyPath, EmptyPath>;
 
 export interface Unchangeable {
   [key: string]: any;
