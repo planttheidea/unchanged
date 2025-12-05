@@ -13,6 +13,8 @@ import type {
 import { isEmptyPath } from './validation.js';
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
 
 const NO_MATCH_FOUND: NoMatch = { $$noMatch: true };
@@ -82,10 +84,10 @@ export function getValueAtPathInternal<const P extends AnyPath, const V extends 
     key = parsedPath[index + 1]!;
   }
 
-  return ref && Object.hasOwn(ref, key)
+  return ref && hasOwnProperty.call(ref, key)
     ? ref[key]
     : // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
-      undefined;
+      NO_MATCH_FOUND;
 }
 
 /**
@@ -123,5 +125,5 @@ export function hasFullPath<const P extends AnyPath, const V extends Unchangeabl
   value: V | null | undefined,
 ): HasDeep<V, P> {
   // @ts-expect-error - Types are widening internally due to ternary returns, but consumers get good types.
-  return getValueAtPathInternal(path, value) !== NO_MATCH_FOUND;
+  return value != null && getValueAtPathInternal(path, value) !== NO_MATCH_FOUND;
 }
