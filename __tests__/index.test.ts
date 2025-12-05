@@ -479,103 +479,116 @@ describe('not', () => {
   });
 });
 
-describe.only('set', () => {
+describe('set', () => {
   const setExisting = [
     {
       type: 'existing simple array path',
       path: ['foo'],
-      object: { foo: 'bar', untouched: true },
+      getObject: () => ({ foo: 'bar', untouched: true }),
       value: 'new',
       expected: { foo: 'new', untouched: true },
     },
     {
       type: 'existing simple strng path',
       path: 'foo',
-      object: { foo: 'bar', untouched: true },
+      getObject: () => ({ foo: 'bar', untouched: true }),
       value: 'new',
       expected: { foo: 'new', untouched: true },
     },
     {
       type: 'existing nested array path',
       path: ['foo', 0],
-      object: { foo: ['bar'], untouched: true },
+      getObject: () => ({ foo: ['bar'], untouched: true }),
       value: 'new',
       expected: { foo: ['new'], untouched: true },
     },
     {
       type: 'existing nested string path',
       path: 'foo[0]',
-      object: { foo: ['bar'], untouched: true },
+      getObject: () => ({ foo: ['bar'], untouched: true }),
       value: 'new',
       expected: { foo: ['new'], untouched: true },
     },
     {
       type: 'new simple array path',
       path: ['foo'],
-      object: { untouched: true },
+      getObject: () => ({ untouched: true }),
       value: 'new',
       expected: { foo: 'new', untouched: true },
     },
     {
       type: 'new simple strng path',
       path: 'foo',
-      object: { untouched: true },
+      getObject: () => ({ untouched: true }),
       value: 'new',
       expected: { foo: 'new', untouched: true },
     },
     {
       type: 'new nested array path',
       path: ['foo', 0],
-      object: { untouched: true },
+      getObject: () => ({ untouched: true }),
       value: 'new',
       expected: { foo: ['new'], untouched: true },
     },
     {
       type: 'new nested string path',
       path: 'foo[0]',
-      object: { untouched: true },
+      getObject: () => ({ untouched: true }),
       value: 'new',
       expected: { foo: ['new'], untouched: true },
     },
   ] as const;
 
-  test.each(setExisting)('sets the value matching at the $type (standard)', ({ path, object, value, expected }) => {
-    const resultStandard = set(value, path, object);
+  test.each(setExisting)('sets the value matching at the $type', ({ path, getObject, value, expected }) => {
+    const resultStandard = set(value, path, getObject());
 
     expect(resultStandard).toEqual(expected);
-  });
 
-  test.each(setExisting)(
-    'sets the value matching at the $type (partial value)',
-    ({ path, object, value, expected }) => {
-      const resultPartialValue = set(value)(path, object);
+    const resultPartialValue = set(value)(path, getObject());
 
-      expect(resultPartialValue).toEqual(expected);
-    },
-  );
+    expect(resultPartialValue).toEqual(expected);
 
-  test.each(setExisting)(
-    'sets the value matching at the $type (partial object)',
-    ({ path, object, value, expected }) => {
-      const resultPartialObject = set(value, path)(object);
+    const resultPartialObject = set(value, path)(getObject());
 
-      expect(resultPartialObject).toEqual(expected);
-    },
-  );
+    expect(resultPartialObject).toEqual(expected);
 
-  test.each(setExisting)('sets the value matching at the $type (curried)', ({ path, object, value, expected }) => {
-    const resultCurried = set(value)(path)(object);
+    const resultCurried = set(value)(path)(getObject());
 
     expect(resultCurried).toEqual(expected);
   });
 
-  test('returns the value passed if the path is empty', () => {
-    const path: any[] = [];
-    const value: any = { foo: 'bar' };
-    const object = { untouched: true };
+  const setEmptyPath = [
+    {
+      type: 'null',
+      path: null,
+      getObject: () => ({ foo: 'bar', untouched: true }),
+      value: 'new',
+      expected: 'new',
+    },
+    {
+      type: 'empty array',
+      path: [],
+      getObject: () => ({ foo: 'bar', untouched: true }),
+      value: 'new',
+      expected: 'new',
+    },
+  ] as const;
 
-    const result = set(value, path, object);
+  test.each(setEmptyPath)('returns the new value for $type', ({ path, getObject, value, expected }) => {
+    const resultStandard = set(value, path, getObject());
 
-    expect(result).toBe(value);
+    expect(resultStandard).toEqual(expected);
+
+    const resultPartialValue = set(value)(path, getObject());
+
+    expect(resultPartialValue).toEqual(expected);
+
+    const resultPartialObject = set(value, path)(getObject());
+
+    expect(resultPartialObject).toEqual(expected);
+
+    const resultCurried = set(value)(path)(getObject());
+
+    expect(resultCurried).toEqual(expected);
   });
 });

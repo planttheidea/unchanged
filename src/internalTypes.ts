@@ -45,7 +45,8 @@ export type PickDeepInternal<U, P> =
       ? _PickDeep<U, P>
       : P extends readonly unknown[]
         ? _PickDeep<U, [...P]>
-        : U;
+        : // When it cannot be narrowly determined, widen to ensure false positives / negatives are avoided.
+          any;
 
 export type PickDeep<U, P extends AnyPath, Result = PickDeepInternal<U, ParsePath<P>>> = NoMatch extends Result
   ? undefined
@@ -123,5 +124,6 @@ export type SetDeep<U, P, N> =
     : P extends unknown[]
       ? SetDeepInternal<U, P, N>
       : P extends readonly unknown[]
-        ? SetDeepInternal<U, P, N>
-        : U;
+        ? SetDeepInternal<U, [...P], N>
+        : // When it cannot be narrowly determined, widen to ensure false positives / negatives are avoided.
+          any;
