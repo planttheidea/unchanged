@@ -1,6 +1,16 @@
-import type { AnyFn, AnyPath, EmptyPath, HasDeep, PickDeep, PickDeepOr, Unchangeable } from './internalTypes.js';
-import { getValueAtPath, hasFullPath } from './utils.js';
-import { isCallable } from './validation.js';
+import type { Path } from 'pathington';
+import type {
+  AnyFn,
+  AnyPath,
+  EmptyPath,
+  HasDeep,
+  PickDeep,
+  PickDeepOr,
+  SetDeep,
+  Unchangeable,
+} from './internalTypes.js';
+import { getDeepClone, getValueAtPath, hasFullPath } from './utils.js';
+import { isCallable, isEmptyPath } from './validation.js';
 
 // export { __ };
 
@@ -17,9 +27,9 @@ import { isCallable } from './validation.js';
 // ): <A extends unknown[]>(
 //   ...args: A
 // ) => A extends [infer P extends AnyPath]
-//   ? <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>
-//   : A extends [infer P extends AnyPath, infer V extends Unchangeable]
-//     ? PickDeepOr<V, P, N>
+//   ? <const U extends Unchangeable>(object: U) => PickDeepOr<U, P, N>
+//   : A extends [infer P extends AnyPath, infer U extends Unchangeable]
+//     ? PickDeepOr<U, P, N>
 //     : never;
 
 export function call<const P extends EmptyPath>(
@@ -27,10 +37,10 @@ export function call<const P extends EmptyPath>(
 ): <const A extends unknown[]>(
   ...args: A
 ) => A extends [infer CallA extends unknown[]]
-  ? <const V extends AnyFn<CallA>>(value: V, context?: any) => ReturnType<V>
-  : A extends [infer CallA extends unknown[], infer V]
-    ? V extends AnyFn<CallA>
-      ? ReturnType<V>
+  ? <const U extends AnyFn<CallA>>(object: U, context?: any) => ReturnType<U>
+  : A extends [infer CallA extends unknown[], infer U]
+    ? U extends AnyFn<CallA>
+      ? ReturnType<U>
       : never
     : never;
 export function call<const P extends AnyPath>(
@@ -38,54 +48,53 @@ export function call<const P extends AnyPath>(
 ): <const A extends unknown[]>(
   ...args: A
 ) => A extends [infer CallA extends unknown[]]
-  ? <const V extends Unchangeable>(
-      value: V,
+  ? <const U extends Unchangeable>(
+      object: U,
       context?: any,
-    ) => PickDeep<V, P> extends AnyFn<CallA> ? ReturnType<PickDeep<V, P>> : undefined
-  : A extends [infer CallA extends unknown[], infer V extends Unchangeable]
-    ? PickDeep<V, P> extends AnyFn<CallA>
-      ? ReturnType<PickDeep<V, P>>
+    ) => PickDeep<U, P> extends AnyFn<CallA> ? ReturnType<PickDeep<U, P>> : undefined
+  : A extends [infer CallA extends unknown[], infer U extends Unchangeable]
+    ? PickDeep<U, P> extends AnyFn<CallA>
+      ? ReturnType<PickDeep<U, P>>
       : undefined
     : never;
 export function call<const P extends EmptyPath, const A extends unknown[]>(
   path: P,
   args: A,
-): <const V extends AnyFn<A>>(value: V, context?: any) => ReturnType<V>;
+): <const U extends AnyFn<A>>(object: U, context?: any) => ReturnType<U>;
 export function call<const P extends AnyPath, const A extends unknown[]>(
   path: P,
   args: A,
-): <const V extends Unchangeable>(
-  value: V,
+): <const U extends Unchangeable>(
+  object: U,
   context?: any,
-) => PickDeep<V, P> extends AnyFn<A> ? ReturnType<PickDeep<V, P>> : undefined;
-export function call<const P extends EmptyPath, const A extends unknown[], const V extends AnyFn<A>>(
+) => PickDeep<U, P> extends AnyFn<A> ? ReturnType<PickDeep<U, P>> : undefined;
+export function call<const P extends EmptyPath, const A extends unknown[], const U extends AnyFn<A>>(
   path: P,
   args: A,
-  value: V,
+  object: U,
   context?: any,
-): ReturnType<V>;
-export function call<const P extends AnyPath, const A extends unknown[], const V extends Unchangeable>(
+): ReturnType<U>;
+export function call<const P extends AnyPath, const A extends unknown[], const U extends Unchangeable>(
   path: P,
   args: A,
-  value: V,
+  object: U,
   context?: any,
-): PickDeep<V, P> extends AnyFn<A> ? ReturnType<PickDeep<V, P>> : undefined;
-export function call<
-  const P extends AnyPath | EmptyPath,
-  const A extends unknown[],
-  const V extends Unchangeable | AnyFn<A>,
->(path: P, ...rest: [eagerArgs: A, eagerValue: V, eagerContext?: any] | [eagerArgs: A] | []) {
+): PickDeep<U, P> extends AnyFn<A> ? ReturnType<PickDeep<U, P>> : undefined;
+export function call<const P extends AnyPath, const A extends unknown[], const U extends Unchangeable | AnyFn<A>>(
+  path: P,
+  ...rest: [eagerArgs: A, eagerValue: U, eagerContext?: any] | [eagerArgs: A] | []
+) {
   if (!rest.length) {
-    return <const A extends unknown[], const V extends Unchangeable | AnyFn<A>>(
+    return <const A extends unknown[], const U extends Unchangeable | AnyFn<A>>(
       args: A,
-      ...rest: [eagerValue: V, eagerContext?: any] | []
+      ...rest: [eagerValue: U, eagerContext?: any] | []
     ) => {
       if (!rest.length) {
-        return <const V extends Unchangeable | AnyFn<A>>(value: V, context = value) => {
-          const fn = getValueAtPath(path, value);
+        return <const U extends Unchangeable | AnyFn<A>>(object: U, context = object) => {
+          const fn = getValueAtPath(path, object);
 
           if (isCallable<A>(fn)) {
-            return context !== value ? fn.apply(context, args) : fn(...args);
+            return context !== object ? fn.apply(context, args) : fn(...args);
           }
         };
       }
@@ -105,11 +114,11 @@ export function call<
   const [eagerArgs] = rest;
 
   if (rest.length === 1) {
-    return <const V extends Unchangeable | AnyFn<A>>(value: V, context = value) => {
-      const fn = getValueAtPath(path, value);
+    return <const U extends Unchangeable | AnyFn<A>>(object: U, context = object) => {
+      const fn = getValueAtPath(path, object);
 
       if (isCallable<A>(fn)) {
-        return context !== value ? fn.apply(context, eagerArgs) : fn(...eagerArgs);
+        return context !== object ? fn.apply(context, eagerArgs) : fn(...eagerArgs);
       }
     };
   }
@@ -124,16 +133,16 @@ export function call<
 }
 
 /**
- * Get the value at the `path` for the given `object`.
+ * Get the object at the `path` for the given `object`.
  */
-export function get<const P extends AnyPath>(path: P): <const V extends Unchangeable>(value: V) => PickDeep<V, P>;
-export function get<const P extends AnyPath, const V extends Unchangeable>(path: P, value: V): PickDeep<V, P>;
+export function get<const P extends AnyPath>(path: P): <const U extends Unchangeable>(object: U) => PickDeep<U, P>;
+export function get<const P extends AnyPath, const U extends Unchangeable>(path: P, object: U): PickDeep<U, P>;
 export function get<const P extends AnyPath, const EagerV extends Unchangeable>(
   path: P,
   ...rest: [eagerValue: EagerV] | []
 ) {
   if (!rest.length) {
-    return <const V extends Unchangeable>(value: V) => getValueAtPath(path, value);
+    return <const U extends Unchangeable>(object: U) => getValueAtPath(path, object);
   }
 
   const [eagerValue] = rest;
@@ -142,7 +151,7 @@ export function get<const P extends AnyPath, const EagerV extends Unchangeable>(
 }
 
 /**
- * Get the value at the `path` for the given `object`. If there is no value found at the given path, return the
+ * Get the object at the `path` for the given `object`. If there is no object found at the given path, return the
  * provided default.
  */
 export function getOr<const N>(
@@ -150,27 +159,27 @@ export function getOr<const N>(
 ): <A extends unknown[]>(
   ...args: A
 ) => A extends [infer P extends AnyPath]
-  ? <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>
-  : A extends [infer P extends AnyPath, infer V extends Unchangeable]
-    ? PickDeepOr<V, P, N>
+  ? <const U extends Unchangeable>(object: U) => PickDeepOr<U, P, N>
+  : A extends [infer P extends AnyPath, infer U extends Unchangeable]
+    ? PickDeepOr<U, P, N>
     : never;
 export function getOr<const N, const P extends AnyPath>(
   noMatchValue: N,
   path: P,
-): <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>;
-export function getOr<const N, const P extends AnyPath, const V extends Unchangeable>(
+): <const U extends Unchangeable>(object: U) => PickDeepOr<U, P, N>;
+export function getOr<const N, const P extends AnyPath, const U extends Unchangeable>(
   noMatchValue: N,
   path: P,
-  value: V,
-): PickDeepOr<V, P, N>;
-export function getOr<const N, const P extends AnyPath, const V extends Unchangeable>(
+  object: U,
+): PickDeepOr<U, P, N>;
+export function getOr<const N, const P extends AnyPath, const U extends Unchangeable>(
   noMatchValue: N,
-  ...rest: [path: P, value: V] | [path: P] | []
+  ...rest: [path: P, object: U] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath>(path: P, ...rest: [value: V] | []) => {
+    return <const P extends AnyPath>(path: P, ...rest: [object: U] | []) => {
       if (!rest.length) {
-        return <const V extends Unchangeable>(value: V) => getValueAtPath(path, value, noMatchValue);
+        return <const U extends Unchangeable>(object: U) => getValueAtPath(path, object, noMatchValue);
       }
 
       const [eagerValue] = rest;
@@ -182,7 +191,7 @@ export function getOr<const N, const P extends AnyPath, const V extends Unchange
   const [eagerPath] = rest;
 
   if (rest.length === 1) {
-    return <const V extends Unchangeable>(value: V) => getValueAtPath(eagerPath, value, noMatchValue);
+    return <const U extends Unchangeable>(object: U) => getValueAtPath(eagerPath, object, noMatchValue);
   }
 
   const [, eagerValue] = rest;
@@ -193,14 +202,14 @@ export function getOr<const N, const P extends AnyPath, const V extends Unchange
 /**
  * Whether the `path` exists in the given `object`.
  */
-export function has<const P extends AnyPath>(path: P): <const V>(value: V) => HasDeep<V, P>;
-export function has<const P extends AnyPath, const V>(path: P, value: V): HasDeep<V, P>;
+export function has<const P extends AnyPath>(path: P): <const U>(object: U) => HasDeep<U, P>;
+export function has<const P extends AnyPath, const U>(path: P, object: U): HasDeep<U, P>;
 export function has<const P extends AnyPath, const EagerV extends Unchangeable>(
   path: P,
   ...rest: [eagerValue: EagerV] | []
 ) {
   if (!rest.length) {
-    return <const V extends Unchangeable>(value: V) => hasFullPath(path, value);
+    return <const U extends Unchangeable>(object: U) => hasFullPath(path, object);
   }
 
   const eagerValue = rest[0];
@@ -209,7 +218,7 @@ export function has<const P extends AnyPath, const EagerV extends Unchangeable>(
 }
 
 /**
- * Whether the `expected` value matches the given `object` at `path` with
+ * Whether the `expected` object matches the given `object` at `path` with
  * [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness#same-value_equality_using_object.is)
  * equality.
  */
@@ -218,27 +227,27 @@ export function is<const E>(
 ): <A extends unknown[]>(
   ...args: A
 ) => A extends [AnyPath]
-  ? <const V extends Unchangeable>(value: V) => boolean
+  ? <const U extends Unchangeable>(object: U) => boolean
   : A extends [AnyPath, Unchangeable]
     ? boolean
     : never;
 export function is<const E, const P extends AnyPath>(
   expected: E,
   path: P,
-): <const V extends Unchangeable>(value: V) => boolean;
-export function is<const E, const P extends AnyPath, const V extends Unchangeable>(
+): <const U extends Unchangeable>(object: U) => boolean;
+export function is<const E, const P extends AnyPath, const U extends Unchangeable>(
   expected: E,
   path: P,
-  value: V,
+  object: U,
 ): boolean;
-export function is<const E, const P extends AnyPath, const V extends Unchangeable>(
+export function is<const E, const P extends AnyPath, const U extends Unchangeable>(
   expected: E,
-  ...rest: [path: P, value: V] | [path: P] | []
+  ...rest: [path: P, object: U] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath, const V extends Unchangeable>(path: P, ...rest: [value: V] | []) => {
+    return <const P extends AnyPath, const U extends Unchangeable>(path: P, ...rest: [object: U] | []) => {
       if (!rest.length) {
-        return <const V extends Unchangeable>(value: V) => Object.is(getValueAtPath(path, value), expected);
+        return <const U extends Unchangeable>(object: U) => Object.is(getValueAtPath(path, object), expected);
       }
 
       const [eagerValue] = rest;
@@ -250,7 +259,7 @@ export function is<const E, const P extends AnyPath, const V extends Unchangeabl
   const [eagerPath] = rest;
 
   if (rest.length === 1) {
-    return <const V extends Unchangeable>(value: V) => Object.is(getValueAtPath(eagerPath, value), expected);
+    return <const U extends Unchangeable>(object: U) => Object.is(getValueAtPath(eagerPath, object), expected);
   }
 
   const [, eagerValue] = rest;
@@ -263,7 +272,7 @@ export function is<const E, const P extends AnyPath, const V extends Unchangeabl
 // export const mergeWith = curry(createMerge(true, true));
 
 /**
- * Whether the `expected` value does not match the given `object` at `path` with
+ * Whether the `expected` object does not match the given `object` at `path` with
  * [SameValueZero](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Equality_comparisons_and_sameness#same-value_equality_using_object.is)
  * equality.
  */
@@ -272,27 +281,27 @@ export function not<const E>(
 ): <A extends unknown[]>(
   ...args: A
 ) => A extends [AnyPath]
-  ? <const V extends Unchangeable>(value: V) => boolean
+  ? <const U extends Unchangeable>(object: U) => boolean
   : A extends [AnyPath, Unchangeable]
     ? boolean
     : never;
 export function not<const E, const P extends AnyPath>(
   expected: E,
   path: P,
-): <const V extends Unchangeable>(value: V) => boolean;
-export function not<const E, const P extends AnyPath, const V extends Unchangeable>(
+): <const U extends Unchangeable>(object: U) => boolean;
+export function not<const E, const P extends AnyPath, const U extends Unchangeable>(
   expected: E,
   path: P,
-  value: V,
+  object: U,
 ): boolean;
-export function not<const E, const P extends AnyPath, const V extends Unchangeable>(
+export function not<const E, const P extends AnyPath, const U extends Unchangeable>(
   expected: E,
-  ...rest: [path: P, value: V] | [path: P] | []
+  ...rest: [path: P, object: U] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath, const V extends Unchangeable>(path: P, ...rest: [value: V] | []) => {
+    return <const P extends AnyPath, const U extends Unchangeable>(path: P, ...rest: [object: U] | []) => {
       if (!rest.length) {
-        return <const V extends Unchangeable>(value: V) => !is(expected, path, value);
+        return <const U extends Unchangeable>(object: U) => !is(expected, path, object);
       }
 
       const [eagerValue] = rest;
@@ -304,7 +313,7 @@ export function not<const E, const P extends AnyPath, const V extends Unchangeab
   const [eagerPath] = rest;
 
   if (rest.length === 1) {
-    return <const V extends Unchangeable>(value: V) => !is(expected, eagerPath, value);
+    return <const U extends Unchangeable>(object: U) => !is(expected, eagerPath, object);
   }
 
   const [, eagerValue] = rest;
@@ -316,6 +325,69 @@ export function not<const E, const P extends AnyPath, const V extends Unchangeab
 
 // export const removeWith = curry(createRemove(true));
 
-// export const set = curry(createSet(false));
+export function set<const N>(
+  newValue: N,
+): <const A extends unknown[]>(
+  ...args: A
+) => A extends [infer P extends AnyPath]
+  ? <const U extends Unchangeable>(object: U) => SetDeep<U, P, N>
+  : A extends [infer P extends AnyPath, infer U extends Unchangeable]
+    ? SetDeep<U, P, N>
+    : never;
+export function set<const N, const P extends AnyPath>(
+  newValue: N,
+  path: P,
+): <const U extends Unchangeable>(object: U) => SetDeep<U, P, N>;
+export function set<const N, const P extends AnyPath, const U extends Unchangeable>(
+  newValue: N,
+  path: P,
+  object: U,
+): SetDeep<U, P, N>;
+export function set<const N, const P extends AnyPath, const U extends Unchangeable>(
+  newValue: N,
+  ...rest: [path: P, object: U] | [path: P] | []
+) {
+  if (!rest.length) {
+    return <const P extends AnyPath, const U extends Unchangeable>(path: P, ...rest: [object: U] | []) => {
+      if (!rest.length) {
+        return <const U extends Unchangeable>(object: U) =>
+          isEmptyPath(path)
+            ? (newValue as any)
+            : getDeepClone(path, object, (ref, key) => {
+                // @ts-expect-error - Allow writing to object.
+                ref[key] = newValue;
+              });
+      }
 
-// export const setWith = curry(createSet(true));
+      const [eagerObject] = rest;
+
+      return isEmptyPath(path)
+        ? (newValue as any)
+        : getDeepClone(path, eagerObject, (ref, key) => {
+            // @ts-expect-error - Allow writing to object.
+            ref[key] = newValue;
+          });
+    };
+  }
+
+  const [eagerPath] = rest;
+
+  if (rest.length === 1) {
+    return <const U extends Unchangeable>(object: U) =>
+      isEmptyPath(eagerPath)
+        ? (newValue as any)
+        : getDeepClone(eagerPath, object, (ref, key) => {
+            // @ts-expect-error - Allow writing to object.
+            ref[key] = newValue;
+          });
+  }
+
+  const [, eagerObject] = rest;
+
+  return isEmptyPath(eagerPath)
+    ? (newValue as any)
+    : getDeepClone(eagerPath, eagerObject, (ref, key) => {
+        // @ts-expect-error - Allow writing to object.
+        ref[key] = newValue;
+      });
+}

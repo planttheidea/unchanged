@@ -2,7 +2,7 @@
 
 import type { Mock } from 'vitest';
 import { describe, expect, vi, test } from 'vitest';
-import { call, get, getOr, has, is, not } from '../src/index.js';
+import { call, get, getOr, has, is, not, set } from '../src/index.js';
 
 describe('call', () => {
   test.each([
@@ -476,5 +476,106 @@ describe('not', () => {
     const resultCurried = not(value)(path)(object);
 
     expect(resultCurried).toBe(true);
+  });
+});
+
+describe.only('set', () => {
+  const setExisting = [
+    {
+      type: 'existing simple array path',
+      path: ['foo'],
+      object: { foo: 'bar', untouched: true },
+      value: 'new',
+      expected: { foo: 'new', untouched: true },
+    },
+    {
+      type: 'existing simple strng path',
+      path: 'foo',
+      object: { foo: 'bar', untouched: true },
+      value: 'new',
+      expected: { foo: 'new', untouched: true },
+    },
+    {
+      type: 'existing nested array path',
+      path: ['foo', 0],
+      object: { foo: ['bar'], untouched: true },
+      value: 'new',
+      expected: { foo: ['new'], untouched: true },
+    },
+    {
+      type: 'existing nested string path',
+      path: 'foo[0]',
+      object: { foo: ['bar'], untouched: true },
+      value: 'new',
+      expected: { foo: ['new'], untouched: true },
+    },
+    {
+      type: 'new simple array path',
+      path: ['foo'],
+      object: { untouched: true },
+      value: 'new',
+      expected: { foo: 'new', untouched: true },
+    },
+    {
+      type: 'new simple strng path',
+      path: 'foo',
+      object: { untouched: true },
+      value: 'new',
+      expected: { foo: 'new', untouched: true },
+    },
+    {
+      type: 'new nested array path',
+      path: ['foo', 0],
+      object: { untouched: true },
+      value: 'new',
+      expected: { foo: ['new'], untouched: true },
+    },
+    {
+      type: 'new nested string path',
+      path: 'foo[0]',
+      object: { untouched: true },
+      value: 'new',
+      expected: { foo: ['new'], untouched: true },
+    },
+  ] as const;
+
+  test.each(setExisting)('sets the value matching at the $type (standard)', ({ path, object, value, expected }) => {
+    const resultStandard = set(value, path, object);
+
+    expect(resultStandard).toEqual(expected);
+  });
+
+  test.each(setExisting)(
+    'sets the value matching at the $type (partial value)',
+    ({ path, object, value, expected }) => {
+      const resultPartialValue = set(value)(path, object);
+
+      expect(resultPartialValue).toEqual(expected);
+    },
+  );
+
+  test.each(setExisting)(
+    'sets the value matching at the $type (partial object)',
+    ({ path, object, value, expected }) => {
+      const resultPartialObject = set(value, path)(object);
+
+      expect(resultPartialObject).toEqual(expected);
+    },
+  );
+
+  test.each(setExisting)('sets the value matching at the $type (curried)', ({ path, object, value, expected }) => {
+    const resultCurried = set(value)(path)(object);
+
+    expect(resultCurried).toEqual(expected);
+  });
+
+  test('returns the value passed if the path is empty', () => {
+    const path: any[] = [];
+    const value: any = { foo: 'bar' };
+    const object = { untouched: true };
+
+    const result = set(value, path, object);
+
+    expect(result).toBe(value);
   });
 });
