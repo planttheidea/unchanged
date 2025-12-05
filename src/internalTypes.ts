@@ -51,7 +51,7 @@ export type PickDeep<V, P extends AnyPath, Result = PickDeepInternal<V, ParsePat
     ? any
     : Result;
 
-export type PickDeepOr<V, P extends AnyPath, N, Result = PickDeep<V, P>> = NoMatch extends Result
+export type PickDeepOr<V, P extends AnyPath, N, Result = PickDeepInternal<V, ParsePath<P>>> = NoMatch extends Result
   ? N
   : UnknownMatch extends Result
     ? any

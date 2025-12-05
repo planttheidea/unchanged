@@ -59,6 +59,10 @@ describe('getOr', () => {
 
     expect(resultStandard).toEqual(expected);
 
+    const resultPartialFallback = getOr(fallback)(path, object);
+
+    expect(resultPartialFallback).toEqual(expected);
+
     const resultPartialObject = getOr(fallback, path)(object);
 
     expect(resultPartialObject).toEqual(expected);
@@ -75,6 +79,10 @@ describe('getOr', () => {
     const resultStandard = getOr(fallback, path, object);
 
     expect(resultStandard).toBe(object);
+
+    const resultPartialFallback = getOr(fallback)(path, object);
+
+    expect(resultPartialFallback).toBe(object);
 
     const resultPartialObject = getOr(fallback, path)(object);
 
@@ -94,6 +102,10 @@ describe('getOr', () => {
     const resultStandard = getOr(fallback, path, object);
 
     expect(resultStandard).toBe(fallback);
+
+    const resultPartialFallback = getOr(fallback)(path, object);
+
+    expect(resultPartialFallback).toEqual(fallback);
 
     const resultPartialObject = getOr(fallback, path)(object);
 
@@ -176,6 +188,10 @@ describe('is', () => {
 
     expect(resultStandard).toBe(true);
 
+    const resultPartialValue = is(value)(path, object);
+
+    expect(resultPartialValue).toBe(true);
+
     const resultPartialObject = is(value, path)(object);
 
     expect(resultPartialObject).toBe(true);
@@ -192,6 +208,10 @@ describe('is', () => {
     const resultStandard = is(object, path, object);
 
     expect(resultStandard).toBe(true);
+
+    const resultPartialValue = is(object)(path, object);
+
+    expect(resultPartialValue).toBe(true);
 
     const resultPartialObject = is(object, path)(object);
 
@@ -211,6 +231,10 @@ describe('is', () => {
     const resultStandard = is(value, path, object);
 
     expect(resultStandard).toBe(false);
+
+    const resultPartialValue = is(value)(path, object);
+
+    expect(resultPartialValue).toBe(false);
 
     const resultPartialObject = is(value, path)(object);
 
@@ -233,6 +257,10 @@ describe('not', () => {
 
     expect(resultStandard).toBe(false);
 
+    const resultPartialValue = not(value)(path, object);
+
+    expect(resultPartialValue).toBe(false);
+
     const resultPartialObject = not(value, path)(object);
 
     expect(resultPartialObject).toBe(false);
@@ -249,6 +277,10 @@ describe('not', () => {
     const resultStandard = not(object, path, object);
 
     expect(resultStandard).toBe(false);
+
+    const resultPartialValue = not(object)(path, object);
+
+    expect(resultPartialValue).toBe(false);
 
     const resultPartialObject = not(object, path)(object);
 
@@ -268,6 +300,10 @@ describe('not', () => {
     const resultStandard = not(value, path, object);
 
     expect(resultStandard).toBe(true);
+
+    const resultPartialValue = not(value)(path, object);
+
+    expect(resultPartialValue).toBe(true);
 
     const resultPartialObject = not(value, path)(object);
 

@@ -121,7 +121,13 @@ export function get<const P extends AnyPath, const EagerV extends Unchangeable>(
  */
 export function getOr<const N>(
   noMatchValue: N,
-): <const P extends AnyPath>(path: P) => <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>;
+): <A extends unknown[]>(
+  ...args: A
+) => A extends [infer P extends AnyPath]
+  ? <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>
+  : A extends [infer P extends AnyPath, infer V extends Unchangeable]
+    ? PickDeepOr<V, P, N>
+    : never;
 export function getOr<const N, const P extends AnyPath>(
   noMatchValue: N,
   path: P,
@@ -136,9 +142,15 @@ export function getOr<const N, const P extends AnyPath, const V extends Unchange
   ...rest: [path: P, value: V] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath>(path: P) =>
-      <const V extends Unchangeable>(value: V) =>
-        getValueAtPath(path, value, noMatchValue);
+    return <const P extends AnyPath>(path: P, ...rest: [value: V] | []) => {
+      if (!rest.length) {
+        return <const V extends Unchangeable>(value: V) => getValueAtPath(path, value, noMatchValue);
+      }
+
+      const [eagerValue] = rest;
+
+      return getValueAtPath(path, eagerValue, noMatchValue);
+    };
   }
 
   const [eagerPath] = rest;
@@ -177,7 +189,13 @@ export function has<const P extends AnyPath, const EagerV extends Unchangeable>(
  */
 export function is<const E>(
   expected: E,
-): <const P extends AnyPath>(path: P) => <const V extends Unchangeable>(value: V) => boolean;
+): <A extends unknown[]>(
+  ...args: A
+) => A extends [AnyPath]
+  ? <const V extends Unchangeable>(value: V) => boolean
+  : A extends [AnyPath, Unchangeable]
+    ? boolean
+    : never;
 export function is<const E, const P extends AnyPath>(
   expected: E,
   path: P,
@@ -192,9 +210,15 @@ export function is<const E, const P extends AnyPath, const V extends Unchangeabl
   ...rest: [path: P, value: V] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath>(path: P) =>
-      <const V extends Unchangeable>(value: V) =>
-        Object.is(getValueAtPath(path, value), expected);
+    return <const P extends AnyPath, const V extends Unchangeable>(path: P, ...rest: [value: V] | []) => {
+      if (!rest.length) {
+        return <const V extends Unchangeable>(value: V) => Object.is(getValueAtPath(path, value), expected);
+      }
+
+      const [eagerValue] = rest;
+
+      return Object.is(getValueAtPath(path, eagerValue), expected);
+    };
   }
 
   const [eagerPath] = rest;
@@ -219,7 +243,13 @@ export function is<const E, const P extends AnyPath, const V extends Unchangeabl
  */
 export function not<const E>(
   expected: E,
-): <const P extends AnyPath>(path: P) => <const V extends Unchangeable>(value: V) => boolean;
+): <A extends unknown[]>(
+  ...args: A
+) => A extends [AnyPath]
+  ? <const V extends Unchangeable>(value: V) => boolean
+  : A extends [AnyPath, Unchangeable]
+    ? boolean
+    : never;
 export function not<const E, const P extends AnyPath>(
   expected: E,
   path: P,
@@ -234,9 +264,15 @@ export function not<const E, const P extends AnyPath, const V extends Unchangeab
   ...rest: [path: P, value: V] | [path: P] | []
 ) {
   if (!rest.length) {
-    return <const P extends AnyPath>(path: P) =>
-      <const V extends Unchangeable>(value: V) =>
-        !is(expected, path, value);
+    return <const P extends AnyPath, const V extends Unchangeable>(path: P, ...rest: [value: V] | []) => {
+      if (!rest.length) {
+        return <const V extends Unchangeable>(value: V) => !is(expected, path, value);
+      }
+
+      const [eagerValue] = rest;
+
+      return !is(expected, path, eagerValue);
+    };
   }
 
   const [eagerPath] = rest;
