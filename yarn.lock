@@ -5462,10 +5462,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pathington@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "pathington@npm:2.0.2"
-  checksum: 10c0/8486ebb79523a4c9d9062c9f2a5abeb007289338b30677939f71047968f0b438a6561a64d8301ad276584eef2614e29f4cfe59bacf15db2a67f37482935ca5be
+"pathington@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "pathington@npm:2.1.0"
+  checksum: 10c0/1459077deb5f29330bf1a24b4b2c590275e3e678425b68c2cbe6734f03998bec1e7f44687f73014315fd9b88c0c248ee6792c88edfa7fc46174c37e45edde871
   languageName: node
   linkType: hard
 
@@ -6838,7 +6838,7 @@ __metadata:
     eslint: "npm:^9.39.1"
     lodash: "npm:^4.17.21"
     nyc: "npm:^17.1.0"
-    pathington: "npm:^2.0.2"
+    pathington: "npm:^2.1.0"
     prettier: "npm:^3.7.4"
     ramda: "npm:^0.32.0"
     react: "npm:^19.2.1"

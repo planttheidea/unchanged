@@ -1,8 +1,5 @@
 import { assoc } from 'ramda';
-import * as src from '../src/index.js';
-// import * as src from '../dist/unchanged';
-// import * as src from '../dist/unchanged.cjs';
-// import * as src from '../dist/unchanged.esm';
+import { call, set } from '../src/index.js';
 
 // import '../benchmarks';
 
@@ -11,8 +8,6 @@ export function App() {
 }
 
 const object = Object.create(null);
-
-console.log(src.set('key', 'value', object));
 
 // const object = {
 //   bar: 'baz',
@@ -210,7 +205,7 @@ interface MethodParam {
   quz: string;
 }
 
-const deepCallResult = src.get('deeply.nested[0]')({
+const deepCallResult = call('deeply.nested[0]')([{ quz: 'quz' }])({
   ...deepObject,
   deeply: {
     nested: [

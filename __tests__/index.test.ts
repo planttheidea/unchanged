@@ -1,7 +1,171 @@
 /* eslint-disable @typescript-eslint/no-confusing-void-expression */
 
-import { describe, expect, test } from 'vitest';
-import { get, getOr, has, is, not } from '../src/index.js';
+import type { Mock } from 'vitest';
+import { describe, expect, vi, test } from 'vitest';
+import { call, get, getOr, has, is, not } from '../src/index.js';
+
+describe('call', () => {
+  test.each([
+    { type: 'simple array path', path: ['foo'], getObject: (fn: Mock) => ({ foo: fn }) },
+    {
+      type: 'simple array path with the custom context value',
+      path: ['foo'],
+      getObject: (fn: Mock) => ({ foo: fn }),
+      context: { iam: 'context' },
+    },
+    { type: 'simple string path', path: 'foo', getObject: (fn: Mock) => ({ foo: fn }) },
+    { type: 'nested array path', path: ['foo', 0], getObject: (fn: Mock) => ({ foo: [fn] }) },
+    { type: 'nested string path', path: 'foo[0]', getObject: (fn: Mock) => ({ foo: [fn] }) },
+  ])('calls the function at the $type', ({ path, getObject, context }) => {
+    const returned = { returned: 'value' };
+    const fn = vi.fn(function (this: any, _string: string, _number: number, _object: object) {
+      if (this) {
+        expect(this).toBe(context);
+      }
+      return returned;
+    });
+    const args = ['foo', 123, {}];
+    const object = getObject(fn);
+
+    const resultStandard = call(path, args, object, context);
+
+    expect(resultStandard).toBe(returned);
+    expect(fn).toHaveBeenCalledWith(...args);
+
+    fn.mockClear();
+
+    const resultPartialPath = call(path)(args, object, context);
+
+    expect(resultPartialPath).toBe(returned);
+    expect(fn).toHaveBeenCalledWith(...args);
+
+    fn.mockClear();
+
+    const resultPartialArgs = call(path, args)(object, context);
+
+    expect(resultPartialArgs).toBe(returned);
+    expect(fn).toHaveBeenCalledWith(...args);
+
+    fn.mockClear();
+
+    const resultCurried = call(path)(args)(object, context);
+
+    expect(resultCurried).toBe(returned);
+  });
+
+  test.each([
+    { type: 'simple array path', path: ['foo'], getObject: (fn: Mock) => ({ bar: fn }) },
+    {
+      type: 'simple array path with the custom context value',
+      path: ['foo'],
+      getObject: (fn: Mock) => ({ bar: fn }),
+      context: { iam: 'context' },
+    },
+    { type: 'simple string path', path: 'foo', getObject: (fn: Mock) => ({ bar: fn }) },
+    { type: 'nested array path', path: ['foo', 0], getObject: (fn: Mock) => ({ bar: [fn] }) },
+    { type: 'nested string path', path: 'foo[0]', getObject: (fn: Mock) => ({ bar: [fn] }) },
+  ])('returns undefined if no match found at $type', ({ path, getObject, context }) => {
+    const fn = vi.fn(function (this: any, _string: string, _number: number, _object: object) {
+      throw Error('boom');
+    });
+    const args = ['foo', 123, {}];
+    const object = getObject(fn);
+
+    const resultStandard = call(path, args, object, context);
+
+    expect(resultStandard).toBe(undefined);
+    expect(fn).not.toHaveBeenCalled();
+
+    const resultPartialPath = call(path)(args, object, context);
+
+    expect(resultPartialPath).toBe(undefined);
+    expect(fn).not.toHaveBeenCalled();
+
+    const resultPartialArgs = call(path, args)(object, context);
+
+    expect(resultPartialArgs).toBe(undefined);
+    expect(fn).not.toHaveBeenCalled();
+
+    const resultCurried = call(path)(args)(object, context);
+
+    expect(resultCurried).toBe(undefined);
+  });
+
+  test.each([
+    { type: 'null', path: null },
+    { type: 'null with the custom context value', path: null, context: { iam: 'context' } },
+    { type: 'empty array', path: [] },
+  ])('calls the object if the path is empty an the object is a function', ({ path, context }) => {
+    const returned = { returned: 'value' };
+    const args = ['foo', 123, {}];
+    const object = vi.fn(function (this: any, _string: string, _number: number, _object: object) {
+      if (this) {
+        expect(this).toBe(context);
+      }
+      return returned;
+    });
+
+    const resultStandard = call(path, args, object, context);
+
+    expect(resultStandard).toBe(returned);
+    expect(object).toHaveBeenCalledWith(...args);
+
+    object.mockClear();
+
+    const resultPartialPath = call(path)(args, object, context);
+
+    expect(resultPartialPath).toBe(returned);
+    expect(object).toHaveBeenCalledWith(...args);
+
+    object.mockClear();
+
+    const resultPartialArgs = call(path, args)(object, context);
+
+    expect(resultPartialArgs).toBe(returned);
+    expect(object).toHaveBeenCalledWith(...args);
+
+    object.mockClear();
+
+    const resultCurried = call(path)(args)(object, context);
+
+    expect(resultCurried).toBe(returned);
+  });
+
+  test.each([
+    { type: 'null', path: null },
+    { type: 'null with the custom context value', path: null, context: { iam: 'context' } },
+    { type: 'empty array', path: [] },
+  ])('returns undefined if the path is empty an the object is not a function', ({ path, context }) => {
+    const args = ['foo', 123, {}];
+    const object = 'boink' as any;
+
+    const resultStandard = call(path, args, object, context);
+
+    expect(resultStandard).toBe(undefined);
+
+    const resultPartialPath = call(path)(args, object, context);
+
+    expect(resultPartialPath).toBe(undefined);
+
+    const resultPartialArgs = call(path, args)(object, context);
+
+    expect(resultPartialArgs).toBe(undefined);
+
+    const resultCurried = call(path)(args)(object, context);
+
+    expect(resultCurried).toBe(undefined);
+  });
+
+  test('returns if the path is empty and the object is not function', () => {
+    const path: any[] = [];
+    const parameters: any[] = [123, null];
+    const object: any = null;
+
+    const result = call(path, parameters, object);
+
+    expect(result).toBe(undefined);
+  });
+});
 
 describe('get', () => {
   test.each([

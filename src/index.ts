@@ -12,17 +12,41 @@ import { isCallable } from './validation.js';
 
 // export const assignWith = curry(createMerge(true, false));
 
+// export function getOr<const N>(
+//   noMatchValue: N,
+// ): <A extends unknown[]>(
+//   ...args: A
+// ) => A extends [infer P extends AnyPath]
+//   ? <const V extends Unchangeable>(value: V) => PickDeepOr<V, P, N>
+//   : A extends [infer P extends AnyPath, infer V extends Unchangeable]
+//     ? PickDeepOr<V, P, N>
+//     : never;
+
 export function call<const P extends EmptyPath>(
   path: P,
-): <const A extends any[]>(args: A) => <const V extends AnyFn<A>>(value: V, context?: any) => ReturnType<V>;
+): <const A extends unknown[]>(
+  ...args: A
+) => A extends [infer CallA extends unknown[]]
+  ? <const V extends AnyFn<CallA>>(value: V, context?: any) => ReturnType<V>
+  : A extends [infer CallA extends unknown[], infer V]
+    ? V extends AnyFn<CallA>
+      ? ReturnType<V>
+      : never
+    : never;
 export function call<const P extends AnyPath>(
   path: P,
 ): <const A extends unknown[]>(
-  args: A,
-) => <const V extends Unchangeable>(
-  value: V,
-  context?: any,
-) => PickDeep<V, P> extends AnyFn<A> ? ReturnType<PickDeep<V, P>> : undefined;
+  ...args: A
+) => A extends [infer CallA extends unknown[]]
+  ? <const V extends Unchangeable>(
+      value: V,
+      context?: any,
+    ) => PickDeep<V, P> extends AnyFn<CallA> ? ReturnType<PickDeep<V, P>> : undefined
+  : A extends [infer CallA extends unknown[], infer V extends Unchangeable]
+    ? PickDeep<V, P> extends AnyFn<CallA>
+      ? ReturnType<PickDeep<V, P>>
+      : undefined
+    : never;
 export function call<const P extends EmptyPath, const A extends unknown[]>(
   path: P,
   args: A,
@@ -66,11 +90,13 @@ export function call<
         };
       }
 
-      const [, eagerValue, eagerContext = eagerValue] = rest;
+      const [eagerValue] = rest;
 
       const fn = getValueAtPath(path, eagerValue);
 
       if (isCallable<A>(fn)) {
+        const [, eagerContext = eagerValue] = rest;
+
         return eagerContext !== eagerValue ? fn.apply(eagerContext, args) : fn(...args);
       }
     };

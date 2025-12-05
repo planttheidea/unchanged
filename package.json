@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "curriable": "^1.3.0",
-    "pathington": "^2.0.2"
+    "pathington": "^2.1.0"
   },
   "description": "A tiny, fast, unopinionated handler for updating JS objects and arrays immutably",
   "devDependencies": {
