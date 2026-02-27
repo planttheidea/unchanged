@@ -32,7 +32,7 @@
     "ramda": "^0.26.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
-    "rollup": "^1.25.2",
+    "rollup": "^2.80.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^5.1.2",
     "rollup-plugin-typescript2": "^0.24.3",
@@ -44,7 +44,7 @@
     "typescript": "^3.6.4",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.9.0"
+    "webpack-dev-server": "^5.2.1"
   },
   "keywords": [
     "immutable",
